@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Grupo base */
+    --background: 0 0% 98%;
+    --foreground: 240 10% 8%;
+    --surface: 0 0% 100%;
+    --surface-muted: 240 12% 96%;
+    --border: 240 10% 88%;
+    --border-strong: 240 8% 74%;
+
+    /* Grupo marca */
+    --brand-primary: 250 45% 28%;
+    --brand-primary-hover: 250 45% 24%;
+    --brand-secondary: 20 28% 26%;
+    --brand-accent: 35 78% 62%;
+
+    /* Grupo texto */
+    --text-primary: 240 10% 8%;
+    --text-secondary: 240 6% 30%;
+    --text-muted: 240 5% 50%;
+    --text-inverse: 0 0% 100%;
+
+    /* Grupo estado */
+    --success: 145 55% 35%;
+    --warning: 35 90% 52%;
+    --danger: 2 72% 54%;
+    --info: 220 70% 52%;
+    --pending: 45 80% 50%;
+    --draft: 240 10% 60%;
+
+    /* Grupo editorial */
+    --editorial-highlight: 40 80% 95%;
+    --editorial-note: 30 50% 95%;
+    --editorial-quote: 240 15% 95%;
+    --editorial-frame: 240 10% 92%;
+
+    /* Radius base (custom) */
+    --radius: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 240 10% 4%;
+      --foreground: 0 0% 98%;
+      --surface: 240 10% 6%;
+      --surface-muted: 240 10% 12%;
+      --border: 240 10% 16%;
+      --border-strong: 240 10% 24%;
+
+      --brand-primary: 0 0% 98%;
+      --brand-primary-hover: 0 0% 90%;
+      --brand-secondary: 20 28% 76%;
+      --brand-accent: 35 78% 62%;
+
+      --text-primary: 0 0% 98%;
+      --text-secondary: 240 5% 70%;
+      --text-muted: 240 5% 50%;
+      --text-inverse: 240 10% 8%;
+
+      --success: 145 45% 45%;
+      --warning: 35 80% 60%;
+      --danger: 2 60% 60%;
+      --info: 220 60% 60%;
+      --pending: 45 70% 50%;
+      --draft: 240 10% 40%;
+      
+      --editorial-highlight: 40 80% 15%;
+      --editorial-note: 30 50% 15%;
+      --editorial-quote: 240 15% 15%;
+      --editorial-frame: 240 10% 12%;
+    }
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    @apply antialiased font-sans;
+  }
+
+  ::selection {
+    background-color: hsl(var(--brand-primary));
+    color: hsl(var(--text-inverse));
+  }
+}
