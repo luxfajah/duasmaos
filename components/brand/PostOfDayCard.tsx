@@ -1,14 +1,15 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { StatusPill, type ProjectStatus } from "./StatusPill";
+import { StatusPill } from "./StatusPill";
+import { PostStatus } from '@/types/database';
 
 interface PostOfDayCardProps {
   title: string;
   client: string;
   channel: string;
   format: string;
-  status: ProjectStatus;
+  status: PostStatus;
   cta: {
     label: string;
     onClick: () => void;
