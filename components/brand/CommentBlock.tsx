@@ -27,7 +27,7 @@ export function CommentBlock({ author, role, stage, date, content, highlight }: 
         <span className="text-xs text-text-muted tabular-nums">{date}</span>
       </div>
       <p className="text-sm font-serif italic text-text-secondary leading-relaxed mt-2">
-        "{content}"
+        &quot;{content}&quot;
       </p>
     </div>
   )
