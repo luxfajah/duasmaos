@@ -26,7 +26,8 @@ const navGroups = [
     label: 'Principal',
     items: [
       { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, exact: true },
-      { href: '/dashboard/clients', label: 'Clientes', icon: Users },
+      { href: '/dashboard/clients', label: 'Clientes', icon: Users, exact: true },
+      { href: '/dashboard/clients/pipeline', label: 'Pipeline CRM', icon: Kanban },
       { href: '/dashboard/projects', label: 'Projetos', icon: FolderOpen },
       { href: '/dashboard/kanban', label: 'Kanban', icon: Kanban },
     ],

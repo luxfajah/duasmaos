@@ -14,13 +14,23 @@ export type ProjectType = 'redes_sociais' | 'branding' | 'site';
 export type Priority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
 export type ClientStatus = 'active' | 'inactive' | 'paused';
-
+export type PipelineStage = 'Lead' | 'Diagnóstico' | 'Proposta' | 'Negociação' | 'Fechado' | 'Onboarding';
 export interface Profile {
   id: string;
   role: UserRole;
   full_name: string;
   client_id: string | null;
   avatar_url: string | null;
+  created_at: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  user_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string;
+  details: string | null;
   created_at: string;
 }
 
@@ -38,6 +48,7 @@ export interface Client {
   email: string | null;
   phone: string | null;
   status: ClientStatus;
+  pipeline_stage: PipelineStage | null;
   notes: string | null;
   website: string | null;
   sector: string | null;
@@ -87,6 +98,8 @@ export interface TaskComment {
   task_id: string;
   user_id: string | null;
   body: string;
+  pos_x: number | null;
+  pos_y: number | null;
   created_at: string;
 }
 
@@ -128,6 +141,8 @@ export interface Comment {
   user_id: string | null;
   stage: 'copy' | 'design';
   text: string;
+  pos_x: number | null;
+  pos_y: number | null;
   created_at: string;
 }
 
@@ -166,4 +181,13 @@ export const CLIENT_STATUS_LABELS: Record<ClientStatus, string> = {
   active: 'Ativo',
   inactive: 'Inativo',
   paused: 'Pausado',
+};
+
+export const PIPELINE_STAGE_LABELS: Record<PipelineStage, string> = {
+  Lead: 'Lead',
+  'Diagnóstico': 'Diagnóstico',
+  Proposta: 'Proposta',
+  'Negociação': 'Negociação',
+  Fechado: 'Fechado',
+  Onboarding: 'Onboarding',
 };

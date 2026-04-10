@@ -94,3 +94,11 @@ export async function getClientStats(clientId: string) {
     delayed: projects.filter((p) => p.status === 'delayed').length,
   }
 }
+
+export async function updateClientPipelineStage(id: string, pipeline_stage: string | null) {
+  const supabase = createClient()
+  const { error } = await supabase.from('clients').update({ pipeline_stage }).eq('id', id)
+  if (error) throw error
+  revalidatePath('/dashboard/clients')
+  revalidatePath('/dashboard/clients/pipeline')
+}

@@ -17,7 +17,7 @@ export async function getTaskComments(taskId: string) {
   })[]
 }
 
-export async function createTaskComment(taskId: string, body: string) {
+export async function createTaskComment(taskId: string, body: string, pos_x?: number | null, pos_y?: number | null) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Não autenticado')
@@ -33,9 +33,12 @@ export async function createTaskComment(taskId: string, body: string) {
     task_id: taskId,
     user_id: profile?.id ?? null,
     body,
+    pos_x: pos_x ?? null,
+    pos_y: pos_y ?? null,
   })
   if (error) throw error
   revalidatePath('/dashboard/tasks')
+  revalidatePath(`/dashboard/tasks/${taskId}`)
 }
 
 export async function deleteTaskComment(commentId: string) {
