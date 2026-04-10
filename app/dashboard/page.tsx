@@ -64,7 +64,7 @@ export default async function DashboardPage() {
           value={stats.activeProjects}
           icon={FolderOpen}
           description="+12% vs último mês"
-          accent="brand"
+          accent="default"
         />
         <MetricCard
           label="TAREFAS ATRASADAS"
