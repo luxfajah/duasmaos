@@ -130,19 +130,20 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
         </div>
 
         {/* ── Botão Novo Projeto ── */}
-        <div className="px-4 mb-5 flex justify-center group-hover:justify-start">
+        <div className="px-4 mb-5">
           <button className={cn(
             'bg-brand-highlight text-text-inverse font-bold',
-            'flex items-center justify-center gap-0 group-hover:gap-2',
-            // Fechado: círculo 40px | Aberto: full width pill
-            'w-10 h-10 group-hover:w-full',
-            'rounded-sm',
-            'overflow-hidden whitespace-nowrap',
+            'flex items-center rounded-sm',
+            'w-10 h-10 group-hover:w-full group-hover:h-10',
             'transition-all duration-300 ease-in-out',
-            'shadow-md hover:opacity-90'
+            'shadow-md hover:opacity-90 overflow-hidden'
           )}>
-            <DoodlePlus size={18} strokeWidth={2.5} className="shrink-0" />
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 text-sm">
+            {/* Ícone — fixo, sempre visível */}
+            <span className="flex items-center justify-center w-10 h-10 shrink-0">
+              <DoodlePlus size={20} strokeWidth={2.5} />
+            </span>
+            {/* Texto — só aparece quando aberto */}
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-150 text-sm whitespace-nowrap pr-4 -ml-1">
               Novo Projeto
             </span>
           </button>
