@@ -7,21 +7,21 @@
     /* ─────────────────────────────────────────
        SUPERFÍCIES E FUNDOS
     ───────────────────────────────────────── */
-    --background: 60 5% 96%; /* Stone #F5F5F4 */
-    --foreground: 0 0% 11%;  /* Graphite #1C1C1C */
-    --surface: 0 0% 100%;    /* White #FFFFFF */
-    --surface-muted: 60 5% 92%;
-    --border: 0 0% 90%;
-    --border-strong: 0 0% 80%;
+    --background: 40 10% 96%;   /* Creme Papel #F5F4F0 */
+    --foreground: 0 0% 11%;     /* Graphite #1C1C1C */
+    --surface: 0 0% 100%;       /* White #FFFFFF para contraste no creme */
+    --surface-muted: 40 10% 92%;
+    --border: 40 10% 88%;
+    --border-strong: 40 10% 80%;
 
     /* ─────────────────────────────────────────
        MARCA
     ───────────────────────────────────────── */
     --brand-primary: 23 62% 49%;       /* Orange #C86C31 */
-    --brand-primary-hover: 23 62% 44%; /* Darker Orange */
-    --brand-secondary: 90 24% 29%;     /* Olive #4A5C38 */
+    --brand-primary-hover: 23 62% 44%; 
+    --brand-secondary: 90 24% 29%;     /* Olive */
     --brand-accent: 35 78% 62%;
-    --brand-highlight: 23 62% 49%;     /* Orange for Light mode CTA */
+    --brand-highlight: 23 62% 49%;     /* Laranja para CTAs */
 
     /* ─────────────────────────────────────────
        TEXTO
@@ -29,7 +29,7 @@
     --text-primary: 0 0% 11%;
     --text-secondary: 0 0% 35%;
     --text-muted: 240 5% 50%;
-    --text-inverse: 0 0% 100%;
+    --text-inverse: 223 19% 30%;       /* Azul Grafite para escrita no Laranja */
 
     /* ─────────────────────────────────────────
        ESTADOS
@@ -91,24 +91,24 @@
   ───────────────────────────────────────── */
   .dark {
       /* Uses Graphite (#1C1C1C) as the base surface, darker graphite for background */
-      --background: 0 0% 7%;
-      --foreground: 60 5% 96%; /* Stone for text */
-      --surface: 0 0% 11%;    /* Graphite */
-      --surface-muted: 0 0% 15%;
-      --border: 0 0% 18%;
-      --border-strong: 0 0% 25%;
+      --background: 223 20% 10%; /* Azul Grafite Escuro */
+      --foreground: 40 85% 94%;  /* Creme para texto */
+      --surface: 223 20% 14%;    /* Ligeiramente mais claro que o fundo */
+      --surface-muted: 223 15% 18%;
+      --border: 223 15% 22%;
+      --border-strong: 223 15% 30%;
 
       /* Brand colors differentiated in dark mode */
-      --brand-primary: 223 19% 25%;       /* Graphite Blue (from logo) */
-      --brand-primary-hover: 223 19% 30%;
+      --brand-primary: 223 35% 45%;       /* Azul Grafite */
+      --brand-primary-hover: 223 35% 50%;
       --brand-secondary: 90 24% 29%;
-      --brand-accent: 40 85% 75%;        /* Creme (from logo circle) */
-      --brand-highlight: 40 85% 75%;     /* Creme for Dark mode CTA */
+      --brand-accent: 40 85% 75%;        
+      --brand-highlight: 223 45% 55%;     /* Azul Vibrante para CTAs */
 
-      --text-primary: 0 0% 98%;
-      --text-secondary: 240 5% 70%;
-      --text-muted: 240 5% 50%;
-      --text-inverse: 240 10% 8%;
+      --text-primary: 40 85% 94%;        /* Creme */
+      --text-secondary: 223 15% 75%;
+      --text-muted: 223 10% 60%;
+      --text-inverse: 40 85% 75%;        /* Creme para escrita no Azul */
 
       --success: 145 45% 45%;
       --warning: 35 80% 60%;
