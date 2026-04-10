@@ -17,7 +17,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         userName={userName}
         userEmail={userEmail}
       />
-      <div className="flex-1 flex flex-col relative w-full min-w-0">
+      {/* Compensate for fixed sidebar */}
+      <div className="flex-1 flex flex-col relative w-full min-w-0 lg:pl-[72px]">
         <Header
           userName={userName}
           userEmail={userEmail}

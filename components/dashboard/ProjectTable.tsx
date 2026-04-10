@@ -20,27 +20,27 @@ function getHealthLabel(score: number): string {
 export function ProjectTable({ projects }: { projects: ExtendedProject[] }) {
   if (projects.length === 0) {
     return (
-      <div className="bg-surface rounded-2xl border border-border p-8 text-center text-text-muted">
+      <div className="bg-surface rounded-sm shadow-md p-8 text-center text-text-muted">
         Nenhum projeto ativo no momento.
       </div>
     );
   }
 
   return (
-    <div className="bg-surface rounded-2xl border border-border overflow-hidden shadow-sm">
+    <div className="bg-surface rounded-sm shadow-md overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-text-secondary whitespace-nowrap">
-          <thead className="bg-surface-muted border-b border-border text-[11px] font-bold uppercase tracking-wider text-text-muted">
+          <thead className="bg-surface-muted text-[10px] font-bold uppercase tracking-wider text-text-muted">
             <tr>
-              <th className="px-6 py-4 rounded-tl-2xl">Nome do Projeto</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Saúde</th>
-              <th className="px-6 py-4">Integrantes</th>
-              <th className="px-6 py-4 w-48">Progresso</th>
-              <th className="px-6 py-4 rounded-tr-2xl">Prazo</th>
+              <th className="px-6 py-3.5">Nome do Projeto</th>
+              <th className="px-6 py-3.5">Status</th>
+              <th className="px-6 py-3.5">Saúde</th>
+              <th className="px-6 py-3.5">Integrantes</th>
+              <th className="px-6 py-3.5 w-48">Progresso</th>
+              <th className="px-6 py-3.5">Prazo</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-border/50">
             {projects.map((project) => (
               <tr key={project.id} className="hover:bg-surface-muted/30 transition-colors group">
                 <td className="px-6 py-4">

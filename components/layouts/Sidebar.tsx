@@ -9,21 +9,20 @@ import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
-  LayoutDashboard,
-  Users,
-  FolderOpen,
-  Kanban,
-  CalendarDays,
-  CheckSquare,
-  Files,
-  Settings,
-  LogOut,
-  BarChart3,
-  UserCircle2,
-  HelpCircle,
-  Archive,
-  Plus
-} from 'lucide-react'
+  DoodleDashboard,
+  DoodleProjects,
+  DoodleClients,
+  DoodleFinancials,
+  DoodleTeam,
+  DoodleTasks,
+  DoodleCalendar,
+  DoodleFiles,
+  DoodleSupport,
+  DoodleArchive,
+  DoodleSettings,
+  DoodlePlus,
+  DoodleLogout,
+} from '@/components/ui/EthosIcons'
 
 /* ─────────────────────────────────────────
    NAV CONFIG
@@ -33,26 +32,26 @@ const navGroups = [
   {
     label: 'Principal',
     items: [
-      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-      { href: '/dashboard/projects', label: 'Projetos', icon: FolderOpen },
-      { href: '/dashboard/clients', label: 'Clientes', icon: Users, exact: true },
-      { href: '/dashboard/financials', label: 'Financeiro', icon: BarChart3 },
-      { href: '/dashboard/team', label: 'Equipe', icon: UserCircle2 },
+      { href: '/dashboard', label: 'Dashboard', icon: DoodleDashboard, exact: true },
+      { href: '/dashboard/projects', label: 'Projetos', icon: DoodleProjects },
+      { href: '/dashboard/clients', label: 'Clientes', icon: DoodleClients, exact: true },
+      { href: '/dashboard/financials', label: 'Financeiro', icon: DoodleFinancials },
+      { href: '/dashboard/team', label: 'Equipe', icon: DoodleTeam },
     ],
   },
   {
     label: 'Produção',
     items: [
-      { href: '/dashboard/tasks', label: 'Tarefas', icon: CheckSquare },
-      { href: '/dashboard/calendar', label: 'Calendário', icon: CalendarDays },
-      { href: '/dashboard/files', label: 'Arquivos', icon: Files },
+      { href: '/dashboard/tasks', label: 'Tarefas', icon: DoodleTasks },
+      { href: '/dashboard/calendar', label: 'Calendário', icon: DoodleCalendar },
+      { href: '/dashboard/files', label: 'Arquivos', icon: DoodleFiles },
     ],
   },
   {
     label: 'Sistema',
     items: [
-      { href: '/dashboard/support', label: 'Suporte', icon: HelpCircle },
-      { href: '/dashboard/archive', label: 'Arquivados', icon: Archive },
+      { href: '/dashboard/support', label: 'Suporte', icon: DoodleSupport },
+      { href: '/dashboard/archive', label: 'Arquivados', icon: DoodleArchive },
     ],
   }
 ]
@@ -63,9 +62,7 @@ const navGroups = [
 
 interface SidebarProps {
   className?: string
-  /** Email do usuário autenticado */
   userEmail?: string | null
-  /** Nome do usuário autenticado */
   userName?: string | null
 }
 
@@ -97,17 +94,20 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
   const displayEmail = userEmail ?? ''
 
   return (
-    <aside className={cn("hidden lg:block relative z-50 h-screen shrink-0 w-[72px] transition-all duration-300", className)}>
+    // Fixed wrapper — não rola com o conteúdo
+    <aside className={cn('fixed inset-y-0 left-0 z-50 h-screen hidden lg:block', className)}>
       <div className={cn(
-        'group absolute top-0 left-0 h-screen border-r border-border bg-surface shadow-sm overflow-hidden',
-        'w-[72px] hover:w-[260px] transition-all duration-300 ease-in-out',
-        'flex flex-col py-6'
+        'group relative h-full flex flex-col py-5',
+        'w-[72px] hover:w-[260px]',
+        'transition-all duration-300 ease-in-out',
+        'glass-fluted',
       )}>
+
         {/* ── Logo ── */}
-        <div className="mb-6 px-4 flex items-center justify-start h-8 shrink-0 relative">
-          <Link href="/dashboard" className="flex items-center group/logo w-full overflow-hidden whitespace-nowrap">
-            {/* Símbolo da marca - Visível apenas quando fechado */}
-            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-0">
+        <div className="mb-5 px-4 flex items-center justify-start h-8 shrink-0 relative">
+          <Link href="/dashboard" className="flex items-center w-full overflow-hidden whitespace-nowrap">
+            {/* Símbolo — visível quando fechado */}
+            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
               <Image
                 src={symbolSrc}
                 alt="Duas Mãos símbolo"
@@ -116,8 +116,8 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
                 priority
               />
             </div>
-            {/* Logotipo - Visível apenas quando aberto (hover) */}
-            <div className="absolute left-4 h-7 w-[180px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            {/* Logotipo — visível quando aberto */}
+            <div className="absolute left-4 h-7 w-[180px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
               <Image
                 src={logoSrc}
                 alt="Duas Mãos"
@@ -129,49 +129,57 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
           </Link>
         </div>
 
-        {/* ── Action Button ── */}
-        <div className="px-4 mb-6">
-           <button className="w-full bg-brand-highlight text-text-inverse font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-sm shadow-brand-highlight/20 group-hover:px-4 duration-300">
-             <Plus size={18} strokeWidth={3} />
-             <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">Novo Projeto</span>
-           </button>
+        {/* ── Botão Novo Projeto ── */}
+        <div className="px-4 mb-5 flex justify-center group-hover:justify-start">
+          <button className={cn(
+            'bg-brand-highlight text-text-inverse font-bold',
+            'flex items-center justify-center gap-0 group-hover:gap-2',
+            // Fechado: círculo 40px | Aberto: full width pill
+            'w-10 h-10 group-hover:w-full',
+            'rounded-sm',
+            'overflow-hidden whitespace-nowrap',
+            'transition-all duration-300 ease-in-out',
+            'shadow-md hover:opacity-90'
+          )}>
+            <DoodlePlus size={18} strokeWidth={2.5} className="shrink-0" />
+            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 text-sm">
+              Novo Projeto
+            </span>
+          </button>
         </div>
 
-        {/* ── Navigation ── */}
-        <nav className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-3 scrollbar-none">
+        {/* ── Navegação ── */}
+        <nav className="flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-3 scrollbar-none">
           {navGroups.map((group) => (
             <div key={group.label}>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2 px-3 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted mb-1 px-2 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
                 {group.label}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const active = isActive(item.href, item.exact)
                   return (
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        className={cn(
-                          'flex items-center rounded-xl transition-all duration-200 p-2 relative overflow-hidden',
-                          active
-                            ? 'bg-brand-highlight/10 text-brand-highlight'
-                            : 'text-text-secondary hover:bg-surface-muted hover:text-text-primary'
-                        )}
                         title={item.label}
+                        className={cn(
+                          'flex items-center rounded-sm p-2 transition-all duration-150 relative overflow-hidden',
+                          active
+                            ? 'bg-brand-highlight/12 text-brand-highlight'
+                            : 'text-text-secondary hover:bg-surface/50 hover:text-text-primary'
+                        )}
                       >
+                        {/* Active indicator bar */}
+                        {active && (
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-highlight rounded-full" />
+                        )}
                         <div className="flex items-center justify-center w-8 h-8 shrink-0">
-                          <item.icon
-                            size={18}
-                            strokeWidth={active ? 2.5 : 2}
-                          />
+                          <item.icon size={20} strokeWidth={active ? 2 : 1.6} />
                         </div>
-                        <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           {item.label}
                         </span>
-                        
-                        {active && (
-                          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-brand-highlight opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100" />
-                        )}
                       </Link>
                     </li>
                   )
@@ -181,31 +189,31 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
           ))}
         </nav>
 
-        {/* ── Bottom actions ── */}
-        <div className="border-t border-border pt-4 mt-4 px-3 space-y-1 overflow-hidden shrink-0">
+        {/* ── Ações de Fundo ── */}
+        <div className="pt-3 mt-2 px-3 space-y-0.5 border-t border-border/30 overflow-hidden shrink-0">
           <Link
             href="/dashboard/settings"
-            className={cn(
-              'flex items-center rounded-xl transition-all duration-200 p-2 overflow-hidden',
-              pathname.startsWith('/dashboard/settings')
-                ? 'bg-brand-highlight/10 text-brand-highlight'
-                : 'text-text-secondary hover:bg-surface-muted hover:text-text-primary'
-            )}
             title="Configurações"
+            className={cn(
+              'flex items-center rounded-sm p-2 transition-all duration-150 overflow-hidden',
+              pathname.startsWith('/dashboard/settings')
+                ? 'bg-brand-highlight/12 text-brand-highlight'
+                : 'text-text-secondary hover:bg-surface/50 hover:text-text-primary'
+            )}
           >
             <div className="flex items-center justify-center w-8 h-8 shrink-0">
-              <Settings size={18} strokeWidth={2} />
+              <DoodleSettings size={20} strokeWidth={1.6} />
             </div>
-            <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               Configurações
             </span>
           </Link>
-          
-          <div className="flex items-center p-2 rounded-xl text-text-secondary hover:bg-surface-muted transition-colors relative overflow-hidden h-12" title="Tema">
-            <div className="flex items-center justify-center w-8 h-8 shrink-0 text-text-muted">
+
+          <div className="flex items-center p-2 rounded-sm text-text-secondary hover:bg-surface/50 transition-colors overflow-hidden h-11" title="Aparência">
+            <div className="flex items-center justify-center w-8 h-8 shrink-0">
               <ThemeToggle />
             </div>
-            <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-1">
+            <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               Aparência
             </span>
           </div>
@@ -213,41 +221,34 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
           <form action="/auth/signout" method="post">
             <button
               type="submit"
-              className="w-full flex items-center rounded-xl transition-all duration-200 p-2 overflow-hidden text-text-secondary hover:bg-status-danger/10 hover:text-status-danger"
               title="Sair"
+              className="w-full flex items-center rounded-sm p-2 transition-all duration-150 overflow-hidden text-text-secondary hover:bg-status-danger/10 hover:text-status-danger"
             >
               <div className="flex items-center justify-center w-8 h-8 shrink-0">
-                <LogOut size={18} strokeWidth={2} />
+                <DoodleLogout size={20} strokeWidth={1.6} />
               </div>
-              <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 Sair do sistema
               </span>
             </button>
           </form>
         </div>
 
-        {/* ── User identity ── */}
-        <div className="mt-4 pt-4 border-t border-border px-3 pb-2 shrink-0">
-          <div className="flex items-center p-1 rounded-xl hover:bg-surface-muted transition-colors overflow-hidden">
+        {/* ── Identidade do Usuário ── */}
+        <div className="mt-2 pt-3 border-t border-border/30 px-3 pb-1 shrink-0">
+          <div className="flex items-center p-1 rounded-sm hover:bg-surface/50 transition-colors overflow-hidden">
             <div className="flex items-center justify-center w-10 h-10 shrink-0">
-              <Avatar
-                name={displayName}
-                size="sm"
-                variant="brand"
-              />
+              <Avatar name={displayName} size="sm" variant="brand" />
             </div>
-            <div className="ml-3 min-w-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-              <p className="text-sm font-bold text-text-primary truncate">
-                {displayName}
-              </p>
+            <div className="ml-3 min-w-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              <p className="text-sm font-bold text-text-primary truncate">{displayName}</p>
               {displayEmail && (
-                <p className="text-[11px] text-text-muted truncate mt-0.5">
-                  {displayEmail}
-                </p>
+                <p className="text-[11px] text-text-muted truncate mt-0.5">{displayEmail}</p>
               )}
             </div>
           </div>
         </div>
+
       </div>
     </aside>
   )

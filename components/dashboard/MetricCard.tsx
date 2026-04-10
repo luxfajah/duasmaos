@@ -33,9 +33,10 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-xl bg-surface border border-border p-6 transition-all duration-200 hover:border-border-strong hover:shadow-sm',
+        'group relative overflow-hidden rounded-sm bg-surface shadow-md transition-all duration-200 hover:shadow-lg',
         className
       )}
+      style={{ padding: '1.5rem' }}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">

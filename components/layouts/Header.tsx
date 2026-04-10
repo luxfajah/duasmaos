@@ -33,7 +33,7 @@ export function Header({
   return (
     <header
       className={cn(
-        'h-16 border-b border-border bg-surface/80 backdrop-blur-md sticky top-0 z-40',
+        'h-16 bg-surface/80 backdrop-blur-md sticky top-0 z-40 shadow-sm',
         'flex items-center px-6 lg:px-8 gap-4',
         className
       )}
@@ -59,7 +59,7 @@ export function Header({
           <input 
             type="text" 
             placeholder="Buscar projetos, tarefas ou arquivos..." 
-            className="w-full bg-surface-muted/50 hover:bg-surface-muted focus:bg-surface border border-transparent focus:border-brand-primary/30 rounded-xl pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none transition-all duration-200"
+            className="w-full bg-surface-muted/50 hover:bg-surface-muted focus:bg-surface border border-transparent focus:border-brand-highlight/30 rounded-sm pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none transition-all duration-200"
           />
         </div>
       </div>
@@ -68,7 +68,7 @@ export function Header({
       <div className="flex items-center gap-3 shrink-0 flex-1 justify-end">
         {/* Notificações */}
         <button
-          className="relative rounded-xl p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary transition-colors"
+          className="relative rounded-sm p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary transition-colors"
           aria-label="Notificações"
         >
           <Bell size={18} strokeWidth={2} />

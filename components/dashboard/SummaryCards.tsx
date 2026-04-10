@@ -10,7 +10,7 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Card 1: Timeline Health */}
-      <div className="bg-surface rounded-2xl border border-border p-6 flex flex-col justify-between shadow-sm">
+      <div className="bg-surface rounded-sm shadow-md p-6 flex flex-col justify-between">
         <div>
           <h3 className="text-sm font-bold text-text-muted uppercase tracking-wider">Saúde do Cronograma</h3>
           <div className="mt-4 flex items-end gap-3">
@@ -28,7 +28,7 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
       </div>
 
       {/* Card 2: Monthly Creative Review */}
-      <div className="bg-brand-highlight text-text-inverse rounded-2xl border border-brand-highlight/20 p-6 flex flex-col justify-between shadow-sm shadow-brand-highlight/10 relative overflow-hidden group">
+      <div className="bg-brand-highlight text-text-inverse rounded-sm border-0 p-6 flex flex-col justify-between shadow-md shadow-brand-highlight/20 relative overflow-hidden group">
         <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700"></div>
         <div className="relative z-10">
           <h3 className="text-sm font-bold opacity-80 uppercase tracking-wider">Relatório Criativo Mensal</h3>
@@ -37,7 +37,7 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
           </p>
         </div>
         <div className="mt-6 relative z-10">
-          <button className="bg-surface text-brand-highlight px-4 py-2 rounded-xl text-sm font-bold hover:bg-surface/90 transition-colors shadow-sm">
+          <button className="bg-surface text-brand-highlight px-4 py-2 rounded-sm text-sm font-bold hover:bg-surface/90 transition-colors shadow-sm">
             Gerar Relatório
           </button>
         </div>
