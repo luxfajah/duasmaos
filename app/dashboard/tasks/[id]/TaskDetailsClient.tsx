@@ -234,7 +234,7 @@ export function TaskDetailsClient({ task, initialComments, currentUser }: TaskDe
                       isSystem ? 'bg-surface text-text-muted' : 'bg-surface-muted text-text-primary'
                     }`}>
                       {comment.profiles?.avatar_url 
-                        ? <img src={comment.profiles.avatar_url} className="w-full h-full rounded-full object-cover" />
+                        ? <img src={comment.profiles.avatar_url} alt="Avatar do usuário" className="w-full h-full rounded-full object-cover" />
                         : comment.profiles?.full_name?.substring(0,2).toUpperCase() || 'DM'
                       }
                     </div>
