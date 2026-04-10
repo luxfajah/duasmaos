@@ -131,7 +131,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
 
         {/* ── Action Button ── */}
         <div className="px-4 mb-6">
-           <button className="w-full bg-brand-primary text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-sm shadow-brand-primary/20 group-hover:px-4 duration-300">
+           <button className="w-full bg-brand-highlight text-text-inverse font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-sm shadow-brand-highlight/20 group-hover:px-4 duration-300">
              <Plus size={18} strokeWidth={3} />
              <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">Novo Projeto</span>
            </button>
@@ -154,7 +154,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
                         className={cn(
                           'flex items-center rounded-xl transition-all duration-200 p-2 relative overflow-hidden',
                           active
-                            ? 'bg-brand-primary/10 text-brand-primary'
+                            ? 'bg-brand-highlight/10 text-brand-highlight'
                             : 'text-text-secondary hover:bg-surface-muted hover:text-text-primary'
                         )}
                         title={item.label}
@@ -170,7 +170,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
                         </span>
                         
                         {active && (
-                          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-brand-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100" />
+                          <span className="absolute right-3 w-1.5 h-1.5 rounded-full bg-brand-highlight opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100" />
                         )}
                       </Link>
                     </li>
@@ -188,7 +188,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
             className={cn(
               'flex items-center rounded-xl transition-all duration-200 p-2 overflow-hidden',
               pathname.startsWith('/dashboard/settings')
-                ? 'bg-brand-primary/10 text-brand-primary'
+                ? 'bg-brand-highlight/10 text-brand-highlight'
                 : 'text-text-secondary hover:bg-surface-muted hover:text-text-primary'
             )}
             title="Configurações"

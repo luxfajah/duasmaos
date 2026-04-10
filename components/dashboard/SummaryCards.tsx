@@ -28,16 +28,16 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
       </div>
 
       {/* Card 2: Monthly Creative Review */}
-      <div className="bg-brand-primary text-surface rounded-2xl border border-brand-primary/20 p-6 flex flex-col justify-between shadow-sm shadow-brand-primary/10 relative overflow-hidden group">
+      <div className="bg-brand-highlight text-text-inverse rounded-2xl border border-brand-highlight/20 p-6 flex flex-col justify-between shadow-sm shadow-brand-highlight/10 relative overflow-hidden group">
         <div className="absolute -right-12 -top-12 w-48 h-48 bg-white/10 blur-3xl rounded-full group-hover:scale-110 transition-transform duration-700"></div>
         <div className="relative z-10">
-          <h3 className="text-sm font-bold text-surface/80 uppercase tracking-wider">Relatório Criativo Mensal</h3>
-          <p className="text-lg font-medium text-surface mt-4 leading-tight max-w-[240px]">
+          <h3 className="text-sm font-bold opacity-80 uppercase tracking-wider">Relatório Criativo Mensal</h3>
+          <p className="text-lg font-medium mt-4 leading-tight max-w-[240px]">
             Gere um relatório detalhado sobre a produtividade do time e entregas de ativos.
           </p>
         </div>
         <div className="mt-6 relative z-10">
-          <button className="bg-surface text-brand-primary px-4 py-2 rounded-xl text-sm font-bold hover:bg-surface/90 transition-colors shadow-sm">
+          <button className="bg-surface text-brand-highlight px-4 py-2 rounded-xl text-sm font-bold hover:bg-surface/90 transition-colors shadow-sm">
             Gerar Relatório
           </button>
         </div>

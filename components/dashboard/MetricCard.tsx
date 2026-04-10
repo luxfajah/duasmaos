@@ -13,7 +13,7 @@ interface MetricCardProps {
 }
 
 const accentMap = {
-  default: 'bg-brand-primary/10 text-brand-primary',
+  default: 'bg-brand-highlight/10 text-brand-highlight',
   success: 'bg-status-success/10 text-status-success',
   warning: 'bg-status-warning/10 text-status-warning',
   danger: 'bg-status-danger/10 text-status-danger',
@@ -65,7 +65,7 @@ export function MetricCard({
       </div>
       {/* Subtle gradient decoration */}
       <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full blur-2xl bg-brand-primary/5 translate-x-1/2 translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full blur-2xl bg-brand-highlight/5 translate-x-1/2 translate-y-1/2" />
       </div>
     </div>
   )

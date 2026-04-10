@@ -38,6 +38,7 @@ const config: Config = {
           "primary-hover": "hsl(var(--brand-primary-hover))",
           secondary: "hsl(var(--brand-secondary))",
           accent: "hsl(var(--brand-accent))",
+          highlight: "hsl(var(--brand-highlight))",
         },
         text: {
           primary: "hsl(var(--text-primary))",

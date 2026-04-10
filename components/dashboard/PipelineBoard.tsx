@@ -8,7 +8,7 @@ import { updateClientPipelineStage } from '@/app/dashboard/clients/actions'
 
 const PIPELINE_COLUMNS: { id: PipelineStage; label: string; color: string }[] = [
   { id: 'Lead', label: 'OPORTUNIDADE', color: 'bg-status-info/20 text-status-info' },
-  { id: 'Diagnóstico', label: 'DIAGNÓSTICO', color: 'bg-brand-primary/20 text-brand-primary' },
+  { id: 'Diagnóstico', label: 'DIAGNÓSTICO', color: 'bg-brand-highlight/20 text-brand-highlight' },
   { id: 'Proposta', label: 'PROPOSTA', color: 'bg-status-warning/20 text-status-warning' },
   { id: 'Negociação', label: 'NEGOCIAÇÃO', color: 'bg-status-danger/20 text-status-danger' },
   { id: 'Fechado', label: 'FECHADO', color: 'bg-status-success/20 text-status-success' },
@@ -79,7 +79,7 @@ export function PipelineBoard({ initialClients }: PipelineBoardProps) {
                     className={`
                       min-h-[200px] rounded-xl transition-colors duration-150
                       ${snapshot.isDraggingOver
-                        ? 'bg-brand-primary/5 rounded-xl border-2 border-dashed border-brand-primary/30'
+                        ? 'bg-brand-highlight/5 rounded-xl border-2 border-dashed border-brand-highlight/30'
                         : 'bg-transparent'
                       }
                     `}

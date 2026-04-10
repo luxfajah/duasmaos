@@ -14,7 +14,7 @@ export function DailyTasksList({ tasks }: DailyTasksListProps) {
     <Card variant="muted" className="p-6 col-span-1 lg:col-span-2">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-bold font-serif text-text-primary">Minhas Tarefas do Dia</h3>
-        <a href="/dashboard/tasks" className="text-sm font-semibold text-brand-primary hover:text-brand-secondary transition-colors">
+        <a href="/dashboard/tasks" className="text-sm font-semibold text-brand-highlight hover:text-brand-secondary transition-colors">
           Ver todas
         </a>
       </div>
@@ -36,7 +36,7 @@ export function DailyTasksList({ tasks }: DailyTasksListProps) {
               <div 
                 key={task.id} 
                 className={`flex justify-between items-center p-4 rounded-xl border bg-surface transition-all ${
-                  isDone ? 'border-border/50 opacity-60' : 'border-border hover:border-brand-primary/50 hover:shadow-sm'
+                  isDone ? 'border-border/50 opacity-60' : 'border-border hover:border-brand-highlight/50 hover:shadow-sm'
                 }`}
               >
                 <div className="flex items-center gap-4">

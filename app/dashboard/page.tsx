@@ -57,7 +57,7 @@ export default async function DashboardPage() {
           <button className="px-4 py-2 text-sm font-bold text-text-primary bg-surface border border-border rounded-xl hover:bg-surface-muted transition-colors shadow-sm">
             Exportar Relatório
           </button>
-          <button className="px-4 py-2 text-sm font-bold text-white bg-brand-primary rounded-xl hover:opacity-90 transition-opacity shadow-sm shadow-brand-primary/20 flex items-center gap-2">
+          <button className="px-4 py-2 text-sm font-bold text-text-inverse bg-brand-highlight rounded-xl hover:opacity-90 transition-opacity shadow-sm shadow-brand-highlight/20 flex items-center gap-2">
             Agendar Sincronia
           </button>
         </div>
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
                      Cliente <ChevronDown size={14} />
                    </button>
                 </div>
-                <button className="px-3 py-1.5 text-xs font-bold text-brand-primary flex items-center gap-2 hover:bg-brand-primary/5 rounded-lg transition-colors">
+                <button className="px-3 py-1.5 text-xs font-bold text-brand-highlight flex items-center gap-2 hover:bg-brand-highlight/5 rounded-lg transition-colors">
                   <Filter size={14} /> Filtros Avançados
                 </button>
               </div>
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
              <div className="space-y-4">
                <div className="flex items-center justify-between">
                  <h2 className="text-lg font-bold text-text-primary">Minhas Tarefas do Dia</h2>
-                 <Link href="/dashboard/tasks" className="text-sm font-bold text-brand-primary hover:underline">Ver todas</Link>
+                 <Link href="/dashboard/tasks" className="text-sm font-bold text-brand-highlight hover:underline">Ver todas</Link>
                </div>
                <DailyTasksList tasks={todaysTasks} />
              </div>
@@ -167,7 +167,7 @@ export default async function DashboardPage() {
           <div className="bg-text-primary text-surface rounded-2xl p-6 relative overflow-hidden group h-48 flex flex-col justify-end">
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
             <div className="relative z-10">
-               <span className="text-[10px] font-bold uppercase tracking-widest bg-brand-primary/20 text-brand-primary px-2 py-0.5 rounded mb-2 inline-block">Cliente em Destaque</span>
+               <span className="text-[10px] font-bold uppercase tracking-widest bg-brand-highlight/20 text-brand-highlight px-2 py-0.5 rounded mb-2 inline-block">Cliente em Destaque</span>
                <h3 className="text-xl font-bold text-white">Nordic Design Group</h3>
                <p className="text-sm text-surface/70">Revisão Anual de Retainer Pendente</p>
             </div>

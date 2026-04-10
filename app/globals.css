@@ -21,6 +21,7 @@
     --brand-primary-hover: 23 62% 44%; /* Darker Orange */
     --brand-secondary: 90 24% 29%;     /* Olive #4A5C38 */
     --brand-accent: 35 78% 62%;
+    --brand-highlight: 23 62% 49%;     /* Orange for Light mode CTA */
 
     /* ─────────────────────────────────────────
        TEXTO
@@ -97,11 +98,12 @@
       --border: 0 0% 18%;
       --border-strong: 0 0% 25%;
 
-      /* Brand colors maintained in dark mode */
-      --brand-primary: 23 62% 49%;
-      --brand-primary-hover: 23 62% 44%;
+      /* Brand colors differentiated in dark mode */
+      --brand-primary: 223 19% 25%;       /* Graphite Blue (from logo) */
+      --brand-primary-hover: 223 19% 30%;
       --brand-secondary: 90 24% 29%;
-      --brand-accent: 35 78% 62%;
+      --brand-accent: 40 85% 75%;        /* Creme (from logo circle) */
+      --brand-highlight: 40 85% 75%;     /* Creme for Dark mode CTA */
 
       --text-primary: 0 0% 98%;
       --text-secondary: 240 5% 70%;
