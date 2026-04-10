@@ -83,6 +83,7 @@ export interface ProjectStage {
 export interface Task {
   id: string;
   project_id: string;
+  stage_id: string | null;
   title: string;
   description: string | null;
   assigned_to: string | null;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
-import { Bell } from 'lucide-react'
+import { Bell, Search } from 'lucide-react'
 
 /* ─────────────────────────────────────────
    HEADER
@@ -52,28 +52,37 @@ export function Header({
         {children}
       </div>
 
+      {/* Search */}
+      <div className="flex-1 max-w-lg hidden md:block">
+        <div className="relative group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand-primary" size={16} strokeWidth={2} />
+          <input 
+            type="text" 
+            placeholder="Search projects, tasks, or assets..." 
+            className="w-full bg-surface-muted/50 hover:bg-surface-muted focus:bg-surface border border-transparent focus:border-brand-primary/30 rounded-xl pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none transition-all duration-200"
+          />
+        </div>
+      </div>
+
       {/* Right side */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-3 shrink-0 flex-1 justify-end">
         {/* Notificações */}
         <button
-          className="relative rounded-lg p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary transition-colors"
+          className="relative rounded-xl p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary transition-colors"
           aria-label="Notificações"
         >
-          <Bell size={16} strokeWidth={1.75} />
+          <Bell size={18} strokeWidth={2} />
           {/* Badge de notificação não lida */}
-          <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-status-danger ring-2 ring-surface" />
+          <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-status-danger ring-2 ring-surface" />
         </button>
 
         {/* Separator */}
         <div className="h-6 w-px bg-border" />
 
         {/* User info */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 ml-1">
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-medium text-text-primary leading-tight">{displayName}</p>
-            {userEmail && (
-              <p className="text-[10px] text-text-muted leading-tight">{userEmail}</p>
-            )}
+            <p className="text-sm font-medium text-text-primary leading-tight">{displayName}</p>
           </div>
           <Avatar
             name={displayName}
