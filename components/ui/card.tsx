@@ -9,11 +9,11 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-surface text-text-primary",
-        muted: "bg-surface-muted text-text-primary",
+        default: "bg-surface text-text-primary shadow-sm",
+        muted: "bg-surface-muted text-text-primary border-none shadow-none",
         editorial: "bg-editorial-frame border-l-4 border-l-brand-primary text-text-primary rounded-none",
-        status: "bg-surface border-l-4 border-l-pending text-text-primary",
-        client: "bg-surface border border-brand-secondary/20 shadow-sm text-text-primary",
+        status: "bg-surface border-l-4 border-l-pending text-text-primary shadow-sm",
+        client: "bg-surface border border-border shadow-sm text-text-primary",
         highlight: "bg-editorial-highlight text-brand-primary border border-brand-accent/50",
       },
     },

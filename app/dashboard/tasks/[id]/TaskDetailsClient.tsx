@@ -89,7 +89,7 @@ export function TaskDetailsClient({ task, initialComments, currentUser }: TaskDe
       <div className="flex justify-between items-center mb-6 pl-4">
         <div>
           <div className="flex gap-2 items-center mb-2">
-            <Badge variant="secondary">TASK ID: #{task.id.substring(0, 6).toUpperCase()}</Badge>
+            <Badge variant="muted">TASK ID: #{task.id.substring(0, 6).toUpperCase()}</Badge>
             <Badge variant="warning">{task.status === 'review' ? 'EM REVISÃO' : task.status.toUpperCase()}</Badge>
           </div>
           <h1 className="text-3xl font-serif font-bold text-text-primary">

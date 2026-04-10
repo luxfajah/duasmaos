@@ -7,26 +7,26 @@
     /* ─────────────────────────────────────────
        SUPERFÍCIES E FUNDOS
     ───────────────────────────────────────── */
-    --background: 0 0% 98%;
-    --foreground: 240 10% 8%;
-    --surface: 0 0% 100%;
-    --surface-muted: 240 12% 96%;
-    --border: 240 10% 88%;
-    --border-strong: 240 8% 74%;
+    --background: 60 5% 96%; /* Stone #F5F5F4 */
+    --foreground: 0 0% 11%;  /* Graphite #1C1C1C */
+    --surface: 0 0% 100%;    /* White #FFFFFF */
+    --surface-muted: 60 5% 92%;
+    --border: 0 0% 90%;
+    --border-strong: 0 0% 80%;
 
     /* ─────────────────────────────────────────
        MARCA
     ───────────────────────────────────────── */
-    --brand-primary: 250 45% 28%;
-    --brand-primary-hover: 250 45% 24%;
-    --brand-secondary: 20 28% 26%;
+    --brand-primary: 23 62% 49%;       /* Orange #C86C31 */
+    --brand-primary-hover: 23 62% 44%; /* Darker Orange */
+    --brand-secondary: 90 24% 29%;     /* Olive #4A5C38 */
     --brand-accent: 35 78% 62%;
 
     /* ─────────────────────────────────────────
        TEXTO
     ───────────────────────────────────────── */
-    --text-primary: 240 10% 8%;
-    --text-secondary: 240 6% 30%;
+    --text-primary: 0 0% 11%;
+    --text-secondary: 0 0% 35%;
     --text-muted: 240 5% 50%;
     --text-inverse: 0 0% 100%;
 

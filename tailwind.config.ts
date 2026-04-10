@@ -18,7 +18,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        serif: ["var(--font-playfair)", "Georgia", "serif"],
+        serif: ["var(--font-manrope)", "sans-serif"],
       },
 
       colors: {

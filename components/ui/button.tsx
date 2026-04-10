@@ -9,9 +9,9 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-primary text-text-inverse hover:bg-brand-primary-hover",
-        primary: "bg-brand-primary text-text-inverse hover:bg-brand-primary-hover",
-        secondary: "bg-surface-muted text-text-primary hover:bg-border",
+        default: "bg-brand-primary text-text-inverse hover:brightness-110",
+        primary: "bg-brand-primary text-text-inverse hover:brightness-110",
+        secondary: "bg-surface border border-border text-text-primary shadow-sm hover:bg-surface-muted",
         ghost: "hover:bg-surface-muted text-text-primary",
         danger: "bg-danger text-text-inverse hover:bg-danger/90",
         editorial: "font-serif text-lg bg-editorial-highlight text-brand-primary hover:bg-editorial-quote border border-border",

@@ -12,6 +12,7 @@ const badgeVariants = cva(
         // Padrão shadcn
         default: "bg-brand-primary text-text-inverse hover:bg-brand-primary-hover",
         secondary: "bg-surface-muted text-text-primary border-border hover:bg-border",
+        muted: "bg-surface-muted/50 text-text-muted border-border hover:bg-surface-muted",
         outline: "border-border text-text-secondary hover:bg-surface-muted",
         ghost: "text-text-secondary hover:bg-surface-muted",
 
