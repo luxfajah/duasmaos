@@ -30,6 +30,9 @@ export function ClientModal({ client, onClose }: ClientModalProps) {
     email: client?.email ?? '',
     phone: client?.phone ?? '',
     status: (client?.status ?? 'active') as ClientStatus,
+    website: client?.website ?? '',
+    sector: client?.sector ?? '',
+    notes: client?.notes ?? '',
   })
 
   function handleChange(field: keyof typeof form, value: string) {
@@ -115,21 +118,53 @@ export function ClientModal({ client, onClose }: ClientModalProps) {
               />
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-primary" htmlFor="client-status">Status</label>
+              <select
+                id="client-status"
+                value={form.status}
+                onChange={(e) => handleChange('status', e.target.value)}
+                disabled={isPending}
+                className="w-full h-10 px-3 py-2 text-sm rounded-md border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 disabled:opacity-50"
+              >
+                <option value="active">Ativo</option>
+                <option value="inactive">Inativo</option>
+                <option value="paused">Pausado</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-primary" htmlFor="client-sector">Segmento</label>
+              <Input
+                id="client-sector"
+                value={form.sector}
+                onChange={(e) => handleChange('sector', e.target.value)}
+                placeholder="Ex: Moda, Saúde..."
+                disabled={isPending}
+              />
+            </div>
+          </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-primary" htmlFor="client-status">
-              Status
-            </label>
-            <select
-              id="client-status"
-              value={form.status}
-              onChange={(e) => handleChange('status', e.target.value)}
+            <label className="text-sm font-medium text-text-primary" htmlFor="client-website">Site</label>
+            <Input
+              id="client-website"
+              value={form.website}
+              onChange={(e) => handleChange('website', e.target.value)}
+              placeholder="https://"
               disabled={isPending}
-              className="w-full h-10 px-3 py-2 text-sm rounded-md border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 disabled:opacity-50"
-            >
-              <option value="active">Ativo</option>
-              <option value="inactive">Inativo</option>
-              <option value="paused">Pausado</option>
-            </select>
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary" htmlFor="client-notes">Observações</label>
+            <textarea
+              id="client-notes"
+              value={form.notes}
+              onChange={(e) => handleChange('notes', e.target.value)}
+              placeholder="Notas internas sobre o cliente..."
+              disabled={isPending}
+              rows={3}
+              className="w-full px-3 py-2 text-sm rounded-md border border-border bg-surface text-text-primary resize-none focus:outline-none focus:ring-2 focus:ring-brand-primary/50 disabled:opacity-50"
+            />
           </div>
           {error && (
             <p className="text-sm text-status-danger bg-status-danger/10 rounded-md px-3 py-2">

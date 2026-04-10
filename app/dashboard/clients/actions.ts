@@ -31,6 +31,9 @@ export async function createClient_(formData: {
   email?: string
   phone?: string
   status?: ClientStatus
+  notes?: string
+  website?: string
+  sector?: string
 }) {
   const supabase = createClient()
   const { error } = await supabase.from('clients').insert({
@@ -39,6 +42,10 @@ export async function createClient_(formData: {
     email: formData.email ?? null,
     phone: formData.phone ?? null,
     status: formData.status ?? 'active',
+    notes: formData.notes ?? null,
+    website: formData.website ?? null,
+    sector: formData.sector ?? null,
+    contacts: [],
   })
   if (error) throw error
   revalidatePath('/dashboard/clients')
@@ -52,6 +59,10 @@ export async function updateClient(
     email: string
     phone: string
     status: ClientStatus
+    notes: string
+    website: string
+    sector: string
+    contacts: object[]
   }>
 ) {
   const supabase = createClient()

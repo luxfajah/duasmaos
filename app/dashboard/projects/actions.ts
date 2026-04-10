@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { Project, ProjectStatus, Priority } from '@/types/database'
+import { Project, ProjectStatus, ProjectType, Priority } from '@/types/database'
 import { revalidatePath } from 'next/cache'
 
 export async function getProjects(clientId?: string) {
@@ -38,6 +38,7 @@ export async function createProject(formData: {
   name: string
   description?: string
   client_id: string
+  type?: ProjectType
   status?: ProjectStatus
   priority?: Priority
   deadline?: string
@@ -48,6 +49,7 @@ export async function createProject(formData: {
     name: formData.name,
     description: formData.description ?? null,
     client_id: formData.client_id,
+    type: formData.type ?? null,
     status: formData.status ?? 'draft',
     priority: formData.priority ?? 'medium',
     deadline: formData.deadline ?? null,
@@ -64,6 +66,7 @@ export async function updateProject(
     name: string
     description: string
     client_id: string
+    type: ProjectType
     status: ProjectStatus
     priority: Priority
     deadline: string
@@ -116,10 +119,15 @@ export async function getDashboardStats() {
     activeProjects: projects.filter((p) => ['draft', 'copy', 'review'].includes(p.status)).length,
     delayedProjects: projects.filter((p) => p.status === 'delayed').length,
     approvedProjects: projects.filter((p) => p.status === 'approved').length,
+    reviewProjects: projects.filter((p) => p.status === 'review').length,
     weekTasks: tasks.filter((t) => {
       if (!t.deadline) return false
       const dl = new Date(t.deadline)
       return dl >= now && dl <= weekEnd
+    }).length,
+    overdueTasks: tasks.filter((t) => {
+      if (!t.deadline || t.status === 'done') return false
+      return new Date(t.deadline) < now
     }).length,
   }
 }

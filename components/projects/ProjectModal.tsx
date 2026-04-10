@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Project, ProjectStatus, Priority } from '@/types/database'
+import { Project, ProjectStatus, ProjectType, Priority } from '@/types/database'
 import { createProject, updateProject } from '@/app/dashboard/projects/actions'
 import {
   Dialog,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ProjectTypeSelect } from '@/components/projects/ProjectTypeSelect'
 
 interface ProjectModalProps {
   project?: Project | null
@@ -29,6 +30,7 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
     name: project?.name ?? '',
     description: project?.description ?? '',
     client_id: project?.client_id ?? '',
+    type: (project?.type ?? null) as ProjectType | null,
     status: (project?.status ?? 'draft') as ProjectStatus,
     priority: (project?.priority ?? 'medium') as Priority,
     deadline: project?.deadline ? project.deadline.split('T')[0] : '',
@@ -54,6 +56,7 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
       try {
         const payload = {
           ...form,
+          type: form.type ?? undefined,
           deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
           owner_id: form.owner_id || undefined,
           description: form.description || undefined,
@@ -84,6 +87,13 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
               onChange={(e) => handleChange('name', e.target.value)}
               placeholder="Ex: Campanha de Lançamento"
               disabled={isPending}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Tipo de projeto</label>
+            <ProjectTypeSelect
+              value={form.type}
+              onChange={(type) => setForm((prev) => ({ ...prev, type }))}
             />
           </div>
           <div className="space-y-2">
