@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
@@ -73,11 +75,23 @@ interface SidebarProps {
 
 export function Sidebar({ className, userEmail, userName }: SidebarProps) {
   const pathname = usePathname()
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   function isActive(href: string, exact?: boolean) {
     if (exact) return pathname === href
     return pathname.startsWith(href)
   }
+
+  const currentTheme = resolvedTheme || theme
+  const isDark = mounted && currentTheme === 'dark'
+
+  const symbolSrc = isDark ? '/brand/symbols/simbolo-dark.png' : '/brand/symbols/simbolo-light.png'
+  const logoSrc = isDark ? '/brand/logos/logotipo-dark.png' : '/brand/logos/logotipo-light.png'
 
   const displayName = userName ?? userEmail?.split('@')[0] ?? 'Usuário'
   const displayEmail = userEmail ?? ''
@@ -92,23 +106,23 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
         {/* ── Logo ── */}
         <div className="mb-6 px-4 flex items-center justify-start h-8 shrink-0 relative">
           <Link href="/dashboard" className="flex items-center group/logo w-full overflow-hidden whitespace-nowrap">
-            {/* Símbolo da marca - Fixado em largura */}
-            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center">
+            {/* Símbolo da marca - Visível apenas quando fechado */}
+            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-300 group-hover:opacity-0">
               <Image
-                src="/brand/symbols/simbolo-dark.png"
+                src={symbolSrc}
                 alt="Duas Mãos símbolo"
                 fill
-                className="object-contain transition-opacity duration-200 group-hover/logo:opacity-80"
+                className="object-contain"
                 priority
               />
             </div>
-            {/* Logotipo - Fica oculto até o hover */}
-            <div className="relative h-5 ml-3 w-[120px] shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+            {/* Logotipo - Visível apenas quando aberto (hover) */}
+            <div className="absolute left-4 h-7 w-[180px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               <Image
-                src="/brand/logos/logotipo-dark.png"
+                src={logoSrc}
                 alt="Duas Mãos"
                 fill
-                className="object-contain object-left transition-opacity duration-200 group-hover/logo:opacity-80"
+                className="object-contain object-left"
                 priority
               />
             </div>
