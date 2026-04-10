@@ -32,25 +32,25 @@ const navGroups = [
     label: 'Principal',
     items: [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-      { href: '/dashboard/projects', label: 'Projects', icon: FolderOpen },
-      { href: '/dashboard/clients', label: 'Clients', icon: Users, exact: true },
-      { href: '/dashboard/financials', label: 'Financials', icon: BarChart3 },
-      { href: '/dashboard/team', label: 'Team', icon: UserCircle2 },
+      { href: '/dashboard/projects', label: 'Projetos', icon: FolderOpen },
+      { href: '/dashboard/clients', label: 'Clientes', icon: Users, exact: true },
+      { href: '/dashboard/financials', label: 'Financeiro', icon: BarChart3 },
+      { href: '/dashboard/team', label: 'Equipe', icon: UserCircle2 },
     ],
   },
   {
     label: 'Produção',
     items: [
-      { href: '/dashboard/tasks', label: 'Tasks', icon: CheckSquare },
-      { href: '/dashboard/calendar', label: 'Calendar', icon: CalendarDays },
-      { href: '/dashboard/files', label: 'Files', icon: Files },
+      { href: '/dashboard/tasks', label: 'Tarefas', icon: CheckSquare },
+      { href: '/dashboard/calendar', label: 'Calendário', icon: CalendarDays },
+      { href: '/dashboard/files', label: 'Arquivos', icon: Files },
     ],
   },
   {
     label: 'Sistema',
     items: [
-      { href: '/dashboard/support', label: 'Support', icon: HelpCircle },
-      { href: '/dashboard/archive', label: 'Archive', icon: Archive },
+      { href: '/dashboard/support', label: 'Suporte', icon: HelpCircle },
+      { href: '/dashboard/archive', label: 'Arquivados', icon: Archive },
     ],
   }
 ]
@@ -119,7 +119,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
         <div className="px-4 mb-6">
            <button className="w-full bg-brand-primary text-white font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-sm shadow-brand-primary/20 group-hover:px-4 duration-300">
              <Plus size={18} strokeWidth={3} />
-             <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">New Project</span>
+             <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap overflow-hidden">Novo Projeto</span>
            </button>
         </div>
 
