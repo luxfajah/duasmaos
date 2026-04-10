@@ -6,206 +6,322 @@ interface IconProps {
   strokeWidth?: number
 }
 
-const defaults = { size: 24, strokeWidth: 1.8 }
+const D = { size: 24, sw: 1.9 }
 
-export function DoodleDashboard({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   DASHBOARD — grid + trend line + arrow
+───────────────────────────────────────── */
+export function DoodleDashboard({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Grid lines */}
-      <rect x="2" y="2" width="20" height="20" rx="1" />
-      <line x1="2" y1="7" x2="22" y2="7" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <line x1="2" y1="17" x2="22" y2="17" />
-      <line x1="7" y1="2" x2="7" y2="22" />
-      {/* Trend line */}
-      <polyline points="7,17 11,11 15,14 20,7" strokeWidth={strokeWidth + 0.4} />
-      <line x1="19" y1="5" x2="22" y2="5" strokeWidth={strokeWidth + 0.2} />
-      <line x1="20" y1="4" x2="20" y2="8" strokeWidth={strokeWidth + 0.2} />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Outer border */}
+      <rect x="4" y="4" width="40" height="40" rx="1.5" />
+      {/* Vertical grid lines */}
+      <line x1="4"  y1="17" x2="44" y2="17" />
+      <line x1="4"  y1="30" x2="44" y2="30" />
+      <line x1="17" y1="4"  x2="17" y2="44" />
+      <line x1="30" y1="4"  x2="30" y2="44" />
+      {/* Trend line — zigzag going up */}
+      <polyline points="6,38 13,28 20,32 28,18 36,22 44,8" strokeWidth={strokeWidth * 2.5} />
+      {/* Arrow tip at end */}
+      <polyline points="38,6 44,8 42,14" strokeWidth={strokeWidth * 2.2} />
     </svg>
   )
 }
 
-export function DoodleProjects({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   PROJECTS — open folder, 3 papers inside
+───────────────────────────────────────── */
+export function DoodleProjects({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Folder back */}
-      <path d="M2 7 Q2 5 4 5 H9 L11 7 H20 Q22 7 22 9 V19 Q22 21 20 21 H4 Q2 21 2 19 Z" />
-      {/* Folder front flap */}
-      <path d="M2 10 H22" />
-      {/* Documents inside */}
-      <line x1="8" y1="15" x2="16" y2="15" />
-      <line x1="8" y1="17.5" x2="14" y2="17.5" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Back folder flap */}
+      <path d="M4 16 Q4 12 8 12 H18 L22 16 H44 Q46 16 46 18" />
+      {/* Folder body */}
+      <path d="M4 16 H44 Q46 16 46 18 V38 Q46 42 42 42 H6 Q4 42 4 40 V16 Z" />
+      {/* Document tabs showing inside */}
+      <line x1="4" y1="22" x2="46" y2="22" />
+      {/* Papers sticking up inside folder */}
+      <rect x="13" y="14" width="8" height="10" rx="1" />
+      <rect x="23" y="13" width="8" height="11" rx="1" />
+      <rect x="33" y="14" width="8" height="10" rx="1" />
     </svg>
   )
 }
 
-export function DoodleClients({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   CLIENTS — 2 person silhouettes side by side
+   (right person slightly larger, shown more)
+───────────────────────────────────────── */
+export function DoodleClients({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Person 1 (left) */}
-      <circle cx="8" cy="7" r="3" />
-      <path d="M2 20 Q2 14 8 14 Q11 14 12.5 16" />
-      {/* Person 2 (right, larger/behind) */}
-      <circle cx="16" cy="6" r="3.5" />
-      <path d="M10 21 Q10.5 14.5 16 14.5 Q22 14.5 22 21" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Left person head */}
+      <circle cx="17" cy="13" r="6" />
+      {/* Left person body arc */}
+      <path d="M4 42 Q4 30 17 30 Q22 30 25 33" />
+      {/* Right person head (slightly larger, in front) */}
+      <circle cx="31" cy="12" r="7" />
+      {/* Right person body arc */}
+      <path d="M18 43 Q18 29 31 29 Q44 29 44 43" />
     </svg>
   )
 }
 
-export function DoodleTasks({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   TASKS — checklist: checked box + unchecked box + lines
+───────────────────────────────────────── */
+export function DoodleTasks({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Checked box */}
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <polyline points="4.5,6.5 6,8 9,4.5" />
-      {/* Unchecked box */}
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      {/* Text lines */}
-      <line x1="14" y1="6" x2="21" y2="6" />
-      <line x1="14" y1="9" x2="19" y2="9" />
-      <line x1="14" y1="17" x2="21" y2="17" />
-      <line x1="14" y1="20" x2="18" y2="20" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Top checked box */}
+      <rect x="4" y="6" width="14" height="14" rx="1.5" />
+      <polyline points="7,13 11,17 18,8" strokeWidth={strokeWidth * 2.2} />
+      {/* Top text lines */}
+      <line x1="24" y1="10" x2="44" y2="10" />
+      <line x1="24" y1="16" x2="38" y2="16" />
+      {/* Bottom unchecked box */}
+      <rect x="4" y="28" width="14" height="14" rx="1.5" />
+      {/* Bottom text lines */}
+      <line x1="24" y1="32" x2="44" y2="32" />
+      <line x1="24" y1="38" x2="38" y2="38" />
     </svg>
   )
 }
 
-export function DoodleCalendar({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   CALENDAR GRID — square calendar with spiral rings, grid, circled 15
+───────────────────────────────────────── */
+export function DoodleCalendar({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Outer frame */}
-      <rect x="2" y="3" width="20" height="19" rx="1" />
-      {/* Top rings */}
-      <line x1="7" y1="1" x2="7" y2="5" />
-      <line x1="17" y1="1" x2="17" y2="5" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Calendar frame */}
+      <rect x="4" y="10" width="40" height="34" rx="1.5" />
+      {/* Spiral rings */}
+      <line x1="13" y1="6" x2="13" y2="14" strokeWidth={strokeWidth * 2.5} />
+      <line x1="24" y1="6" x2="24" y2="14" strokeWidth={strokeWidth * 2.5} />
+      <line x1="35" y1="6" x2="35" y2="14" strokeWidth={strokeWidth * 2.5} />
       {/* Header divider */}
-      <line x1="2" y1="8" x2="22" y2="8" />
-      {/* Grid */}
-      <line x1="8" y1="8" x2="8" y2="22" strokeWidth={0.8} />
-      <line x1="14" y1="8" x2="14" y2="22" strokeWidth={0.8} />
-      <line x1="2" y1="13" x2="22" y2="13" strokeWidth={0.8} />
-      <line x1="2" y1="18" x2="22" y2="18" strokeWidth={0.8} />
-      {/* Circled day */}
-      <circle cx="5" cy="10.5" r="1.2" />
+      <line x1="4" y1="18" x2="44" y2="18" />
+      {/* Grid vertical lines */}
+      <line x1="18" y1="18" x2="18" y2="44" strokeWidth={strokeWidth} />
+      <line x1="30" y1="18" x2="30" y2="44" strokeWidth={strokeWidth} />
+      {/* Grid horizontal lines */}
+      <line x1="4" y1="28" x2="44" y2="28" strokeWidth={strokeWidth} />
+      <line x1="4" y1="37" x2="44" y2="37" strokeWidth={strokeWidth} />
+      {/* Circled "15" — just the circle (number implied by style) */}
+      <circle cx="11" cy="23" r="5" />
+      {/* "15" text approximated */}
+      <line x1="10" y1="20" x2="10" y2="26" strokeWidth={strokeWidth * 1.5} />
+      <path d="M10 20 Q13 20 13 22 Q13 24 10 24 Q13 24 13 26" strokeWidth={strokeWidth * 1.3} />
     </svg>
   )
 }
 
-export function DoodleFiles({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   CALENDAR ROUND — rounded calendar with big circled "15"
+───────────────────────────────────────── */
+export function DoodleCalendarRound({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Back document */}
-      <path d="M7 4 H16 L20 8 V21 H7 Z" />
-      <path d="M16 4 V8 H20" />
-      {/* Front document */}
-      <path d="M4 7 H13 L17 11 V22 H4 Z" />
-      <path d="M13 7 V11 H17" />
-      {/* Lines on front doc */}
-      <line x1="7" y1="15" x2="14" y2="15" />
-      <line x1="7" y1="18" x2="12" y2="18" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Rounded calendar frame */}
+      <rect x="4" y="10" width="40" height="34" rx="6" />
+      {/* Spiral rings */}
+      <line x1="14" y1="6" x2="14" y2="14" strokeWidth={strokeWidth * 2.5} />
+      <line x1="34" y1="6" x2="34" y2="14" strokeWidth={strokeWidth * 2.5} />
+      {/* Header divider */}
+      <line x1="4" y1="18" x2="44" y2="18" />
+      {/* Large circle for the date */}
+      <circle cx="24" cy="31" r="10" />
+      {/* "1" of 15 */}
+      <path d="M20 27 L20 35" strokeWidth={strokeWidth * 1.8} />
+      {/* "5" of 15 */}
+      <path d="M23 27 L27 27 L27 31 L23 31 Q23 35 27 35" strokeWidth={strokeWidth * 1.6} />
     </svg>
   )
 }
 
-export function DoodleClip({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   FILES — document with dog-ear fold, horizontal lines
+───────────────────────────────────────── */
+export function DoodleFiles({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Paper */}
-      <rect x="4" y="4" width="16" height="18" rx="1" />
-      {/* Clip */}
-      <path d="M14 2 Q18 2 18 5 Q18 8 14 8 L14 10" strokeLinecap="round" />
-      {/* Lines on paper */}
-      <line x1="7" y1="12" x2="17" y2="12" />
-      <line x1="7" y1="15" x2="17" y2="15" />
-      <line x1="7" y1="18" x2="13" y2="18" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Document body with folded top-right corner */}
+      <path d="M8 4 H32 L40 12 V44 H8 Z" />
+      {/* Dog-ear fold */}
+      <polyline points="32,4 32,12 40,12" />
+      {/* Content lines */}
+      <line x1="13" y1="20" x2="35" y2="20" />
+      <line x1="13" y1="27" x2="35" y2="27" />
+      <line x1="13" y1="34" x2="35" y2="34" />
+      <line x1="13" y1="40" x2="26" y2="40" />
     </svg>
   )
 }
 
-export function DoodleSettings({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   CLIP — blank paper with paperclip at top right
+───────────────────────────────────────── */
+export function DoodleClip({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Gear teeth - 8 teeth */}
-      <path d="M12 2 L13.5 5 L17 4 L17 7.5 L20 9 L18 12 L20 15 L17 16.5 L17 20 L13.5 19 L12 22 L10.5 19 L7 20 L7 16.5 L4 15 L6 12 L4 9 L7 7.5 L7 4 L10.5 5 Z" />
-      {/* Inner circle */}
-      <circle cx="12" cy="12" r="3.5" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Paper rectangle */}
+      <rect x="6" y="8" width="32" height="38" rx="2" />
+      {/* Paperclip — U shape at top right going over edge */}
+      <path d="M30 2 Q38 2 38 8 Q38 14 30 14 Q28 14 28 18"
+        strokeWidth={strokeWidth * 2}
+        strokeLinecap="round"
+        fill="none"
+      />
     </svg>
   )
 }
 
-export function DoodleTeam({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   SETTINGS — gear with concentric circles
+───────────────────────────────────────── */
+export function DoodleSettings({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Left person */}
-      <circle cx="5.5" cy="6.5" r="2.5" />
-      <path d="M1 20 Q1 14 5.5 14 Q7.5 14 9 15.5" />
-      {/* Right person */}
-      <circle cx="18.5" cy="6.5" r="2.5" />
-      <path d="M15 15.5 Q16.5 14 18.5 14 Q23 14 23 20" />
-      {/* Center person */}
-      <circle cx="12" cy="5.5" r="3" />
-      <path d="M6 21 Q6 14.5 12 14.5 Q18 14.5 18 21" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Gear outer path — 8 teeth */}
+      <path d="
+        M24 4 L26.5 9 L32 8 L33 14 L38 16 L35 21 L38 26 L33 30 L32 36 L26.5 35
+        L24 40 L21.5 35 L16 36 L15 30 L10 26 L13 21 L10 16 L15 14 L16 8 L21.5 9 Z
+      " />
+      {/* Outer ring */}
+      <circle cx="24" cy="24" r="8" />
+      {/* Inner circle (the 'eye') */}
+      <circle cx="24" cy="24" r="4" />
     </svg>
   )
 }
 
-export function DoodleSupport({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   TEAM — 3 person silhouettes (2 back, 1 front)
+───────────────────────────────────────── */
+export function DoodleTeam({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Speech bubble */}
-      <path d="M3 4 Q3 2 5 2 H19 Q21 2 21 4 V14 Q21 16 19 16 H8 L3 21 V16 H5 Q3 16 3 14 Z" />
-      {/* Question mark */}
-      <path d="M10 8 Q10 6 12 6 Q14 6 14 8 Q14 10 12 10 L12 11.5" strokeLinecap="round" />
-      <circle cx="12" cy="13.5" r="0.7" fill="currentColor" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Left back person — head */}
+      <circle cx="13" cy="14" r="5.5" />
+      {/* Left back person — body arc */}
+      <path d="M2 42 Q2 30 13 30 Q18 30 21 34" />
+      {/* Right back person — head */}
+      <circle cx="35" cy="14" r="5.5" />
+      {/* Right back person — body arc */}
+      <path d="M27 34 Q30 30 35 30 Q46 30 46 42" />
+      {/* Front center person — head (larger) */}
+      <circle cx="24" cy="13" r="6.5" />
+      {/* Front center person — body arc (fuller) */}
+      <path d="M10 44 Q10 30 24 30 Q38 30 38 44" />
     </svg>
   )
 }
 
-export function DoodleArchive({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   SUPPORT — speech bubble with question mark + dot
+───────────────────────────────────────── */
+export function DoodleSupport({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Box base */}
-      <path d="M3 12 L3 21 L21 21 L21 12" />
-      {/* Box flaps (open) */}
-      <path d="M1 9 L5 12 L9 10 L12 12 L15 10 L19 12 L23 9" />
-      {/* Arrow going in */}
-      <line x1="12" y1="2" x2="12" y2="16" />
-      <polyline points="8,12 12,16 16,12" />
-      {/* Box side lines */}
-      <line x1="3" y1="16" x2="7" y2="16" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Speech bubble body */}
+      <path d="M4 6 Q4 4 6 4 H42 Q44 4 44 6 V30 Q44 32 42 32 H16 L6 44 V32 H6 Q4 32 4 30 V6 Z" />
+      {/* Question mark arc */}
+      <path d="M19 17 Q19 12 24 12 Q29 12 29 17 Q29 22 24 22 L24 25"
+        strokeLinecap="round" strokeWidth={strokeWidth * 2} />
+      {/* Question mark dot */}
+      <circle cx="24" cy="30" r="1.5" fill="currentColor" stroke="none" />
     </svg>
   )
 }
 
-export function DoodlePlus({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   ARCHIVE — open box with curved arrow going down in
+───────────────────────────────────────── */
+export function DoodleArchive({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth + 0.5} strokeLinecap="round" className={className}>
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      {/* Box base & sides */}
+      <path d="M6 24 L6 44 L42 44 L42 24" />
+      {/* Box open flaps — left and right angled */}
+      <polyline points="2,18 10,24 20,20 24,24 28,20 38,24 46,18" />
+      {/* Curved arrow going down into box */}
+      <path d="M32 4 Q40 4 40 14 Q40 20 32 22" strokeLinecap="round" />
+      <polyline points="28,18 32,22 36,18" />
+      {/* Lines on box front */}
+      <line x1="10" y1="34" x2="22" y2="34" />
     </svg>
   )
 }
 
-export function DoodleFinancials({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   FINANCIALS — bar chart with up arrow
+───────────────────────────────────────── */
+export function DoodleFinancials({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      {/* Bar chart */}
-      <line x1="3" y1="22" x2="21" y2="22" />
-      <rect x="4" y="12" width="4" height="10" rx="0.5" />
-      <rect x="10" y="7" width="4" height="15" rx="0.5" />
-      <rect x="16" y="4" width="4" height="18" rx="0.5" />
-      {/* Arrow up */}
-      <polyline points="5,10 5,5 9,5" />
-      <line x1="5" y1="5" x2="19" y2="1" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      <line x1="4" y1="44" x2="44" y2="44" />
+      <rect x="6"  y="28" width="8"  height="16" rx="1" />
+      <rect x="20" y="18" width="8"  height="26" rx="1" />
+      <rect x="34" y="10" width="8"  height="34" rx="1" />
+      <polyline points="8,26 8,18 16,18" />
+      <line x1="8" y1="18" x2="42" y2="4" />
     </svg>
   )
 }
 
-export function DoodleLogout({ className, size = defaults.size, strokeWidth = defaults.strokeWidth }: IconProps) {
+/* ─────────────────────────────────────────
+   PLUS — simple hand-drawn plus
+───────────────────────────────────────── */
+export function DoodlePlus({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M15 3 H19 Q21 3 21 5 V19 Q21 21 19 21 H15" />
-      <polyline points="10,17 15,12 10,7" />
-      <line x1="15" y1="12" x2="3" y2="12" />
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 2.8} strokeLinecap="round"
+      className={className}>
+      <line x1="24" y1="8"  x2="24" y2="40" />
+      <line x1="8"  y1="24" x2="40" y2="24" />
+    </svg>
+  )
+}
+
+/* ─────────────────────────────────────────
+   LOGOUT — door with arrow
+───────────────────────────────────────── */
+export function DoodleLogout({ className, size = D.size, strokeWidth = D.sw }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none"
+      stroke="currentColor" strokeWidth={strokeWidth * 1.8} strokeLinecap="round" strokeLinejoin="round"
+      className={className}>
+      <path d="M28 6 H40 Q42 6 42 8 V40 Q42 42 40 42 H28" />
+      <polyline points="20 34 30 24 20 14" />
+      <line x1="30" y1="24" x2="6" y2="24" />
     </svg>
   )
 }

@@ -15,8 +15,8 @@ import {
   DoodleFinancials,
   DoodleTeam,
   DoodleTasks,
-  DoodleCalendar,
-  DoodleFiles,
+  DoodleCalendarRound,
+  DoodleClip,
   DoodleSupport,
   DoodleArchive,
   DoodleSettings,
@@ -43,8 +43,8 @@ const navGroups = [
     label: 'Produção',
     items: [
       { href: '/dashboard/tasks', label: 'Tarefas', icon: DoodleTasks },
-      { href: '/dashboard/calendar', label: 'Calendário', icon: DoodleCalendar },
-      { href: '/dashboard/files', label: 'Arquivos', icon: DoodleFiles },
+      { href: '/dashboard/calendar', label: 'Calendário', icon: DoodleCalendarRound },
+      { href: '/dashboard/files', label: 'Arquivos', icon: DoodleClip },
     ],
   },
   {
