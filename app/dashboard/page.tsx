@@ -49,15 +49,15 @@ export default async function DashboardPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary tracking-tight">Strategic Dashboard</h1>
-          <p className="text-text-muted mt-1.5 font-medium">Status report for the current sprint cycle ending June 15th.</p>
+          <h1 className="text-3xl font-bold text-text-primary tracking-tight">Painel Estratégico</h1>
+          <p className="text-text-muted mt-1.5 font-medium">Relatório de status do ciclo atual finalizando em 15 de Junho.</p>
         </div>
         <div className="flex items-center gap-3">
           <button className="px-4 py-2 text-sm font-bold text-text-primary bg-surface border border-border rounded-xl hover:bg-surface-muted transition-colors shadow-sm">
-            Export Report
+            Exportar Relatório
           </button>
           <button className="px-4 py-2 text-sm font-bold text-white bg-brand-primary rounded-xl hover:opacity-90 transition-opacity shadow-sm shadow-brand-primary/20 flex items-center gap-2">
-            Schedule Sync
+            Agendar Sincronia
           </button>
         </div>
       </div>
@@ -65,31 +65,31 @@ export default async function DashboardPage() {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          label="ACTIVE PROJECTS"
+          label="PROJETOS ATIVOS"
           value={stats.activeProjects}
           icon={FolderOpen}
-          description="+12% vs last month"
+          description="+12% vs último mês"
           accent="default"
         />
         <MetricCard
-          label="DELAYED TASKS"
+          label="TAREFAS ATRASADAS"
           value={stats.overdueTasks}
           icon={Clock}
-          description="Action Required"
+          description="Ação Necessária"
           accent="danger"
         />
         <MetricCard
-          label="UPCOMING (7D)"
+          label="PRÓXIMOS (7D)"
           value={stats.weekTasks}
           icon={CalendarClock}
-          description="Due next 48h"
+          description="Entrega em 48h"
           accent="info"
         />
         <MetricCard
-          label="MONTHLY BILLING"
-          value="$42.8k"
+          label="FATURAMENTO MENSAL"
+          value="R$ 42,8k"
           icon={ArrowRight}
-          description="Q3 Target"
+          description="Meta Q3"
           accent="success"
         />
       </div>
@@ -104,8 +104,8 @@ export default async function DashboardPage() {
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-text-primary">Active Projects</h2>
-                <p className="text-sm text-text-muted">Overviewing active campaigns.</p>
+                <h2 className="text-xl font-bold text-text-primary">Projetos Ativos</h2>
+                <p className="text-sm text-text-muted">Visão geral das campanhas ativas.</p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="hidden sm:flex items-center gap-2">
@@ -113,11 +113,11 @@ export default async function DashboardPage() {
                      Status <ChevronDown size={14} />
                    </button>
                    <button className="px-3 py-1.5 text-xs font-bold bg-surface border border-border rounded-lg flex items-center gap-2 hover:bg-surface-muted transition-colors">
-                     Client <ChevronDown size={14} />
+                     Cliente <ChevronDown size={14} />
                    </button>
                 </div>
                 <button className="px-3 py-1.5 text-xs font-bold text-brand-primary flex items-center gap-2 hover:bg-brand-primary/5 rounded-lg transition-colors">
-                  <Filter size={14} /> Advanced Filters
+                  <Filter size={14} /> Filtros Avançados
                 </button>
               </div>
             </div>
@@ -129,8 +129,8 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 xl:grid-cols-1 gap-10">
              <div className="space-y-4">
                <div className="flex items-center justify-between">
-                 <h2 className="text-lg font-bold text-text-primary">My Daily Tasks</h2>
-                 <button className="text-sm font-bold text-brand-primary hover:underline">View All</button>
+                 <h2 className="text-lg font-bold text-text-primary">Minhas Tarefas do Dia</h2>
+                 <button className="text-sm font-bold text-brand-primary hover:underline" onClick={() => redirect('/dashboard/tasks')}>Ver todas</button>
                </div>
                <DailyTasksList tasks={todaysTasks} />
              </div>
@@ -150,15 +150,15 @@ export default async function DashboardPage() {
         <div className="space-y-10">
           <section className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-text-primary">Team Activity</h2>
+              <h2 className="text-xl font-bold text-text-primary">Atividade da Equipe</h2>
               <button className="p-1 hover:bg-surface-muted rounded-md transition-colors">
                 {/* Horizontal triple dots lucide icon would go here, using a generic placeholder for now */}
                 <Plus size={18} className="rotate-45 text-text-muted" />
               </button>
             </div>
             <TeamActivityFeed logs={teamLogs} />
-            <button className="w-full py-3 text-sm font-bold text-text-muted hover:text-text-primary border-t border-border transition-colors">
-              SHOW MORE HISTORY
+            <button className="w-full py-3 text-sm font-bold text-text-muted hover:text-text-primary border-t border-border transition-colors uppercase">
+              Ver histórico completo
             </button>
           </section>
 
