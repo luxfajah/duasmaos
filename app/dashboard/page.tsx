@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { getDashboardStats, getProjects } from './projects/actions'
 import { MetricCard } from '@/components/dashboard/MetricCard'
 import { ProductivityChart } from '@/components/dashboard/ProductivityChart'
@@ -130,7 +131,7 @@ export default async function DashboardPage() {
              <div className="space-y-4">
                <div className="flex items-center justify-between">
                  <h2 className="text-lg font-bold text-text-primary">Minhas Tarefas do Dia</h2>
-                 <button className="text-sm font-bold text-brand-primary hover:underline" onClick={() => redirect('/dashboard/tasks')}>Ver todas</button>
+                 <Link href="/dashboard/tasks" className="text-sm font-bold text-brand-primary hover:underline">Ver todas</Link>
                </div>
                <DailyTasksList tasks={todaysTasks} />
              </div>
@@ -141,7 +142,7 @@ export default async function DashboardPage() {
 
           {/* Productivity Chart */}
           <section className="space-y-4">
-             <h2 className="text-lg font-bold text-text-primary">Efficiency Trend</h2>
+             <h2 className="text-lg font-bold text-text-primary">Tendência de Eficiência</h2>
              <ProductivityChart />
           </section>
         </div>
@@ -166,9 +167,9 @@ export default async function DashboardPage() {
           <div className="bg-text-primary text-surface rounded-2xl p-6 relative overflow-hidden group h-48 flex flex-col justify-end">
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
             <div className="relative z-10">
-               <span className="text-[10px] font-bold uppercase tracking-widest bg-brand-primary/20 text-brand-primary px-2 py-0.5 rounded mb-2 inline-block">Featured Client</span>
+               <span className="text-[10px] font-bold uppercase tracking-widest bg-brand-primary/20 text-brand-primary px-2 py-0.5 rounded mb-2 inline-block">Cliente em Destaque</span>
                <h3 className="text-xl font-bold text-white">Nordic Design Group</h3>
-               <p className="text-sm text-surface/70">Annual Retainer Review Pending</p>
+               <p className="text-sm text-surface/70">Revisão Anual de Retainer Pendente</p>
             </div>
           </div>
         </div>
