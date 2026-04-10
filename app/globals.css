@@ -90,16 +90,18 @@
   ───────────────────────────────────────── */
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: 240 10% 4%;
-      --foreground: 0 0% 98%;
-      --surface: 240 10% 6%;
-      --surface-muted: 240 10% 12%;
-      --border: 240 10% 16%;
-      --border-strong: 240 10% 24%;
+      /* Uses Graphite (#1C1C1C) as the base surface, darker graphite for background */
+      --background: 0 0% 7%;
+      --foreground: 60 5% 96%; /* Stone for text */
+      --surface: 0 0% 11%;    /* Graphite */
+      --surface-muted: 0 0% 15%;
+      --border: 0 0% 18%;
+      --border-strong: 0 0% 25%;
 
-      --brand-primary: 0 0% 98%;
-      --brand-primary-hover: 0 0% 90%;
-      --brand-secondary: 20 28% 76%;
+      /* Brand colors maintained in dark mode */
+      --brand-primary: 23 62% 49%;
+      --brand-primary-hover: 23 62% 44%;
+      --brand-secondary: 90 24% 29%;
       --brand-accent: 35 78% 62%;
 
       --text-primary: 0 0% 98%;
