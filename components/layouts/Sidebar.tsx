@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
   LayoutDashboard,
   Users,
@@ -160,6 +161,11 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
           <Settings size={16} strokeWidth={1.75} />
           Configurações
         </Link>
+        
+        <div className="flex items-center justify-between px-3 py-1">
+          <span className="text-sm font-medium text-text-secondary">Aparência</span>
+          <ThemeToggle />
+        </div>
 
         <form action="/auth/signout" method="post">
           <button

@@ -10,14 +10,25 @@ export const metadata: Metadata = {
   description: "Plataforma de colaboração de conteúdo para social media",
 };
 
+import { ThemeProvider } from "@/components/theme-provider"
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${inter.variable} ${manrope.variable} font-sans`}>{children}</body>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${inter.variable} ${manrope.variable} font-sans`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
