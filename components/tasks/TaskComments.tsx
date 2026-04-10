@@ -37,6 +37,8 @@ export function TaskComments({ taskId, comments: initial, currentUserId }: TaskC
         user_id: currentUserId ?? null,
         body: text,
         created_at: new Date().toISOString(),
+        pos_x: null,
+        pos_y: null,
         profiles: null,
       }
       setComments((prev) => [...prev, optimistic])

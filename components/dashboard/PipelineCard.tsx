@@ -22,7 +22,7 @@ export function PipelineCard({ client }: PipelineCardProps) {
   return (
     <Card className="p-4 bg-surface border-border hover:border-brand-primary/50 hover:shadow-md transition-all cursor-grab active:cursor-grabbing group">
       <div className="flex justify-between items-start mb-3">
-        <Badge variant="muted">{sector.toUpperCase()}</Badge>
+        <Badge variant="secondary">{sector.toUpperCase()}</Badge>
         <span className="text-sm font-semibold text-text-primary">{formattedTicket}</span>
       </div>
       
@@ -35,7 +35,7 @@ export function PipelineCard({ client }: PipelineCardProps) {
       
       <div className="flex items-center justify-between pt-3 border-t border-border">
         <Avatar 
-          fallback={client.name.substring(0, 2).toUpperCase()} 
+          name={client.name.substring(0, 2).toUpperCase()} 
           className="w-6 h-6 border bg-brand-primary text-white text-[10px]"
         />
         <span className="text-xs text-text-muted">Atualizado há 2h</span>

@@ -33,7 +33,7 @@ export function TeamActivityFeed({ logs }: TeamActivityFeedProps) {
             <div key={log.id} className="flex gap-4 items-start bg-surface z-10">
               <Avatar 
                 src={log.user_avatar || undefined} 
-                fallback={log.user_name.substring(0, 2).toUpperCase()} 
+                name={log.user_name} 
                 className="w-10 h-10 border-2 border-background shrink-0"
               />
               <div className="flex-1 pt-1">

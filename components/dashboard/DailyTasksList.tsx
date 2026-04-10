@@ -59,7 +59,7 @@ export function DailyTasksList({ tasks }: DailyTasksListProps) {
                 </div>
                 
                 {isDone ? (
-                  <Badge variant="muted">CONCLUÍDO</Badge>
+                  <Badge variant="secondary">CONCLUÍDO</Badge>
                 ) : (
                   <Badge variant={badgeVariant}>{PRIORITY_LABELS[task.priority].toUpperCase()}</Badge>
                 )}
