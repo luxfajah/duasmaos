@@ -58,7 +58,7 @@ export function Header({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-brand-primary" size={16} strokeWidth={2} />
           <input 
             type="text" 
-            placeholder="Search projects, tasks, or assets..." 
+            placeholder="Buscar projetos, tarefas ou arquivos..." 
             className="w-full bg-surface-muted/50 hover:bg-surface-muted focus:bg-surface border border-transparent focus:border-brand-primary/30 rounded-xl pl-9 pr-4 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none transition-all duration-200"
           />
         </div>

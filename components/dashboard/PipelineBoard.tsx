@@ -7,12 +7,12 @@ import { PipelineCard } from './PipelineCard'
 import { updateClientPipelineStage } from '@/app/dashboard/clients/actions'
 
 const PIPELINE_COLUMNS: { id: PipelineStage; label: string; color: string }[] = [
-  { id: 'Lead', label: 'LEAD', color: 'bg-status-info/20 text-status-info' },
+  { id: 'Lead', label: 'OPORTUNIDADE', color: 'bg-status-info/20 text-status-info' },
   { id: 'Diagnóstico', label: 'DIAGNÓSTICO', color: 'bg-brand-primary/20 text-brand-primary' },
   { id: 'Proposta', label: 'PROPOSTA', color: 'bg-status-warning/20 text-status-warning' },
   { id: 'Negociação', label: 'NEGOCIAÇÃO', color: 'bg-status-danger/20 text-status-danger' },
   { id: 'Fechado', label: 'FECHADO', color: 'bg-status-success/20 text-status-success' },
-  { id: 'Onboarding', label: 'ONBOARDING', color: 'bg-brand-secondary/20 text-brand-secondary' },
+  { id: 'Onboarding', label: 'INTEGRAÇÃO', color: 'bg-brand-secondary/20 text-brand-secondary' },
 ];
 
 interface PipelineBoardProps {
