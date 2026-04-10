@@ -4,7 +4,9 @@
 
 @layer base {
   :root {
-    /* Grupo base */
+    /* ─────────────────────────────────────────
+       SUPERFÍCIES E FUNDOS
+    ───────────────────────────────────────── */
     --background: 0 0% 98%;
     --foreground: 240 10% 8%;
     --surface: 0 0% 100%;
@@ -12,19 +14,25 @@
     --border: 240 10% 88%;
     --border-strong: 240 8% 74%;
 
-    /* Grupo marca */
+    /* ─────────────────────────────────────────
+       MARCA
+    ───────────────────────────────────────── */
     --brand-primary: 250 45% 28%;
     --brand-primary-hover: 250 45% 24%;
     --brand-secondary: 20 28% 26%;
     --brand-accent: 35 78% 62%;
 
-    /* Grupo texto */
+    /* ─────────────────────────────────────────
+       TEXTO
+    ───────────────────────────────────────── */
     --text-primary: 240 10% 8%;
     --text-secondary: 240 6% 30%;
     --text-muted: 240 5% 50%;
     --text-inverse: 0 0% 100%;
 
-    /* Grupo estado */
+    /* ─────────────────────────────────────────
+       ESTADOS
+    ───────────────────────────────────────── */
     --success: 145 55% 35%;
     --warning: 35 90% 52%;
     --danger: 2 72% 54%;
@@ -32,16 +40,54 @@
     --pending: 45 80% 50%;
     --draft: 240 10% 60%;
 
-    /* Grupo editorial */
+    /* ─────────────────────────────────────────
+       EDITORIAL
+    ───────────────────────────────────────── */
     --editorial-highlight: 40 80% 95%;
     --editorial-note: 30 50% 95%;
     --editorial-quote: 240 15% 95%;
     --editorial-frame: 240 10% 92%;
 
-    /* Radius base (custom) */
+    /* ─────────────────────────────────────────
+       RADIUS
+    ───────────────────────────────────────── */
     --radius: 8px;
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+
+    /* ─────────────────────────────────────────
+       SOMBRAS
+    ───────────────────────────────────────── */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+    --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.08), inset 0 1px 0 0 rgb(255 255 255 / 0.6);
+    --shadow-brand: 0 4px 14px 0 hsl(var(--brand-primary) / 0.2);
+
+    /* ─────────────────────────────────────────
+       TRANSIÇÕES
+    ───────────────────────────────────────── */
+    --transition-fast: 100ms ease;
+    --transition-normal: 200ms ease;
+    --transition-slow: 350ms ease;
+
+    /* ─────────────────────────────────────────
+       LAYOUT
+    ───────────────────────────────────────── */
+    --sidebar-width: 256px;
+    --header-height: 64px;
   }
 
+  /* ─────────────────────────────────────────
+     DARK MODE
+  ───────────────────────────────────────── */
   @media (prefers-color-scheme: dark) {
     :root {
       --background: 240 10% 4%;
@@ -67,14 +113,23 @@
       --info: 220 60% 60%;
       --pending: 45 70% 50%;
       --draft: 240 10% 40%;
-      
+
       --editorial-highlight: 40 80% 15%;
       --editorial-note: 30 50% 15%;
       --editorial-quote: 240 15% 15%;
       --editorial-frame: 240 10% 12%;
+
+      --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+      --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.4), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
     }
   }
 
+  /* ─────────────────────────────────────────
+     RESET BASE
+  ───────────────────────────────────────── */
   * {
     border-color: hsl(var(--border));
   }
@@ -88,5 +143,128 @@
   ::selection {
     background-color: hsl(var(--brand-primary));
     color: hsl(var(--text-inverse));
+  }
+
+  /* Scrollbar sutil */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border-strong));
+    border-radius: var(--radius-full);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--text-muted));
+  }
+}
+
+/* ─────────────────────────────────────────
+   ANIMAÇÕES
+───────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-brand {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--brand-primary) / 0.4); }
+  50%       { box-shadow: 0 0 0 6px hsl(var(--brand-primary) / 0); }
+}
+
+/* ─────────────────────────────────────────
+   UTILITÁRIOS CUSTOMIZADOS
+───────────────────────────────────────── */
+@layer utilities {
+  .animate-fade-in {
+    animation: fade-in 200ms ease both;
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 300ms ease both;
+  }
+  .animate-fade-in-down {
+    animation: fade-in-down 300ms ease both;
+  }
+  .animate-scale-in {
+    animation: scale-in 200ms ease both;
+  }
+  .animate-slide-in-left {
+    animation: slide-in-left 300ms ease both;
+  }
+  .animate-slide-in-right {
+    animation: slide-in-right 300ms ease both;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    background: hsl(var(--surface) / 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-glass);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  /* Texto com gradiente da marca */
+  .text-gradient-brand {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--brand-primary)),
+      hsl(var(--brand-accent))
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Overlay de background */
+  .surface-tint {
+    background: hsl(var(--brand-primary) / 0.04);
+  }
+
+  /* Borda gradiente da marca */
+  .border-gradient-brand {
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+  }
+  .border-gradient-brand::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--brand-primary) / 0.5),
+      hsl(var(--brand-accent) / 0.5)
+    );
   }
 }
