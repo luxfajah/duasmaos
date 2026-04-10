@@ -12,9 +12,9 @@ function getHealthVariant(score: number): BadgeVariant {
 }
 
 function getHealthLabel(score: number): string {
-  if (score >= 80) return 'Healthy';
-  if (score >= 50) return 'Attention';
-  return 'Critical';
+  if (score >= 80) return 'Saudável';
+  if (score >= 50) return 'Atenção';
+  return 'Crítico';
 }
 
 export function ProjectTable({ projects }: { projects: ExtendedProject[] }) {
@@ -32,12 +32,12 @@ export function ProjectTable({ projects }: { projects: ExtendedProject[] }) {
         <table className="w-full text-left text-sm text-text-secondary whitespace-nowrap">
           <thead className="bg-surface-muted border-b border-border text-[11px] font-bold uppercase tracking-wider text-text-muted">
             <tr>
-              <th className="px-6 py-4 rounded-tl-2xl">Project Name</th>
+              <th className="px-6 py-4 rounded-tl-2xl">Nome do Projeto</th>
               <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Health</th>
-              <th className="px-6 py-4">Team</th>
-              <th className="px-6 py-4 w-48">Progress</th>
-              <th className="px-6 py-4 rounded-tr-2xl">Deadline</th>
+              <th className="px-6 py-4">Saúde</th>
+              <th className="px-6 py-4">Integrantes</th>
+              <th className="px-6 py-4 w-48">Progresso</th>
+              <th className="px-6 py-4 rounded-tr-2xl">Prazo</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
