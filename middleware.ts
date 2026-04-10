@@ -1,3 +1,4 @@
+// Vercel Edge Cache Invalidation v2
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
