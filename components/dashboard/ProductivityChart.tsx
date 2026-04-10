@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts'
-import { Card } from '@/components/ui/Card'
+import { Card } from '@/components/ui/card'
 
 const data = [
   { name: 'SEG', concluídas: 4, planejadas: 6 },

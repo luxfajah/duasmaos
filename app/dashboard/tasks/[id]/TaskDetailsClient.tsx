@@ -2,12 +2,12 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { Task, TaskComment } from '@/types/database'
-import { Card } from '@/components/ui/Card'
-import { Avatar } from '@/components/ui/Avatar'
+import { Card } from '@/components/ui/card'
+import { Avatar } from '@/components/ui/avatar'
 import { InteractivePreview } from '@/components/dashboard/InteractivePreview'
 import { createTaskComment } from '../comment-actions'
 import { History, CheckCircle, FileText, Send, Paperclip, Smile } from 'lucide-react'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 
 type CommentWithProfile = TaskComment & {
   profiles: { full_name: string; avatar_url: string | null } | null

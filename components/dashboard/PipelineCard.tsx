@@ -1,8 +1,8 @@
 import React from 'react'
-import { Card } from '@/components/ui/Card'
-import { Avatar } from '@/components/ui/Avatar'
+import { Card } from '@/components/ui/card'
+import { Avatar } from '@/components/ui/avatar'
 import { Client, PipelineStage } from '@/types/database'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { MoreHorizontal, User } from 'lucide-react'
 
 interface PipelineCardProps {

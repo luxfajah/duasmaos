@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { getClients } from '@/app/dashboard/clients/actions'
 import { PipelineBoard } from '@/components/dashboard/PipelineBoard'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
-import { Card } from '@/components/ui/Card'
+import { Card } from '@/components/ui/card'
 import { TrendingUp, Target, DollarSign } from 'lucide-react'
 
 export default async function PipelinePage() {

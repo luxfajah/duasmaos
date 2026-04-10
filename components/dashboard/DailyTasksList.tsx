@@ -1,7 +1,7 @@
 import React from 'react'
-import { Card } from '@/components/ui/Card'
+import { Card } from '@/components/ui/card'
 import { CheckCircle2, Circle } from 'lucide-react'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
 import { Task, Priority } from '@/types/database'
 import { PRIORITY_LABELS } from '@/types/database'
 
