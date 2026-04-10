@@ -66,7 +66,7 @@ export function ProjectTable({ projects }: { projects: ExtendedProject[] }) {
                     {project.profiles && (
                       <Avatar 
                         name={project.profiles.full_name} 
-                        imageUrl={project.profiles.avatar_url ?? undefined} 
+                        src={project.profiles.avatar_url ?? undefined} 
                         size="sm" 
                         className="ring-2 ring-surface group-hover:ring-surface-muted/30 transition-all" 
                       />
