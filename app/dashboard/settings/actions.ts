@@ -93,7 +93,6 @@ export async function changePassword(formData: FormData) {
   if (error) throw error
 
   // Reset forced password change flag
-  const { data: { user } } = await supabase.auth.getUser()
   if (user) {
     await supabase.from('profiles').update({ requires_password_change: false }).eq('id', user.id)
   }
