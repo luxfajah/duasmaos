@@ -148,8 +148,8 @@ export default async function ProjectDetailPage({ params }: Props) {
           {
             icon: Calendar,
             label: 'Prazo',
-            value: project.deadline
-              ? new Date(project.deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
+            value: (project as any).deadline
+              ? new Date((project as any).deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
               : '—',
           },
           {
