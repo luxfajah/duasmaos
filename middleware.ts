@@ -40,6 +40,7 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = 
     request.nextUrl.pathname.startsWith('/login') || 
     request.nextUrl.pathname.startsWith('/signup') || 
+    request.nextUrl.pathname.startsWith('/register') || 
     request.nextUrl.pathname.startsWith('/auth') || 
     request.nextUrl.pathname === '/' ||
     request.nextUrl.pathname.startsWith('/api')
