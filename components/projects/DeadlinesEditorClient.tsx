@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 
 interface DeadlinesEditorProps {
   projectId: string
-  stages: V2ProjectStage[]
+  stages: any[]
   tasks: any[] // Using any here to bypass strict V1/V2 mix type issues if present, but safe downcast
 }
 
