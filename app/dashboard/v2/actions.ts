@@ -35,11 +35,9 @@ export async function seedWorkflowTemplates() {
 
   const socialMediaStages = [
     { name: 'Planejamento', key: 'planejamento', order: 0, approval: false },
-    { name: 'Copy', key: 'copy', order: 1, approval: true },
-    { name: 'Aprovação Copy', key: 'aprovacao_copy', order: 2, approval: true },
-    { name: 'Design', key: 'design', order: 3, approval: true },
-    { name: 'Aprovação Design', key: 'aprovacao_design', order: 4, approval: true },
-    { name: 'Publicação', key: 'publicacao', order: 5, approval: false },
+    { name: 'Copywriter', key: 'copy', order: 1, approval: true },
+    { name: 'Design', key: 'design', order: 2, approval: true },
+    { name: 'Publicação', key: 'publicacao', order: 3, approval: false },
   ]
 
   const websiteStages = [
