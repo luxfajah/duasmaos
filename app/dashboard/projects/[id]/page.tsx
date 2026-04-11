@@ -10,7 +10,7 @@ import { ProjectPipeline } from '@/components/projects/ProjectPipeline'
 import { V2ProjectWorkspace } from '@/components/projects/V2ProjectWorkspace'
 import { ProjectTypeBadge } from '@/components/projects/ProjectTypeSelect'
 import { TaskKanban } from '@/components/tasks/TaskKanban'
-import { PROJECT_STATUS_LABELS, PRIORITY_LABELS, WorkflowTypeV2 } from '@/types/database'
+import { PRIORITY_LABELS, WorkflowTypeV2 } from '@/types/database'
 import {
   Calendar,
   User,
@@ -25,12 +25,31 @@ interface Props {
 }
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  // V2 statuses
+  active: 'default',
+  paused: 'destructive',
+  completed: 'default',
+  archived: 'outline',
+  // Legacy fallback statuses
   draft: 'outline',
   copy: 'secondary',
   review: 'secondary',
   approved: 'default',
   delayed: 'destructive',
-  completed: 'default',
+}
+
+const PROJECT_STATUS_LABELS: Record<string, string> = {
+  // V2 statuses
+  active: 'Ativo',
+  paused: 'Pausado',
+  completed: 'Concluído',
+  archived: 'Arquivado',
+  // Legacy fallback statuses
+  draft: 'Rascunho',
+  copy: 'Copy',
+  review: 'Revisão',
+  approved: 'Aprovado',
+  delayed: 'Atrasado',
 }
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -116,7 +135,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {
             icon: Building2,
             label: 'Cliente',
-            value: project.clients.name,
+            value: project.clients?.name ?? '—',
             href: `/dashboard/clients/${project.client_id}`,
           },
           {
