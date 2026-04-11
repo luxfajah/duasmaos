@@ -19,7 +19,7 @@ export function KanbanCard({ project }: KanbanCardProps) {
     new Date(project.deadline) < new Date() &&
     project.status !== 'completed'
 
-  const priorityBorder = priorityColors[project.priority] ?? 'border-l-border'
+  const priorityBorder = priorityColors[project.priority ?? ''] ?? 'border-l-border'
 
   return (
     <div
