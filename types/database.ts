@@ -178,6 +178,15 @@ export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   done: 'Concluído',
 };
 
+export const TASK_STATUS_V2_LABELS: Record<TaskStatusV2, string> = {
+  pending: 'Pendente',
+  in_progress: 'Em andamento',
+  in_review: 'Em revisão',
+  approved: 'Aprovado',
+  done: 'Concluído',
+  blocked: 'Bloqueado',
+};
+
 export const CLIENT_STATUS_LABELS: Record<ClientStatus, string> = {
   active: 'Ativo',
   inactive: 'Inativo',

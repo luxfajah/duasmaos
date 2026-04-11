@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
-import { Task, PRIORITY_LABELS, TASK_STATUS_LABELS } from '@/types/database'
+import { Task, PRIORITY_LABELS, TASK_STATUS_V2_LABELS } from '@/types/database'
 import { Avatar } from '@/components/ui/avatar'
 import { Calendar, Clock, ClipboardList, AlertCircle } from 'lucide-react'
 import { TaskComments } from './TaskComments'
@@ -30,12 +30,12 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
 
   if (!task) return null
 
-  // Define priority colors matching theme
+  // Define priority colors matching theme for light and dark
   const priorityColorMap = {
-    low: 'text-blue-600 bg-blue-50 border-blue-100',
-    medium: 'text-yellow-700 bg-yellow-50 border-yellow-100',
-    high: 'text-orange-600 bg-orange-50 border-orange-100',
-    urgent: 'text-white bg-terracotta border-terracotta',
+    low: 'text-text-muted bg-surface-muted border-border',
+    medium: 'text-warning bg-warning/10 border-warning/20',
+    high: 'text-brand-primary bg-brand-primary/10 border-brand-primary/20',
+    urgent: 'text-white bg-status-danger border-status-danger',
   }
 
   const pColor = priorityColorMap[task.priority as keyof typeof priorityColorMap] || 'text-text-muted bg-surface-muted'
@@ -102,9 +102,9 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
               <div className="space-y-8">
                 <div>
                   <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] block mb-4">Etapa</label>
-                  <div className="flex items-center gap-3 bg-white dark:bg-slate-900 px-5 py-3.5 rounded-2xl border border-sand-dark/10 shadow-sm">
+                  <div className="flex items-center gap-3 bg-white dark:bg-slate-900 px-5 py-3.5 rounded-2xl border border-sand-dark/10 dark:border-white/5 shadow-sm">
                     <div className="w-3 h-3 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary-rgb),0.4)]" />
-                    <span className="text-sm font-bold text-text-primary font-body">{TASK_STATUS_LABELS[task.status]}</span>
+                    <span className="text-sm font-bold text-text-primary font-body">{TASK_STATUS_V2_LABELS[task.status as any] || task.status}</span>
                   </div>
                 </div>
 
