@@ -331,7 +331,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
               >
                 <div className="flex items-center gap-3">
                   <CalendarDays size={16} className="text-brand-primary group-hover:scale-110 transition-transform duration-300" />
-                  <span className="text-[14px] font-bold text-text-primary font-body tracking-tight">Alterar prazos do projeto</span>
+                  <span className="text-[14px] font-bold text-text-primary font-body tracking-tight">Prazos e equipes</span>
                 </div>
               </Link>
             ) : (
@@ -342,16 +342,19 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                 </div>
               </button>
             )}
-            <button onClick={() => setMeetingModalOpen(true)} className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-white/30 text-left w-full">
+            <Link 
+              href="/dashboard/calendar" 
+              className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-white/30 text-left w-full"
+            >
               <div className="flex items-center gap-3">
                 <PhoneCall size={16} className="text-text-muted group-hover:text-brand-primary" />
-                <span className="text-[14px] font-medium text-text-primary font-body">Agendar reunião</span>
+                <span className="text-[14px] font-medium text-text-primary font-body">Agendar reuniões</span>
               </div>
-            </button>
-            <Link href={`/dashboard/projects/${safeSelectedProject?.id}`} className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-white/30 text-left">
+            </Link>
+            <Link href="/dashboard/projects" className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-white/30 text-left">
               <div className="flex items-center gap-3">
                 <Layout size={16} className="text-text-muted group-hover:text-brand-primary" />
-                <span className="text-[14px] font-medium text-text-primary font-body">Ver detalhes do projeto</span>
+                <span className="text-[14px] font-medium text-text-primary font-body">Ver projetos</span>
               </div>
               <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-brand-primary" />
             </Link>
