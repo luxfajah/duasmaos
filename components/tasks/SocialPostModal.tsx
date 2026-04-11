@@ -120,7 +120,7 @@ export function SocialPostModal({ posts, initialIndex, taskId, taskType, onClose
 
   return (
     <Modal open={true} onClose={onClose}>
-      <ModalContent size="lg" className="overflow-hidden bg-gradient-to-br from-surface to-background/50 dark:from-surface dark:to-background/90 shadow-3xl">
+      <ModalContent size="full" className="overflow-hidden bg-gradient-to-br from-surface to-background/50 dark:from-surface dark:to-background/90 shadow-3xl max-h-[92vh]">
         <ModalHeader showClose={false} className="p-6 border-b border-sand-dark/10">
           <div className="flex justify-between items-center w-full">
             <div className="flex items-center gap-4">
@@ -150,7 +150,7 @@ export function SocialPostModal({ posts, initialIndex, taskId, taskType, onClose
           </div>
         </ModalHeader>
 
-        <ModalBody className="p-0 overflow-y-auto max-h-[80vh]">
+        <ModalBody className="p-0 overflow-y-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12">
             
             {/* Main Production Area */}
@@ -281,44 +281,44 @@ export function SocialPostModal({ posts, initialIndex, taskId, taskType, onClose
 
                 <div>
                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-3 block">Status de Produção</label>
-                   <div className="grid grid-cols-2 gap-2">
-                      {(['pending', 'in_progress', 'done'] as PostStatusV2[]).map(s => (
-                        <button
-                          key={s}
-                          onClick={() => setFormData(p => ({ ...p, status: s }))}
-                          disabled={s === 'done' && !canMarkDone()}
-                          className={cn(
-                            "py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all",
-                            formData.status === s 
-                              ? "bg-brand-primary text-white shadow-brand" 
-                              : "bg-white/50 dark:bg-white/5 border border-sand-dark/10 text-text-muted hover:bg-white/80",
-                            s === 'done' && !canMarkDone() && "opacity-30 cursor-not-allowed"
-                          )}
-                        >
-                          {s.replace('_', ' ')}
-                        </button>
-                      ))}
-                   </div>
+                    <div className="grid grid-cols-1 gap-2">
+                       {(['pending', 'in_progress', 'done'] as PostStatusV2[]).map(s => (
+                         <button
+                           key={s}
+                           onClick={() => setFormData(p => ({ ...p, status: s }))}
+                           disabled={s === 'done' && !canMarkDone()}
+                           className={cn(
+                             "py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                             formData.status === s 
+                               ? "bg-brand-primary text-white shadow-brand" 
+                               : "bg-white/50 dark:bg-white/5 border border-sand-dark/10 text-text-muted hover:bg-white/80",
+                             s === 'done' && !canMarkDone() && "opacity-30 cursor-not-allowed"
+                           )}
+                         >
+                           {s === 'pending' ? 'Pendente' : s === 'in_progress' ? 'Em Produção' : 'Finalizado'}
+                         </button>
+                       ))}
+                    </div>
                 </div>
 
                 <div>
                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-3 block">Aprovação</label>
-                   <div className="grid grid-cols-3 gap-2">
-                      {(['pending', 'approved', 'rejected'] as ApprovalStatusV2[]).map(s => (
-                        <button
-                          key={s}
-                          onClick={() => setFormData(p => ({ ...p, approval_status: s }))}
-                          className={cn(
-                            "py-3 rounded-xl text-[8px] font-black uppercase tracking-tighter transition-all px-1",
-                            formData.approval_status === s 
-                              ? (s === 'approved' ? "bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]" : "bg-brand-primary text-white") 
-                              : "bg-white/50 dark:bg-white/5 border border-sand-dark/10 text-text-muted"
-                          )}
-                        >
-                          {s}
-                        </button>
-                      ))}
-                   </div>
+                    <div className="grid grid-cols-1 gap-2">
+                       {(['pending', 'approved', 'rejected'] as ApprovalStatusV2[]).map(s => (
+                         <button
+                           key={s}
+                           onClick={() => setFormData(p => ({ ...p, approval_status: s }))}
+                           className={cn(
+                             "py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all px-1",
+                             formData.approval_status === s 
+                               ? (s === 'approved' ? "bg-emerald-500 text-white shadow-[0_0_12px_rgba(16,185,129,0.4)]" : "bg-brand-primary text-white") 
+                               : "bg-white/50 dark:bg-white/5 border border-sand-dark/10 text-text-muted"
+                           )}
+                         >
+                           {s === 'pending' ? 'Aguardando' : s === 'approved' ? 'Aprovado' : 'Ajustes Necessários'}
+                         </button>
+                       ))}
+                    </div>
                 </div>
               </div>
 
