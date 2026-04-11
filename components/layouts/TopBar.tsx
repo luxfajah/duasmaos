@@ -1,7 +1,19 @@
+'use client'
+
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
-import { Bell, Search } from 'lucide-react'
+import { Bell, Search, Settings, LogOut, Moon, Sun } from 'lucide-react'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
+import Link from 'next/link'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown'
 
 interface TopBarProps {
   className?: string
@@ -15,16 +27,20 @@ export function TopBar({ className, userName, userEmail }: TopBarProps) {
   return (
     <header
       className={cn(
-        'h-14 sticky top-0 z-40 topbar-float',
-        'flex items-center px-6 lg:px-8 gap-4',
+        'h-14 relative z-40',
+        'flex items-center px-6 lg:px-8',
+        'bg-transparent',
         className
       )}
     >
-      {/* Search */}
-      <div className="flex-1 max-w-sm">
+      {/* Spacer para equilibrar o flex */}
+      <div className="flex-1" />
+
+      {/* Buscar Centralizado Absoluto (ou com flex) */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm px-4">
         <div className="relative group">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted transition-colors duration-200 group-focus-within:text-brand-primary"
+            className="absolute left-7 top-1/2 -translate-y-1/2 text-text-muted transition-colors duration-200 group-focus-within:text-brand-primary"
             size={14}
             strokeWidth={2}
           />
@@ -43,11 +59,18 @@ export function TopBar({ className, userName, userEmail }: TopBarProps) {
         </div>
       </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
+      {/* Controladores Direitos */}
+      <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
+        
+        {/* Aparência (Theme) */}
+        <ThemeToggle className="text-text-muted hover:text-text-primary" />
 
-      {/* Right: bell + avatar */}
-      <div className="flex items-center gap-3 shrink-0">
+        {/* Configurações */}
+        <Link href="/dashboard/settings" title="Configurações" className="p-2 text-text-muted hover:bg-sand-warm hover:text-text-primary rounded-xl transition-all duration-150 hover:scale-105">
+          <Settings size={17} strokeWidth={1.75} />
+        </Link>
+        
+        {/* Notificações */}
         <button
           className={cn(
             'relative rounded-xl p-2',
@@ -60,17 +83,46 @@ export function TopBar({ className, userName, userEmail }: TopBarProps) {
           <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-brand-primary ring-2 ring-background animate-pulse" />
         </button>
 
-        <div className="h-5 w-px bg-sand-dark/40" />
+        <div className="h-5 w-px bg-sand-dark/40 mx-1" />
 
-        {/* Avatar only — name lives in the greeting block */}
-        <div className="flex items-center gap-2 cursor-pointer group">
-          <Avatar
-            name={displayName}
-            size="sm"
-            variant="brand"
-            className="transition-transform duration-200 group-hover:scale-105 ring-2 ring-brand-primary/20"
-          />
-        </div>
+        {/* Avatar com Dropdown (CRUD) */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center gap-2 cursor-pointer group outline-none">
+              <Avatar
+                name={displayName}
+                size="sm"
+                variant="brand"
+                className="transition-transform duration-200 group-hover:scale-105 ring-2 ring-brand-primary/20 cursor-pointer"
+              />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 mt-2">
+            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <div className="px-2.5 py-1.5 text-sm">
+              <p className="font-bold font-heading text-text-primary truncate">{displayName}</p>
+              <p className="text-xs text-text-muted font-body truncate">{userEmail}</p>
+            </div>
+            <DropdownMenuSeparator />
+            <Link href="/dashboard/settings">
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Configurações</span>
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
+            <form action="/auth/signout" method="post" className="w-full">
+              <button type="submit" className="w-full">
+                <DropdownMenuItem variant="danger">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sair do sistema</span>
+                </DropdownMenuItem>
+              </button>
+            </form>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
       </div>
     </header>
   )

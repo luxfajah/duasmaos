@@ -6,8 +6,6 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import { Avatar } from '@/components/ui/avatar'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { SlIcon } from '@/components/ui/StreamlineIcon'
 
 /* ─────────────────────────────────────────
@@ -56,7 +54,7 @@ interface SidebarProps {
    COMPONENT
 ───────────────────────────────────────── */
 
-export function Sidebar({ className, userEmail, userName }: SidebarProps) {
+export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname()
   const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -76,9 +74,6 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
   const symbolSrc = isDark ? '/brand/symbols/simbolo-dark.png' : '/brand/symbols/simbolo-light.png'
   const logoSrc = isDark ? '/brand/logos/logotipo-dark.png' : '/brand/logos/logotipo-light.png'
 
-  const displayName = userName ?? userEmail?.split('@')[0] ?? 'Usuário'
-  const displayEmail = userEmail ?? ''
-
   return (
     <aside className={cn('fixed inset-y-0 left-0 z-50 hidden lg:block', className)}>
       <div className={cn(
@@ -86,20 +81,21 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
         'w-[72px] hover:w-[264px]',
         'transition-all duration-300 ease-in-out',
         'sidebar-surface sidebar-float',
+        'overflow-hidden'
       )}>
 
         {/* ── Organic Brand Decorations ── */}
         {/* Flowing wave at top */}
-        <div className="pointer-events-none absolute top-0 right-0 w-full h-40 overflow-hidden opacity-[0.06]">
+        <div className="pointer-events-none absolute top-0 right-0 w-full h-40 overflow-hidden opacity-[0.06] dark:opacity-[0.06] flex text-text-primary">
           <svg width="264" height="160" viewBox="0 0 264 160" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M-20 80 C40 40 80 120 140 80 C200 40 220 100 284 60"
-              stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"
               strokeDasharray="200" strokeDashoffset="0"
             />
             <path
               d="M-20 100 C40 60 80 140 140 100 C200 60 220 120 284 80"
-              stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"
+              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"
             />
           </svg>
         </div>
@@ -155,11 +151,11 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
         </div>
 
         {/* ── Navegação ── */}
-        <nav className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-3 scrollbar-none">
+        <nav className="flex-1 space-y-5 px-3">
           {navGroups.map((group) => (
             <div key={group.label}>
               {/* Group label — only visible on hover */}
-              <p className="text-[9px] font-bold uppercase tracking-widest text-white/20 mb-2 px-2 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-body">
+              <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted/60 mb-2 px-2 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-body">
                 {group.label}
               </p>
               <ul className="space-y-0.5">
@@ -173,8 +169,8 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
                         className={cn(
                           'flex items-center rounded-md p-2 transition-all duration-200 relative overflow-hidden group/item',
                           active
-                            ? 'bg-brand-primary/18 text-white'
-                            : 'text-white/40 hover:bg-white/6 hover:text-white/80'
+                            ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/18 dark:text-white'
+                            : 'text-text-muted hover:bg-surface-muted hover:text-text-primary'
                         )}
                       >
                         {/* Active indicator — Terracotta bar */}
@@ -183,7 +179,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
                         )}
                         {/* Active glow fill */}
                         {active && (
-                          <span className="absolute inset-0 bg-gradient-to-r from-brand-primary/15 to-transparent rounded-md" />
+                          <span className="absolute inset-0 bg-gradient-to-r from-brand-primary/5 dark:from-brand-primary/15 to-transparent rounded-md" />
                         )}
                         {/* Icon */}
                         <div className="flex items-center justify-center w-8 h-8 shrink-0 relative z-10 transition-transform duration-200 group-hover/item:scale-110">
@@ -201,69 +197,6 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
             </div>
           ))}
         </nav>
-
-        {/* ── Divider — Terracotta accent gradient ── */}
-        <div className="mx-3 mb-2 h-px bg-gradient-to-r from-brand-primary/50 via-brand-primary/15 to-transparent" />
-
-        {/* ── Bottom Actions ── */}
-        <div className="pt-2 px-3 space-y-0.5 overflow-hidden shrink-0">
-          <Link
-            href="/dashboard/settings"
-            title="Configurações"
-            className={cn(
-              'flex items-center rounded-md p-2 transition-all duration-200 overflow-hidden',
-              pathname.startsWith('/dashboard/settings')
-                ? 'bg-brand-primary/18 text-white'
-                : 'text-white/40 hover:bg-white/6 hover:text-white/80'
-            )}
-          >
-            <div className="flex items-center justify-center w-8 h-8 shrink-0">
-              <SlIcon name="settings" size={22} />
-            </div>
-            <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              Configurações
-            </span>
-          </Link>
-
-          <div className="flex items-center p-2 rounded-md text-white/40 hover:bg-white/6 hover:text-white/80 transition-colors overflow-hidden h-11 cursor-pointer" title="Aparência">
-            <div className="flex items-center justify-center w-8 h-8 shrink-0">
-              <ThemeToggle />
-            </div>
-            <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              Aparência
-            </span>
-          </div>
-
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              title="Sair"
-              className="w-full flex items-center rounded-md p-2 transition-all duration-200 overflow-hidden text-white/25 hover:bg-terracotta/15 hover:text-terracotta-light"
-            >
-              <div className="flex items-center justify-center w-8 h-8 shrink-0">
-                <SlIcon name="logout" size={22} />
-              </div>
-              <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                Sair do sistema
-              </span>
-            </button>
-          </form>
-        </div>
-
-        {/* ── Identidade do Usuário ── */}
-        <div className="mt-2 pt-3 border-t border-white/8 px-3 pb-1 shrink-0">
-          <div className="flex items-center p-1.5 rounded-md hover:bg-white/6 transition-colors overflow-hidden cursor-pointer">
-            <div className="flex items-center justify-center w-10 h-10 shrink-0">
-              <Avatar name={displayName} size="sm" variant="brand" />
-            </div>
-            <div className="ml-3 min-w-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-              <p className="text-sm font-bold font-heading text-white truncate">{displayName}</p>
-              {displayEmail && (
-                <p className="text-[11px] text-white/40 truncate mt-0.5 font-body">{displayEmail}</p>
-              )}
-            </div>
-          </div>
-        </div>
 
       </div>
     </aside>

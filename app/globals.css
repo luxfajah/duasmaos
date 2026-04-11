@@ -513,10 +513,10 @@
     animation: shimmer 3s linear infinite;
   }
 
-  /* ── Sidebar Surface — Deep Blue immersive ── */
+  /* ── Sidebar Surface — Light in light theme, Deep Blue in dark ── */
   .sidebar-surface {
-    background: hsl(var(--surface-deep-blue));
-    border-right: 1px solid hsl(222 35% 20%);
+    background: hsl(var(--surface-elevated));
+    border-right: 1px solid hsl(var(--border) / 0.5);
   }
 
   .dark .sidebar-surface {
@@ -794,10 +794,15 @@
     margin: 12px 0 12px 12px;
     height: calc(100vh - 24px);
     border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .dark .sidebar-float {
     box-shadow:
       0 8px 40px -8px hsl(222 55% 22% / 0.45),
       0 2px 12px 0 hsl(222 55% 22% / 0.20),
       inset 1px 0 0 0 hsl(222 45% 30% / 0.15);
+  }
     overflow: hidden;
   }
 }
