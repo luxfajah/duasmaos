@@ -1,11 +1,10 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import { getV2ProjectById } from '@/app/dashboard/v2/actions'
-import { getProjectStages } from '../../stage-actions'
-import { getTasks } from '@/app/dashboard/tasks/actions'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 import { DeadlinesEditorClient } from '@/components/projects/DeadlinesEditorClient'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-center' // Wait, I should stick to the icons I already have
+import { ArrowLeft as ArrowLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 
 interface Props {
@@ -19,18 +18,16 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Fetch data
+  // Fetch V2 Project Data (already includes stages and tasks)
   const project = await getV2ProjectById(params.id)
   if (!project) notFound()
 
-  // Fetch project dependencies
-  const [stages, tasks] = await Promise.all([
-    getProjectStages(params.id),
-    getTasks(params.id),
-  ])
+  // In V2, project object returns 'stages' and 'tasks' directly
+  const stages = project.stages || []
+  const tasks = project.tasks || []
 
-  // Filter tasks to only include the ones that are not strictly V1
-  const validTasks = tasks.filter(t => !['archived'].includes(t.status))
+  // Filter tasks to only include the ones that are not strictly archived
+  const validTasks = tasks.filter((t: any) => t.status !== 'archived')
 
   // Fetch user role
   const { data: profile } = await supabase
@@ -50,7 +47,7 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
             href={`/dashboard/projects/${project.id}`}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface hover:bg-surface-muted text-text-muted hover:text-text-primary transition-colors border border-border shadow-sm text-sm font-bold tracking-wide uppercase"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeftIcon size={16} />
             Voltar ao Projeto
           </Link>
         </div>
