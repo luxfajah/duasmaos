@@ -123,7 +123,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
               {greeting}, {user.firstName} <span className="inline-block animate-wave transform origin-bottom-right">👋</span>
             </h1>
             <p className="text-text-secondary mt-1 font-medium font-body text-sm">
-              Você tem acompanhamento em <span className="font-bold text-text-primary">{pendingTasks.length} tarefas</span> hoje.
+              Você tem acompanhamento em <span className="font-bold text-text-primary">{globalPendingTasks.length} tarefas</span> hoje.
             </p>
           </div>
         </div>
@@ -273,14 +273,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                    </span>
                  </div>
                </div>
-                <div className="flex items-center gap-2">
-                  {isHighPriority && <span className="px-3 py-1.5 bg-terracotta text-white rounded-full text-[11px] font-bold font-body shadow-sm whitespace-nowrap">Alta Prioridade</span>}
-                  <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold font-body tracking-wide whitespace-nowrap ${isMeeting ? 'bg-[#34A853]/15 text-[#21813A]' : 'bg-[#FFD166] text-[#4a3915]'}`}>
-                    {isMeeting ? 'Reunião' : 'Tarefa'}
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 border-t border-b border-sand-dark/20 py-4 relative z-10">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 border-t border-b border-sand-dark/20 py-4 relative z-10">
                 <div>
                   <p className="text-[10px] text-text-muted font-bold uppercase tracking-wider mb-1">Prazo:</p>
                   <p className="text-sm font-bold font-body text-text-primary">{isToday ? 'Hoje' : dateObj ? dateObj.toLocaleDateString() : 'Aberto'}</p>
