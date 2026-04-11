@@ -148,7 +148,7 @@ export async function createProjectV3(data: {
       auto_restart: data.auto_restart || false,
       status: 'active',
       owner_id: data.owner_id,
-      workspace_id: 'default'
+      workspace_id: 'e777e7e7-e7e7-e7e7-e7e7-e7e7e7e7e7e7'
     })
     .select()
     .single()
