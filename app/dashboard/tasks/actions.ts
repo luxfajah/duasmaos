@@ -23,6 +23,43 @@ export async function getTasks(projectId?: string) {
   }))
 }
 
+export async function createTask(formData: {
+  project_id: string
+  title: string
+  description?: string
+  status?: TaskStatusV2
+  priority?: TaskPriorityV2
+  due_date?: string
+}) {
+  const supabase = createClient()
+
+  // 1. Find the current stage (the one that is in_progress or the first one)
+  const { data: stages } = await supabase
+    .from('v2_project_stages')
+    .select('id, status, order')
+    .eq('project_id', formData.project_id)
+    .order('order', { ascending: true })
+
+  if (!stages || stages.length === 0) throw new Error('Projeto não possui etapas.')
+
+  const currentStage = stages.find(s => s.status === 'in_progress') || stages[0]
+
+  // 2. Insert Task
+  const { error } = await supabase.from('v2_tasks').insert({
+    project_id: formData.project_id,
+    stage_id: currentStage.id,
+    title: formData.title,
+    description: formData.description ?? null,
+    status: formData.status ?? 'pending',
+    priority: formData.priority ?? 'medium',
+    due_date: formData.due_date ?? null,
+  })
+
+  if (error) throw error
+  revalidatePath('/dashboard/tasks')
+  revalidatePath(`/dashboard/projects/${formData.project_id}`)
+}
+
 export async function updateTaskStatus(id: string, status: TaskStatusV2) {
   const supabase = createClient()
   const { error } = await supabase.from('v2_tasks').update({ status }).eq('id', id)

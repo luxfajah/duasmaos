@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Task, TaskStatus, Priority } from '@/types/database'
+import { V2Task, TaskStatusV2, TaskPriorityV2 } from '@/types/database'
 import { createTask, updateTask } from '@/app/dashboard/tasks/actions'
 import {
   Dialog,
@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 interface TaskModalProps {
-  task?: Task | null
+  task?: V2Task | null
   projects: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
   defaultProjectId?: string
@@ -31,9 +31,9 @@ export function TaskModal({ task, projects, team, defaultProjectId, onClose }: T
     title: task?.title ?? '',
     description: task?.description ?? '',
     assigned_to: task?.assigned_to ?? '',
-    status: (task?.status ?? 'todo') as TaskStatus,
-    priority: (task?.priority ?? 'medium') as Priority,
-    deadline: task?.deadline ? task.deadline.split('T')[0] : '',
+    status: (task?.status ?? 'pending') as TaskStatusV2,
+    priority: (task?.priority ?? 'medium') as TaskPriorityV2,
+    deadline: task?.due_date ? task.due_date.split('T')[0] : '',
   })
 
   function handleChange(field: keyof typeof form, value: string) {
@@ -55,8 +55,7 @@ export function TaskModal({ task, projects, team, defaultProjectId, onClose }: T
       try {
         const payload = {
           ...form,
-          deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
-          assigned_to: form.assigned_to || undefined,
+          due_date: form.deadline ? new Date(form.deadline).toISOString() : undefined,
           description: form.description || undefined,
         }
         if (isEdit && task) {
@@ -135,10 +134,12 @@ export function TaskModal({ task, projects, team, defaultProjectId, onClose }: T
                 disabled={isPending}
                 className="w-full h-10 px-3 py-2 text-sm rounded-md border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 disabled:opacity-50"
               >
-                <option value="todo">A fazer</option>
+                <option value="pending">Pendente</option>
                 <option value="in_progress">Em progresso</option>
-                <option value="review">Revisão</option>
+                <option value="in_review">Revisão</option>
+                <option value="approved">Aprovado</option>
                 <option value="done">Concluído</option>
+                <option value="blocked">Bloqueado</option>
               </select>
             </div>
             <div className="space-y-2">
