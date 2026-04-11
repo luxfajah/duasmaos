@@ -20,7 +20,10 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       (c.company ?? '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.email ?? '').toLowerCase().includes(search.toLowerCase())
+      (c.trade_name ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.email ?? '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.cnpj ?? '').includes(search.replace(/\D/g, '')) ||
+      (c.cpf ?? '').includes(search.replace(/\D/g, ''))
   )
 
   return (

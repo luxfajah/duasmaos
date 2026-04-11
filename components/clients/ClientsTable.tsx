@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Client } from '@/types/database'
-import { updateClient, deleteClient } from '@/app/dashboard/clients/actions'
+import { deleteClient } from '@/app/dashboard/clients/actions'
 import { ClientModal } from './ClientModal'
 import {
   Table,
@@ -14,13 +14,28 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { MoreHorizontal, Pencil, Trash2, ExternalLink } from 'lucide-react'
+import { Pencil, Trash2, ExternalLink, Briefcase, User, Building2 } from 'lucide-react'
 import Link from 'next/link'
 
 const statusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
   active: { label: 'Ativo', variant: 'default' },
   inactive: { label: 'Inativo', variant: 'secondary' },
   paused: { label: 'Pausado', variant: 'destructive' },
+}
+
+function formatCPF(v: string) {
+  return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+}
+
+function formatCNPJ(v: string) {
+  return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5")
+}
+
+function formatPhone(v: string) {
+  if (v.length === 11) {
+    return v.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3")
+  }
+  return v.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3")
 }
 
 interface ClientsTableProps {
@@ -60,10 +75,10 @@ export function ClientsTable({ clients }: ClientsTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>Empresa</TableHead>
-            <TableHead>E-mail</TableHead>
-            <TableHead>Telefone</TableHead>
+            <TableHead className="w-[300px]">Nome / Empresa</TableHead>
+            <TableHead>Documento</TableHead>
+            <TableHead>Contato</TableHead>
+            <TableHead>Projetos</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -71,12 +86,53 @@ export function ClientsTable({ clients }: ClientsTableProps) {
         <TableBody>
           {clients.map((client) => {
             const status = statusMap[client.status] ?? { label: client.status, variant: 'secondary' as const }
+            const isPJ = client.type === 'pj'
+            const identifier = isPJ ? client.cnpj : client.cpf
+            const formattedIdentifier = identifier 
+              ? (isPJ ? formatCNPJ(identifier) : formatCPF(identifier))
+              : '—'
+            
             return (
               <TableRow key={client.id} className="group">
-                <TableCell className="font-medium text-text-primary">{client.name}</TableCell>
-                <TableCell className="text-text-secondary">{client.company ?? '—'}</TableCell>
-                <TableCell className="text-text-secondary">{client.email ?? '—'}</TableCell>
-                <TableCell className="text-text-secondary">{client.phone ?? '—'}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                      {isPJ ? <Building2 size={18} /> : <User size={18} />}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-medium text-text-primary truncate">
+                        {isPJ ? (client.company || client.name) : client.name}
+                      </span>
+                      {isPJ && client.name && client.company !== client.name && (
+                        <span className="text-xs text-text-muted truncate">
+                          Resp: {client.name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-text-secondary font-mono text-xs">
+                  {formattedIdentifier}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="text-sm text-text-primary">{client.email || '—'}</span>
+                    {client.phone && (
+                      <span className="text-xs text-text-muted">{formatPhone(client.phone)}</span>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="flex items-center gap-1 font-normal">
+                      <Briefcase size={12} className="text-text-muted" />
+                      {client.projects_count || 0}
+                    </Badge>
+                    {client.active_projects_count ? (
+                      <span className="w-2 h-2 rounded-full bg-status-success animate-pulse" title="Projetos ativos" />
+                    ) : null}
+                  </div>
+                </TableCell>
                 <TableCell>
                   <Badge variant={status.variant}>{status.label}</Badge>
                 </TableCell>

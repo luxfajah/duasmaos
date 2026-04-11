@@ -43,16 +43,59 @@ export interface ClientContact {
 
 export interface Client {
   id: string;
+  type: 'pf' | 'pj';
   name: string;
-  company: string | null;
+  company: string | null; // Keep for legacy
   email: string | null;
   phone: string | null;
+  whatsapp: string | null;
   status: ClientStatus;
   pipeline_stage: PipelineStage | null;
   notes: string | null;
   website: string | null;
-  sector: string | null;
+  segment: string | null;
+  
+  // PF Fields
+  cpf: string | null;
+  birth_date: string | null;
+  
+  // PJ Fields
+  trade_name: string | null;
+  cnpj: string | null;
+  responsible_name: string | null;
+  
+  // CRM
+  lead_source: string | null;
+  account_manager_id: string | null;
+  
   contacts: ClientContact[];
+  created_at: string;
+  
+  // Extended fields for listing
+  projects_count?: number;
+  active_projects_count?: number;
+}
+
+export interface ClientAddress {
+  id: string;
+  client_id: string;
+  zip_code: string | null;
+  street: string | null;
+  number: string | null;
+  complement: string | null;
+  city: string | null;
+  state: string | null;
+  is_main: boolean;
+  created_at: string;
+}
+
+export interface ClientDocument {
+  id: string;
+  client_id: string;
+  type: string;
+  file_name: string;
+  file_size: number | null;
+  file_url: string;
   created_at: string;
 }
 
