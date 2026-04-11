@@ -172,6 +172,14 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                     
                     <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase tracking-widest text-text-muted block px-1">Estado Atual</label>
+                      <select 
+                        value={formData.status}
+                        onChange={e => setFormData(p => ({ ...p, status: e.target.value as any }))}
+                        className="glass-input w-full p-4 rounded-xl text-sm font-black uppercase tracking-widest appearance-none cursor-pointer"
+                      >
+                        {Object.entries(TASK_STATUS_V2_LABELS).map(([val, label]) => (
+                          <option key={val} value={val} className="bg-surface text-text-primary">{label}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
