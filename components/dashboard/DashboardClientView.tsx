@@ -13,7 +13,8 @@ import {
   MessageCircle,
   FileText,
   Clock,
-  ArrowRight
+  ArrowRight,
+  CalendarDays
 } from 'lucide-react'
 import { useProjectContext } from '@/components/providers/project-provider'
 import { ExtendedProject } from '@/app/dashboard/projects/actions'
@@ -303,12 +304,24 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
 
           {/* Minimal Quick Actions list */}
           <div className="flex flex-col gap-2">
-            <button onClick={() => setTaskModalOpen(true)} className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-white/30 text-left w-full">
-              <div className="flex items-center gap-3">
-                <Plus size={16} className="text-text-muted group-hover:text-brand-primary" />
-                <span className="text-[14px] font-medium text-text-primary font-body">Nova tarefa</span>
-              </div>
-            </button>
+            {safeSelectedProject ? (
+              <Link 
+                href={`/dashboard/projects/${safeSelectedProject.id}/deadlines`} 
+                className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-brand-primary/30 text-left w-full"
+              >
+                <div className="flex items-center gap-3">
+                  <CalendarDays size={16} className="text-brand-primary group-hover:scale-110 transition-transform duration-300" />
+                  <span className="text-[14px] font-bold text-text-primary font-body tracking-tight">Alterar prazos do projeto</span>
+                </div>
+              </Link>
+            ) : (
+              <button disabled className="opacity-50 group relative flex items-center justify-between p-4 py-4 rounded-2xl cursor-not-allowed border border-transparent text-left w-full">
+                <div className="flex items-center gap-3">
+                  <CalendarDays size={16} className="text-text-muted" />
+                  <span className="text-[14px] font-medium text-text-muted font-body">Selecione um projeto...</span>
+                </div>
+              </button>
+            )}
             <button onClick={() => setMeetingModalOpen(true)} className="group relative flex items-center justify-between p-4 py-4 rounded-2xl hover:bg-white/40 cursor-pointer transition-all duration-300 border border-transparent hover:border-white/30 text-left w-full">
               <div className="flex items-center gap-3">
                 <PhoneCall size={16} className="text-text-muted group-hover:text-brand-primary" />
