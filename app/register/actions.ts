@@ -50,7 +50,7 @@ export async function acceptInvitation(formData: FormData, token: string) {
     throw new Error('Falha ao criar conta. Tente novamente.')
   }
 
-  // 3. Create the user profile manually
+  // 3. Create profile manually
   const { error: profileError } = await supabase
     .from('profiles')
     .insert({
@@ -61,15 +61,15 @@ export async function acceptInvitation(formData: FormData, token: string) {
       email: email,
       role: invitation.role,
       client_id: invitation.client_id,
-      requires_password_change: false // New users selecting their password don't need forced change
+      requires_password_change: false // They just chose their password
     })
 
   if (profileError) {
     console.error('Error creating profile:', profileError)
-    throw new Error(`Conta criada, mas erro ao configurar perfil: ${profileError.message}`)
+    throw new Error(`Erro ao criar perfil: ${profileError.message}`)
   }
 
-  // 3. Update invitation status
+  // 4. Update invitation status
   const { error: updateError } = await supabase
     .from('invitations')
     .update({ 

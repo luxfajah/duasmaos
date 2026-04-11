@@ -57,8 +57,8 @@ export function InvitationsSection({ clients, invitations }: InvitationsSectionP
     }
   }
 
-  function copyToClipboard(token: string) {
-    const url = `${window.location.origin}/register?token=${token}`
+  function copyToClipboard(token: string, invRole?: string) {
+    const url = `${window.location.origin}/register?token=${token}${invRole ? `&role=${invRole}` : ''}`
     navigator.clipboard.writeText(url)
     toast.success('Link copiado para a área de transferência!')
   }
@@ -171,10 +171,10 @@ export function InvitationsSection({ clients, invitations }: InvitationsSectionP
               <div className="flex gap-2">
                 <input 
                   readOnly 
-                  value={`${window.location.origin}/register?token=${generatedToken}`}
+                  value={`${window.location.origin}/register?token=${generatedToken}&role=${type === 'client' ? 'client' : role}`}
                   className="flex-1 bg-white border border-border rounded-md px-3 py-2 text-xs text-text-secondary overflow-hidden text-ellipsis"
                 />
-                <Button size="icon" variant="outline" onClick={() => copyToClipboard(generatedToken)} className="size-9 shrink-0">
+                <Button size="icon" variant="outline" onClick={() => copyToClipboard(generatedToken, type === 'client' ? 'client' : role)} className="size-9 shrink-0">
                   <Copy size={14} />
                 </Button>
               </div>
@@ -223,7 +223,7 @@ export function InvitationsSection({ clients, invitations }: InvitationsSectionP
                       variant="outline" 
                       size="icon" 
                       className="size-8 rounded-full border-border/50 text-text-muted hover:text-brand-primary"
-                      onClick={() => copyToClipboard(inv.token)}
+                      onClick={() => copyToClipboard(inv.token, inv.role)}
                       title="Copiar link"
                     >
                       <Copy size={13} />
