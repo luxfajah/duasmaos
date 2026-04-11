@@ -28,6 +28,8 @@ const config: Config = {
         surface: {
           DEFAULT: "hsl(var(--surface))",
           muted: "hsl(var(--surface-muted))",
+          elevated: "hsl(var(--surface-elevated))",
+          graphite: "hsl(var(--surface-graphite))",
         },
         border: {
           DEFAULT: "hsl(var(--border))",
@@ -45,6 +47,7 @@ const config: Config = {
           secondary: "hsl(var(--text-secondary))",
           muted: "hsl(var(--text-muted))",
           inverse: "hsl(var(--text-inverse))",
+          "on-dark": "hsl(var(--text-on-dark))",
         },
         status: {
           success: "hsl(var(--success))",
@@ -114,6 +117,7 @@ const config: Config = {
         xl: "var(--shadow-xl)",
         glass: "var(--shadow-glass)",
         brand: "var(--shadow-brand)",
+        "card-hover": "var(--shadow-card-hover)",
         none: "none",
       },
 
@@ -150,18 +154,29 @@ const config: Config = {
         },
         "pulse-brand": {
           "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--brand-primary) / 0.4)" },
-          "50%": { boxShadow: "0 0 0 6px hsl(var(--brand-primary) / 0)" },
+          "50%": { boxShadow: "0 0 0 8px hsl(var(--brand-primary) / 0)" },
+        },
+        "blob-drift": {
+          "0%, 100%": { transform: "translate(0, 0) scale(1)" },
+          "33%": { transform: "translate(10px, -8px) scale(1.05)" },
+          "66%": { transform: "translate(-6px, 6px) scale(0.97)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% center" },
+          "100%": { backgroundPosition: "200% center" },
         },
       },
 
       animation: {
         "fade-in": "fade-in 200ms ease both",
-        "fade-in-up": "fade-in-up 300ms ease both",
+        "fade-in-up": "fade-in-up 350ms cubic-bezier(0.25,0.46,0.45,0.94) both",
         "fade-in-down": "fade-in-down 300ms ease both",
         "scale-in": "scale-in 200ms ease both",
-        "slide-in-left": "slide-in-left 300ms ease both",
+        "slide-in-left": "slide-in-left 300ms cubic-bezier(0.25,0.46,0.45,0.94) both",
         "slide-in-right": "slide-in-right 300ms ease both",
         "pulse-brand": "pulse-brand 2s ease-in-out infinite",
+        "blob-drift": "blob-drift 8s ease-in-out infinite",
+        shimmer: "shimmer 3s linear infinite",
       },
     },
   },

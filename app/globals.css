@@ -7,12 +7,14 @@
     /* ─────────────────────────────────────────
        SUPERFÍCIES E FUNDOS
     ───────────────────────────────────────── */
-    --background: 40 10% 96%;   /* Creme Papel #F5F4F0 */
-    --foreground: 0 0% 11%;     /* Graphite #1C1C1C */
-    --surface: 0 0% 100%;       /* White #FFFFFF para contraste no creme */
-    --surface-muted: 40 10% 92%;
-    --border: 40 10% 88%;
-    --border-strong: 40 10% 80%;
+    --background: 40 10% 95%;     /* Stone suave */
+    --foreground: 0 0% 11%;       /* Graphite #1C1C1C */
+    --surface: 0 0% 100%;         /* White puro para elevação */
+    --surface-muted: 40 10% 91%;
+    --surface-elevated: 0 0% 100%; /* White clean for primary cards */
+    --surface-graphite: 220 15% 16%; /* Dark graphite for sidebar + immersive */
+    --border: 40 10% 86%;
+    --border-strong: 40 10% 78%;
 
     /* ─────────────────────────────────────────
        MARCA
@@ -29,7 +31,8 @@
     --text-primary: 0 0% 11%;
     --text-secondary: 0 0% 35%;
     --text-muted: 240 5% 50%;
-    --text-inverse: 223 19% 30%;       /* Azul Grafite para escrita no Laranja */
+    --text-inverse: 40 85% 94%;        /* CREME — usado no laranja e na seleção */
+    --text-on-dark: 40 85% 94%;        /* Creme sobre superfícies escuras */
 
     /* ─────────────────────────────────────────
        ESTADOS
@@ -56,33 +59,35 @@
     --radius-xs: 2px;
     --radius-sm: 4px;
     --radius-md: 6px;
-    --radius-lg: 8px;
-    --radius-xl: 10px;
-    --radius-2xl: 14px;
+    --radius-lg: 10px;
+    --radius-xl: 14px;
+    --radius-2xl: 20px;
     --radius-full: 9999px;
 
     /* ─────────────────────────────────────────
-       SOMBRAS — Elevation System (no borders)
+       SOMBRAS — Elevation System
     ───────────────────────────────────────── */
-    --shadow-xs: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-    --shadow-sm: 0 2px 8px 0 rgb(0 0 0 / 0.06), 0 1px 2px 0 rgb(0 0 0 / 0.04);
-    --shadow-md: 0 4px 16px 0 rgb(0 0 0 / 0.08), 0 1px 4px 0 rgb(0 0 0 / 0.05);
-    --shadow-lg: 0 8px 32px -4px rgb(0 0 0 / 0.10), 0 2px 8px 0 rgb(0 0 0 / 0.06);
-    --shadow-xl: 0 20px 60px -8px rgb(0 0 0 / 0.12), 0 4px 16px 0 rgb(0 0 0 / 0.06);
+    --shadow-xs: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 2px 8px 0 rgb(0 0 0 / 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --shadow-md: 0 4px 20px 0 rgb(0 0 0 / 0.09), 0 1px 4px 0 rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 40px -4px rgb(0 0 0 / 0.12), 0 2px 8px 0 rgb(0 0 0 / 0.06);
+    --shadow-xl: 0 20px 60px -8px rgb(0 0 0 / 0.14), 0 4px 16px 0 rgb(0 0 0 / 0.07);
     --shadow-glass: 0 8px 32px -4px rgb(0 0 0 / 0.14), inset 0 1px 0 0 rgb(255 255 255 / 0.3);
-    --shadow-brand: 0 4px 20px 0 hsl(var(--brand-highlight) / 0.25);
+    --shadow-brand: 0 6px 24px 0 hsl(var(--brand-highlight) / 0.30);
+    --shadow-card-hover: 0 16px 48px -8px rgb(0 0 0 / 0.15), 0 4px 12px 0 rgb(0 0 0 / 0.08);
 
     /* ─────────────────────────────────────────
        TRANSIÇÕES
     ───────────────────────────────────────── */
     --transition-fast: 100ms ease;
     --transition-normal: 200ms ease;
-    --transition-slow: 350ms ease;
+    --transition-slow: 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
     /* ─────────────────────────────────────────
        LAYOUT
     ───────────────────────────────────────── */
-    --sidebar-width: 256px;
+    --sidebar-width: 260px;
     --header-height: 64px;
   }
 
@@ -90,43 +95,45 @@
      DARK MODE
   ───────────────────────────────────────── */
   .dark {
-      /* Uses Graphite (#1C1C1C) as the base surface, darker graphite for background */
-      --background: 223 20% 10%; /* Azul Grafite Escuro */
-      --foreground: 40 85% 94%;  /* Creme para texto */
-      --surface: 223 20% 14%;    /* Ligeiramente mais claro que o fundo */
-      --surface-muted: 223 15% 18%;
-      --border: 223 15% 22%;
-      --border-strong: 223 15% 30%;
+    --background: 223 20% 10%;
+    --foreground: 40 85% 94%;
+    --surface: 223 20% 14%;
+    --surface-muted: 223 15% 18%;
+    --surface-elevated: 223 20% 17%;
+    --surface-graphite: 220 22% 10%;
+    --border: 223 15% 22%;
+    --border-strong: 223 15% 30%;
 
-      /* Brand colors differentiated in dark mode */
-      --brand-primary: 223 35% 45%;       /* Azul Grafite */
-      --brand-primary-hover: 223 35% 50%;
-      --brand-secondary: 90 24% 29%;
-      --brand-accent: 40 85% 75%;        
-      --brand-highlight: 223 45% 55%;     /* Azul Vibrante para CTAs */
+    --brand-primary: 223 35% 45%;
+    --brand-primary-hover: 223 35% 50%;
+    --brand-secondary: 90 24% 29%;
+    --brand-accent: 40 85% 75%;
+    --brand-highlight: 223 45% 55%;
 
-      --text-primary: 40 85% 94%;        /* Creme */
-      --text-secondary: 223 15% 75%;
-      --text-muted: 223 10% 60%;
-      --text-inverse: 40 85% 75%;        /* Creme para escrita no Azul */
+    --text-primary: 40 85% 94%;
+    --text-secondary: 223 15% 75%;
+    --text-muted: 223 10% 60%;
+    --text-inverse: 40 85% 94%;
+    --text-on-dark: 40 85% 94%;
 
-      --success: 145 45% 45%;
-      --warning: 35 80% 60%;
-      --danger: 2 60% 60%;
-      --info: 220 60% 60%;
-      --pending: 45 70% 50%;
-      --draft: 240 10% 40%;
+    --success: 145 45% 45%;
+    --warning: 35 80% 60%;
+    --danger: 2 60% 60%;
+    --info: 220 60% 60%;
+    --pending: 45 70% 50%;
+    --draft: 240 10% 40%;
 
-      --editorial-highlight: 40 80% 15%;
-      --editorial-note: 30 50% 15%;
-      --editorial-quote: 240 15% 15%;
-      --editorial-frame: 240 10% 12%;
+    --editorial-highlight: 40 80% 15%;
+    --editorial-note: 30 50% 15%;
+    --editorial-quote: 240 15% 15%;
+    --editorial-frame: 240 10% 12%;
 
-      --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
-      --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.4), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+    --shadow-md: 0 4px 16px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --shadow-lg: 0 10px 30px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.25);
+    --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+    --shadow-card-hover: 0 16px 48px -8px rgb(0 0 0 / 0.5), 0 4px 12px 0 rgb(0 0 0 / 0.3);
   }
 
   /* ─────────────────────────────────────────
@@ -142,15 +149,16 @@
     @apply antialiased font-sans;
   }
 
+  /* Seleção de texto — Creme sobre fundo laranja em modo claro */
   ::selection {
     background-color: hsl(var(--brand-primary));
-    color: hsl(var(--text-inverse));
+    color: hsl(40 85% 94%); /* CREME — legível sobre laranja em light mode */
   }
 
   /* Scrollbar sutil */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
@@ -173,33 +181,54 @@
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fade-in-down {
-  from { opacity: 0; transform: translateY(-8px); }
+  from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scale-in {
-  from { opacity: 0; transform: scale(0.95); }
+  from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-16px); }
+  from { opacity: 0; transform: translateX(-20px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(16px); }
+  from { opacity: 0; transform: translateX(20px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes pulse-brand {
   0%, 100% { box-shadow: 0 0 0 0 hsl(var(--brand-primary) / 0.4); }
-  50%       { box-shadow: 0 0 0 6px hsl(var(--brand-primary) / 0); }
+  50%       { box-shadow: 0 0 0 8px hsl(var(--brand-primary) / 0); }
+}
+
+@keyframes float-up {
+  from { transform: translateY(0); box-shadow: var(--shadow-md); }
+  to   { transform: translateY(-4px); box-shadow: var(--shadow-card-hover); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(10px, -8px) scale(1.05); }
+  66%       { transform: translate(-6px, 6px) scale(0.97); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 /* ─────────────────────────────────────────
@@ -210,7 +239,7 @@
     animation: fade-in 200ms ease both;
   }
   .animate-fade-in-up {
-    animation: fade-in-up 300ms ease both;
+    animation: fade-in-up 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
   .animate-fade-in-down {
     animation: fade-in-down 300ms ease both;
@@ -219,10 +248,16 @@
     animation: scale-in 200ms ease both;
   }
   .animate-slide-in-left {
-    animation: slide-in-left 300ms ease both;
+    animation: slide-in-left 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
   .animate-slide-in-right {
     animation: slide-in-right 300ms ease both;
+  }
+  .animate-blob-drift {
+    animation: blob-drift 8s ease-in-out infinite;
+  }
+  .animate-spin-slow {
+    animation: spin-slow 30s linear infinite;
   }
 
   /* Glassmorphism base */
@@ -283,5 +318,101 @@
       hsl(var(--brand-primary) / 0.5),
       hsl(var(--brand-accent) / 0.5)
     );
+  }
+
+  /* ── Card Surface Hierarchy ── */
+
+  /* Nível 0 — card neutro padrão */
+  .card-default {
+    background: hsl(var(--surface-elevated));
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-lg);
+    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .card-default:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Nível 1 — card primário (laranja da marca) */
+  .card-brand {
+    background: hsl(var(--brand-primary));
+    box-shadow: var(--shadow-brand);
+    border-radius: var(--radius-lg);
+    color: hsl(40 85% 94%);
+    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-brand:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px 0 hsl(var(--brand-primary) / 0.45);
+  }
+
+  /* Nível 2 — card imersivo (grafite escuro) */
+  .card-graphite {
+    background: hsl(var(--surface-graphite));
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
+    color: hsl(40 85% 94%);
+    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-graphite:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px -8px rgb(0 0 0 / 0.35);
+  }
+
+  /* ── Doodle / Organic Shape Overlay ── */
+  .doodle-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+    z-index: 0;
+  }
+
+  /* Shimmer gradient effect */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--surface) / 0.15) 40%,
+      hsl(var(--surface) / 0.25) 50%,
+      hsl(var(--surface) / 0.15) 60%,
+      transparent 100%
+    );
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+  }
+
+  /* ── Typography Utilities ── */
+  .heading-editorial {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .label-eyebrow {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── Sidebar Graphite Surface ── */
+  .sidebar-surface {
+    background: hsl(var(--surface-graphite));
+    border-right: 1px solid hsl(var(--border-strong) / 0.12);
+  }
+
+  /* In dark mode, sidebar stays graphite but lighter */
+  .dark .sidebar-surface {
+    background: hsl(220 22% 12%);
+    border-right-color: hsl(var(--border) / 0.2);
   }
 }
