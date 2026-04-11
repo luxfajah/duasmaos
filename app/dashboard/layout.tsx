@@ -13,9 +13,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/login')
   }
 
-  const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
+  const { data: profile } = await supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).single()
   const userName = profile?.full_name ?? user?.user_metadata?.full_name ?? user?.email?.split('@')[0] ?? null
   const userEmail = user?.email ?? null
+  const userAvatar = profile?.avatar_url ?? null
 
   return (
     <div className="flex min-h-screen bg-background font-sans">
@@ -33,6 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <TopBar
           userName={userName}
           userEmail={userEmail}
+          userAvatar={userAvatar}
         />
 
         {/* Atmospheric environment wrapper */}

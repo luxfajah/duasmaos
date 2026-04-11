@@ -344,7 +344,12 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                            {new Date(t.updated_at).toLocaleDateString()}
                         </span>
                      </div>
-                     <Avatar name={t.profiles?.full_name || 'IA'} size="sm" className="w-7 h-7 ring-2 ring-white" />
+                     <Avatar 
+                        name={t.profiles?.full_name || 'IA'} 
+                        src={t.profiles?.avatar_url || undefined}
+                        size="sm" 
+                        className="w-7 h-7 ring-2 ring-white" 
+                     />
                   </div>
                 ))
               )}

@@ -19,9 +19,10 @@ interface TopBarProps {
   className?: string
   userName?: string | null
   userEmail?: string | null
+  userAvatar?: string | null
 }
 
-export function TopBar({ className, userName, userEmail }: TopBarProps) {
+export function TopBar({ className, userName, userEmail, userAvatar }: TopBarProps) {
   const displayName = userName ?? userEmail?.split('@')[0] ?? 'Usuário'
 
   return (
@@ -91,6 +92,7 @@ export function TopBar({ className, userName, userEmail }: TopBarProps) {
             <div className="flex items-center gap-2 cursor-pointer group outline-none">
               <Avatar
                 name={displayName}
+                src={userAvatar || undefined}
                 size="sm"
                 variant="brand"
                 className="transition-transform duration-200 group-hover:scale-105 ring-2 ring-brand-primary/20 cursor-pointer"
