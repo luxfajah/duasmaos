@@ -1,17 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { V2Task, TaskStatusV2 } from '@/types/database'
+import { V2Task, TaskStatusV2, TaskWithRelations } from '@/types/database'
 import { TasksTable } from '@/components/tasks/TasksTable'
 import { TaskModal } from '@/components/tasks/TaskModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 
-type TaskWithRelations = V2Task & {
-  projects: { name: string; client_id: string; clients: { name: string } | null } | null
-  profiles: { full_name: string } | null
-}
 
 interface TasksPageClientProps {
   initialTasks: TaskWithRelations[]

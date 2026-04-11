@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { V2Task, TaskStatusV2 } from '@/types/database'
+import { V2Task, TaskStatusV2, TaskWithRelations } from '@/types/database'
 import { updateTaskStatus } from '@/app/dashboard/tasks/actions'
 import { cn } from '@/lib/utils'
 import { Calendar, User, AlertCircle, GripVertical } from 'lucide-react'
@@ -30,10 +30,6 @@ const PRIORITY_COLOR: Record<string, string> = {
   urgent: 'bg-status-danger text-white border-status-danger',
 }
 
-type TaskWithRelations = V2Task & {
-  projects?: { name: string; client_id: string; clients?: { name: string } | null } | null
-  profiles?: { full_name: string } | null
-}
 
 interface TaskKanbanProps {
   tasks: TaskWithRelations[]

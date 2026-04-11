@@ -285,6 +285,7 @@ export interface V2StageApproval {
   status: ApprovalStatusV2;
 }
 
+
 export interface V2TaskComment {
   id: string;
   task_id: string;
@@ -292,3 +293,14 @@ export interface V2TaskComment {
   content: string;
   created_at: string;
 }
+
+// ── Shared relation types ────────────────────────────────────────────────────
+
+/** V2Task enriched with joined project and profile data. Used across TasksTable, TaskKanban, TaskModal and TasksPageClient. */
+export type TaskWithRelations = V2Task & {
+  projects: { name: string; client_id: string; clients: { name: string } | null } | null
+  profiles: { full_name: string } | null
+  /** Alias kept for legacy fallback components that read task.deadline */
+  deadline?: string | null
+}
+

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { V2Task, TaskStatusV2 } from '@/types/database'
+import { V2Task, TaskStatusV2, TaskWithRelations } from '@/types/database'
 import { updateTaskStatus, deleteTask } from '@/app/dashboard/tasks/actions'
 import {
   Table,
@@ -15,9 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Pencil, Trash2, Clock, AlertCircle } from 'lucide-react'
 
-type TaskWithRelations = V2Task & {
-  projects: { name: string; client_id: string; clients: { name: string } | null } | null
-}
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
   pending: { label: 'Pendente', variant: 'outline' },
@@ -92,7 +89,7 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
         {tasks.map((task) => {
           const cfg = statusConfig[task.status]
           const isOverdue =
-            task.deadline && new Date(task.deadline) < new Date() && task.status !== 'done'
+            task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
           return (
             <TableRow key={task.id} className="group">
               <TableCell className="font-medium text-text-primary max-w-[200px] truncate">
@@ -122,14 +119,14 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                 </select>
               </TableCell>
               <TableCell>
-                {task.deadline ? (
-                  <span className={`flex items-center gap-1 text-sm ${isOverdue ? 'text-status-danger font-medium' : 'text-text-secondary'}`}>
-                    {isOverdue ? <AlertCircle size={12} /> : <Clock size={12} />}
-                    {new Date(task.deadline).toLocaleDateString('pt-BR')}
-                  </span>
-                ) : (
-                  <span className="text-text-muted">—</span>
-                )}
+                {task.due_date ? (
+                <span className={`flex items-center gap-1 text-sm ${isOverdue ? 'text-status-danger font-medium' : 'text-text-secondary'}`}>
+                  {isOverdue ? <AlertCircle size={12} /> : <Clock size={12} />}
+                  {new Date(task.due_date).toLocaleDateString('pt-BR')}
+                </span>
+              ) : (
+                <span className="text-text-muted">—</span>
+              )}
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
