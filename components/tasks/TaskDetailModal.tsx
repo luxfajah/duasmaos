@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { Task, PRIORITY_LABELS, TASK_STATUS_V2_LABELS } from '@/types/database'
 import { Avatar } from '@/components/ui/avatar'
-import { Calendar, Clock, ClipboardList, AlertCircle } from 'lucide-react'
+import { Calendar, Clock, ClipboardList, AlertCircle, ChevronLeft, X } from 'lucide-react'
 import { TaskComments } from './TaskComments'
 import { getTaskComments } from '@/app/dashboard/tasks/comment-actions'
 
@@ -42,23 +42,39 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalContent size="full" className="max-h-[90vh] overflow-hidden flex flex-col rounded-[32px] border border-white/10 shadow-2xl bg-gradient-to-br from-surface to-background/50 dark:from-surface dark:to-background/80">
-        <ModalHeader className="border-b border-sand-dark/10 px-8 py-7">
-          <div className="flex flex-col gap-1.5">
+      <ModalContent size="full" className="max-h-[100dvh] sm:max-h-[90vh] overflow-hidden flex flex-col rounded-none sm:rounded-[32px] border-0 sm:border border-white/10 shadow-2xl bg-gradient-to-br from-surface to-background/50 dark:from-surface dark:to-background/80">
+        <ModalHeader showClose={false} className="border-b border-sand-dark/10 px-5 sm:px-8 py-5 sm:py-7 relative shrink-0 flex items-start justify-between">
+          <div className="flex flex-col gap-1.5 pt-2 sm:pt-0">
+            {/* Mobile Back Button */}
+            <button 
+              onClick={onClose} 
+              className="sm:hidden flex items-center text-text-muted hover:text-brand-primary transition-colors text-[10px] font-black uppercase tracking-[0.2em] mb-4 active:-translate-x-1"
+            >
+               <ChevronLeft size={16} className="mr-0.5" />
+               Voltar
+            </button>
             <div className="flex items-center gap-2 text-text-muted text-[10px] font-black uppercase tracking-[0.2em]">
               <div className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
               Detalhamento da Operação
             </div>
-            <ModalTitle className="text-3xl font-black font-heading tracking-tight text-text-primary leading-tight">
+            <ModalTitle className="text-2xl sm:text-3xl font-black font-heading tracking-tight text-text-primary leading-tight">
               {task.title}
             </ModalTitle>
           </div>
+          
+          {/* Desktop Close Button */}
+          <button 
+            onClick={onClose}
+            className="hidden sm:flex shrink-0 p-2 rounded-xl text-text-muted hover:bg-sand/50 dark:hover:bg-white/5 hover:text-text-primary transition-colors -mr-2"
+          >
+            <X size={20} />
+          </button>
         </ModalHeader>
 
-        <ModalBody className="overflow-y-auto flex-1 p-0">
+        <ModalBody className="overflow-y-auto overflow-x-hidden flex-1 p-0">
           <div className="flex flex-col lg:flex-row h-full">
             {/* Main Area: Description & Comments */}
-            <div className="flex-1 p-8 lg:p-10 space-y-12 border-r border-sand-dark/10">
+            <div className="flex-1 p-5 sm:p-8 lg:p-10 space-y-10 sm:space-y-12 border-b lg:border-b-0 lg:border-r border-sand-dark/10">
               <section>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 rounded-xl bg-sand/50 dark:bg-slate-900/50 flex items-center justify-center text-brand-primary shadow-sm border border-sand-dark/10">
@@ -98,7 +114,7 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
             </div>
 
             {/* Sidebar: Metadata */}
-            <div className="w-full lg:w-[380px] bg-sand-light/10 dark:bg-slate-950/20 p-8 lg:p-10 flex flex-col gap-8">
+            <div className="w-full lg:w-[380px] bg-sand-light/10 dark:bg-slate-950/20 p-5 sm:p-8 lg:p-10 flex flex-col gap-8 shrink-0">
               <div className="space-y-8">
                 <div>
                   <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] block mb-4">Etapa</label>

@@ -55,7 +55,7 @@ function Modal({ open, onClose, children }: ModalProps) {
     <ModalContext.Provider value={{ open, onClose }}>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-6"
         aria-modal="true"
         role="dialog"
       >
@@ -90,9 +90,9 @@ function ModalContent({ className, size = "md", children, ...props }: ModalConte
   return (
     <div
       className={cn(
-        "relative z-50 w-full rounded-xl bg-surface border border-border",
-        "shadow-xl animate-scale-in",
+        "relative z-50 w-full bg-surface border border-border shadow-xl animate-scale-in",
         sizeMap[size],
+        size === "full" ? "h-[100dvh] rounded-none sm:rounded-xl sm:h-auto" : "h-auto rounded-xl m-4 sm:m-0",
         className
       )}
       {...props}
