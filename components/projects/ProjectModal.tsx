@@ -5,7 +5,7 @@ import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority, ProductTemplate }
 import { createProjectV3, updateProject } from '@/app/dashboard/projects/actions'
 import { getProductTemplates } from '@/app/dashboard/templates/actions'
 import { useEffect } from 'react'
-import { Calendar, DollarSign, Layers, Users, Info, Settings, RefreshCw, FileText } from 'lucide-react'
+import { Calendar, DollarSign, Layers, Users, Info, Settings, RefreshCw, FileText, AlertCircle } from 'lucide-react'
 import {
   Dialog,
   DialogContent,

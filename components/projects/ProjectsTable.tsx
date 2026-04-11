@@ -15,7 +15,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { RefreshCw, User, DollarSign, CheckCircle2, AlertCircle } from 'lucide-react'
+import { RefreshCw, User, DollarSign, CheckCircle2, AlertCircle, Clock, ExternalLink, Pencil, Trash2 } from 'lucide-react'
+import Link from 'next/link'
 
 type ProjectWithRelations = V2Project & {
   clients: { name: string } | null

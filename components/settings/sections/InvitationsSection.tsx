@@ -14,6 +14,7 @@ import {
   UserPlus,
   ArrowRight
 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { createInvitation, invalidateInvitation } from '@/app/dashboard/settings/actions'
 import { toast } from 'sonner'
 import { format } from 'date-fns'

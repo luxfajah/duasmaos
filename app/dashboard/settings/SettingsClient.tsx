@@ -51,7 +51,7 @@ export function SettingsClient({ profile, users, invitations, clients }: Setting
               <span className="text-xs font-bold uppercase">Ação Necessária</span>
             </div>
             <p className="text-xs text-text-primary font-medium">
-              Por segurança, altere sua senha temporária na aba "Segurança".
+              Por segurança, altere sua senha temporária na aba &quot;Segurança&quot;.
             </p>
           </div>
         )}
