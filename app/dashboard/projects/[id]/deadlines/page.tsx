@@ -12,6 +12,26 @@ interface Props {
   params: { id: string }
 }
 
+export default async function ProjectDeadlinesPage({ params }: Props) {
+  const supabase = createClient()
+
+  // Protect route
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  // Fetch data
+  const project = await getV2ProjectById(params.id)
+  if (!project) notFound()
+
+  // Fetch project dependencies
+  const [stages, tasks] = await Promise.all([
+    getProjectStages(params.id),
+    getTasks(params.id),
+  ])
+
+  // Filter tasks to only include the ones that are not strictly V1
+  const validTasks = tasks.filter(t => !['archived'].includes(t.status))
+
   // Fetch user role
   const { data: profile } = await supabase
     .from('profiles')
