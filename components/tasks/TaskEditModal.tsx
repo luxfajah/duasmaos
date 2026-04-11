@@ -16,7 +16,7 @@ interface TaskEditModalProps {
   projects?: { id: string; name: string }[] // New prop for project list
 }
 
-export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalProps) {
+export function TaskEditModal({ task, open, onClose, projectId, projects }: TaskEditModalProps) {
   const [isPending, startTransition] = useTransition()
   const [profiles, setProfiles] = useState<any[]>([])
   
@@ -64,7 +64,7 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
 
       getAllProfiles().then(setProfiles).catch(console.error)
     }
-  }, [open, task])
+  }, [open, task, projectId])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
