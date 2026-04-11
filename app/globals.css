@@ -803,6 +803,4 @@
       0 2px 12px 0 hsl(222 55% 22% / 0.20),
       inset 1px 0 0 0 hsl(222 45% 30% / 0.15);
   }
-    overflow: hidden;
-  }
 }
