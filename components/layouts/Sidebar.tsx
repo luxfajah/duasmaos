@@ -80,12 +80,12 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
   const displayEmail = userEmail ?? ''
 
   return (
-    <aside className={cn('fixed inset-y-0 left-0 z-50 h-screen hidden lg:block', className)}>
+    <aside className={cn('fixed inset-y-0 left-0 z-50 hidden lg:block', className)}>
       <div className={cn(
-        'group relative h-full flex flex-col py-5',
+        'group relative flex flex-col py-5',
         'w-[72px] hover:w-[264px]',
         'transition-all duration-300 ease-in-out',
-        'sidebar-surface',
+        'sidebar-surface sidebar-float',
       )}>
 
         {/* ── Organic Brand Decorations ── */}

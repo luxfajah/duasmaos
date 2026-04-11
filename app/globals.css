@@ -684,4 +684,120 @@
       0 4px 24px -4px rgb(0 0 0 / 0.08),
       0 1px 3px 0 rgb(0 0 0 / 0.04);
   }
+
+  /* ════════════════════════════════════════════
+     TASK-CENTRIC REDESIGN UTILITIES
+  ════════════════════════════════════════════ */
+
+  /* Topbar — minimal floating toolbar (search + bell + avatar) */
+  .topbar-float {
+    background: hsl(var(--surface-elevated) / 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: 0 1px 0 0 hsl(35 18% 84% / 0.5), 0 4px 24px 0 rgb(0 0 0 / 0.04);
+  }
+
+  /* Greeting block — blends into background, no hard card border */
+  .greeting-block {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 4px 0 20px;
+  }
+
+  /* Task card — the primary interactive unit */
+  .task-card {
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-xl);
+    box-shadow:
+      0 2px 8px 0 rgb(0 0 0 / 0.04),
+      0 10px 36px -6px rgb(0 0 0 / 0.09),
+      0 1px 0 0 rgb(255 255 255 / 0.75) inset;
+    transition:
+      transform 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      border-color 220ms ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .task-card:hover {
+    transform: translateY(-4px);
+    border-color: hsl(var(--border-strong));
+    box-shadow:
+      0 4px 12px 0 rgb(0 0 0 / 0.06),
+      0 20px 56px -8px rgb(0 0 0 / 0.14),
+      0 1px 0 0 rgb(255 255 255 / 0.75) inset;
+  }
+  .task-card-urgent {
+    border-left: 3px solid hsl(13 55% 50%);
+  }
+  .task-card-high {
+    border-left: 3px solid hsl(43 80% 48%);
+  }
+  .task-card-medium {
+    border-left: 3px solid hsl(222 50% 42%);
+  }
+  .task-card-low {
+    border-left: 3px solid hsl(var(--border-strong));
+  }
+
+  /* Avatar stack — overlapping circular avatars */
+  .avatar-stack {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+  .avatar-stack > * {
+    margin-left: -8px;
+    ring: 2px;
+    ring-color: hsl(var(--surface-elevated));
+  }
+  .avatar-stack > *:last-child {
+    margin-left: 0;
+  }
+
+  /* Right panel — vertical sticky column */
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Quick action button — right panel CTA card */
+  .quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 0.04), 0 4px 16px -4px rgb(0 0 0 / 0.07);
+    transition:
+      transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 200ms ease,
+      border-color 200ms ease;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+  }
+  .quick-action-btn:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--border-strong));
+    box-shadow: 0 2px 8px 0 rgb(0 0 0 / 0.06), 0 8px 28px -6px rgb(0 0 0 / 0.12);
+  }
+
+  /* Floating sidebar shell — adds margin+radius so it floats off the edge */
+  .sidebar-float {
+    margin: 12px 0 12px 12px;
+    height: calc(100vh - 24px);
+    border-radius: var(--radius-2xl);
+    box-shadow:
+      0 8px 40px -8px hsl(222 55% 22% / 0.45),
+      0 2px 12px 0 hsl(222 55% 22% / 0.20),
+      inset 1px 0 0 0 hsl(222 45% 30% / 0.15);
+    overflow: hidden;
+  }
 }

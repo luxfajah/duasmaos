@@ -1,7 +1,7 @@
 import React from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { Sidebar } from '@/components/layouts/Sidebar'
-import { Header, ContentWrapper } from '@/components/layouts/Header'
+import { TopBar, ContentWrapper } from '@/components/layouts/TopBar'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
@@ -12,18 +12,23 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen bg-background font-sans">
+      {/* Floating Sidebar */}
       <Sidebar
-        className="hidden lg:flex"
+        className="hidden lg:block"
         userName={userName}
         userEmail={userEmail}
       />
-      {/* Compensate for fixed sidebar */}
-      <div className="flex-1 flex flex-col relative w-full min-w-0 lg:pl-[72px]">
-        <Header
+
+      {/* Main area — compensate for fixed floating sidebar (72px collapsed + 12px left margin = 84px) */}
+      <div className="flex-1 flex flex-col relative w-full min-w-0 lg:pl-[84px]">
+
+        {/* Slim TopBar */}
+        <TopBar
           userName={userName}
           userEmail={userEmail}
         />
-        {/* ── Atmospheric environment wrapper ── */}
+
+        {/* Atmospheric environment wrapper */}
         <div className="dashboard-atmosphere flex-1" style={{ position: 'relative' }}>
 
           {/* Background photo — fixed cityscape */}
@@ -39,7 +44,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             }}
           />
 
-          {/* Brand color overlay — keeps palette, lets photo bleed through */}
+          {/* Brand color overlay */}
           <div
             style={{
               position: 'fixed',
@@ -54,31 +59,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
             }}
           />
 
-          {/* Ambient blobs — slow-drifting accent shapes (above overlay) */}
+          {/* Ambient blobs */}
           <div
             className="ambient-blob w-[600px] h-[600px] bg-brand-primary/5 animate-blob-drift"
-            style={{
-              position: 'absolute',
-              top: '-180px',
-              left: '-120px',
-              zIndex: 2,
-              animationDuration: '18s',
-              animationDelay: '0s',
-            }}
+            style={{ position: 'absolute', top: '-180px', left: '-120px', zIndex: 2, animationDuration: '18s', animationDelay: '0s' }}
           />
           <div
             className="ambient-blob w-[500px] h-[500px] bg-brand-deep-blue/6 animate-blob-drift"
-            style={{
-              position: 'absolute',
-              bottom: '-150px',
-              right: '-100px',
-              zIndex: 2,
-              animationDuration: '22s',
-              animationDelay: '-7s',
-            }}
+            style={{ position: 'absolute', bottom: '-150px', right: '-100px', zIndex: 2, animationDuration: '22s', animationDelay: '-7s' }}
           />
 
-          {/* Page content — above all layers */}
+          {/* Page content */}
           <div style={{ position: 'relative', zIndex: 3 }}>
             <ContentWrapper>
               {children}

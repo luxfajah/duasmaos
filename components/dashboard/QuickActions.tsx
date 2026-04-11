@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { FolderPlus, FileBarChart2, ListChecks, ArrowRight } from 'lucide-react'
+import { FolderPlus, ListPlus, CalendarPlus, FileBarChart2, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface QuickAction {
@@ -9,17 +9,41 @@ interface QuickAction {
   description: string
   icon: React.ElementType
   href?: string
-  accent?: 'terracotta' | 'deep-blue' | 'olive'
+  iconBg: string
+  iconColor: string
+  arrowBg: string
 }
 
 const actions: QuickAction[] = [
   {
     id: 'create-project',
-    label: 'Criar Projeto',
+    label: 'Novo Projeto',
     description: 'Iniciar nova campanha',
     icon: FolderPlus,
     href: '/dashboard/projects',
-    accent: 'terracotta',
+    iconBg: 'bg-terracotta-soft',
+    iconColor: 'text-terracotta-dark',
+    arrowBg: 'bg-brand-primary text-white',
+  },
+  {
+    id: 'create-task',
+    label: 'Nova Tarefa',
+    description: 'Adicionar à lista de hoje',
+    icon: ListPlus,
+    href: '/dashboard/tasks',
+    iconBg: 'bg-deep-blue-soft',
+    iconColor: 'text-deep-blue',
+    arrowBg: 'bg-brand-deep-blue text-white',
+  },
+  {
+    id: 'create-meeting',
+    label: 'Nova Reunião',
+    description: 'Agendar com cliente ou equipe',
+    icon: CalendarPlus,
+    href: '/dashboard/calendar',
+    iconBg: 'bg-olive-soft',
+    iconColor: 'text-olive-dark',
+    arrowBg: 'bg-olive text-white',
   },
   {
     id: 'generate-report',
@@ -27,119 +51,76 @@ const actions: QuickAction[] = [
     description: 'Exportar visão do ciclo',
     icon: FileBarChart2,
     href: '#',
-    accent: 'deep-blue',
-  },
-  {
-    id: 'review-tasks',
-    label: 'Revisar Tarefas',
-    description: 'Pendências da equipe',
-    icon: ListChecks,
-    href: '/dashboard/tasks',
-    accent: 'olive',
+    iconBg: 'bg-yellow-soft',
+    iconColor: 'text-yellow-dark',
+    arrowBg: 'bg-yellow-dark text-white',
   },
 ]
 
-const accentStyles = {
-  terracotta: {
-    icon: 'bg-terracotta-soft text-terracotta-dark',
-    arrow: 'bg-brand-primary text-white',
-  },
-  'deep-blue': {
-    icon: 'bg-deep-blue-soft text-deep-blue',
-    arrow: 'bg-brand-deep-blue text-white',
-  },
-  olive: {
-    icon: 'bg-olive-soft text-olive-dark',
-    arrow: 'bg-olive text-white',
-  },
-}
+function ActionButton({ action }: { action: QuickAction }) {
+  const Icon = action.icon
 
-export function QuickActions() {
-  return (
-    <div className="quick-actions-bar px-5 py-4">
-      <div className="flex items-center gap-2 mb-3">
-        <span className="label-eyebrow text-text-muted">Ações Rápidas</span>
-        <div className="h-px flex-1 bg-gradient-to-r from-border/60 to-transparent" />
+  const inner = (
+    <>
+      {/* Icon */}
+      <div className={cn('flex-shrink-0 p-2.5 rounded-xl', action.iconBg, action.iconColor)}>
+        <Icon size={17} strokeWidth={1.75} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {actions.map((action) => {
-          const Icon = action.icon
-          const styles = accentStyles[action.accent ?? 'terracotta']
+      {/* Labels */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold font-heading text-text-primary leading-tight">
+          {action.label}
+        </p>
+        <p className="text-[11px] text-text-muted font-body mt-0.5">{action.description}</p>
+      </div>
 
-          return (
-            <div key={action.id}>
-              {action.href ? (
-                <Link
-                  href={action.href}
-                  className={cn(
-                    'group flex items-center gap-3 px-4 py-3 rounded-xl',
-                    'bg-surface-elevated/60 border border-border/60',
-                    'hover:bg-surface-elevated hover:border-border',
-                    'hover:-translate-y-0.5 hover:shadow-sm',
-                    'transition-all duration-200 text-left',
-                    'cursor-pointer'
-                  )}
-                >
-                  {/* Icon */}
-                  <div className={cn('flex-shrink-0 p-2 rounded-lg', styles.icon)}>
-                    <Icon size={16} strokeWidth={1.75} />
-                  </div>
-                  {/* Label */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold font-heading text-text-primary leading-tight">
-                      {action.label}
-                    </p>
-                    <p className="text-[11px] text-text-muted font-body mt-0.5">
-                      {action.description}
-                    </p>
-                  </div>
-                  {/* Arrow */}
-                  <div className={cn(
-                    'flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
-                    'bg-yellow/15 text-yellow-dark',
-                    'group-hover:bg-yellow group-hover:text-white',
-                    'transition-all duration-200'
-                  )}>
-                    <ArrowRight size={11} strokeWidth={2.5} />
-                  </div>
-                </Link>
-              ) : (
-                <button
-                  className={cn(
-                    'group flex items-center gap-3 px-4 py-3 rounded-xl w-full',
-                    'bg-surface-elevated/60 border border-border/60',
-                    'hover:bg-surface-elevated hover:border-border',
-                    'hover:-translate-y-0.5 hover:shadow-sm',
-                    'transition-all duration-200 text-left',
-                    'cursor-pointer'
-                  )}
-                >
-                  <div className={cn('flex-shrink-0 p-2 rounded-lg', styles.icon)}>
-                    <Icon size={16} strokeWidth={1.75} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold font-heading text-text-primary leading-tight">
-                      {action.label}
-                    </p>
-                    <p className="text-[11px] text-text-muted font-body mt-0.5">
-                      {action.description}
-                    </p>
-                  </div>
-                  <div className={cn(
-                    'flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center',
-                    'bg-yellow/15 text-yellow-dark',
-                    'group-hover:bg-yellow group-hover:text-white',
-                    'transition-all duration-200'
-                  )}>
-                    <ArrowRight size={11} strokeWidth={2.5} />
-                  </div>
-                </button>
-              )}
-            </div>
+      {/* Arrow */}
+      <div className={cn(
+        'flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center',
+        'bg-sand-warm text-text-muted',
+        'group-hover:bg-brand-primary group-hover:text-white',
+        'transition-all duration-200'
+      )}>
+        <ArrowRight size={12} strokeWidth={2.5} />
+      </div>
+    </>
+  )
 
-          )
-        })}
+  const cls = 'quick-action-btn group'
+
+  if (action.href && action.href !== '#') {
+    return (
+      <Link href={action.href} className={cls}>
+        {inner}
+      </Link>
+    )
+  }
+
+  return (
+    <button className={cls}>
+      {inner}
+    </button>
+  )
+}
+
+/* ─────────────────────────────────────────
+   QUICK ACTIONS — Vertical right panel
+───────────────────────────────────────── */
+export function QuickActions() {
+  return (
+    <div className="floating-card p-5">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="label-eyebrow text-text-muted">Ações Rápidas</span>
+        <div className="h-px flex-1 bg-gradient-to-r from-border/80 to-transparent" />
+      </div>
+
+      {/* Action buttons — vertical stack */}
+      <div className="flex flex-col gap-2">
+        {actions.map((action) => (
+          <ActionButton key={action.id} action={action} />
+        ))}
       </div>
     </div>
   )
