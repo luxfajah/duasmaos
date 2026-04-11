@@ -28,22 +28,22 @@ function InputField({
   const inputId = id ?? (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined)
 
   return (
-    <div className="flex flex-col gap-1.5 w-full">
+    <div className="flex flex-col gap-2 w-full">
       {label && (
         <label
           htmlFor={inputId}
-          className="text-sm font-medium text-text-primary leading-none"
+          className="text-sm font-bold font-heading text-text-primary leading-none"
         >
           {label}
           {props.required && (
-            <span className="ml-0.5 text-status-danger" aria-hidden>*</span>
+            <span className="ml-1 text-brand-primary" aria-hidden>*</span>
           )}
         </label>
       )}
 
       <div className="relative flex items-center">
         {leftIcon && (
-          <span className="pointer-events-none absolute left-3 flex items-center text-text-muted [&>svg]:size-4">
+          <span className="pointer-events-none absolute left-3.5 flex items-center text-text-muted [&>svg]:size-4">
             {leftIcon}
           </span>
         )}
@@ -55,21 +55,26 @@ function InputField({
             error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined
           }
           className={cn(
-            "h-9 w-full rounded-sm border border-border bg-surface px-3 py-2",
+            /* base */
+            "h-10 w-full rounded-md border border-border bg-surface px-4 py-2.5",
             "text-sm text-text-primary placeholder:text-text-muted",
-            "transition-all duration-normal outline-none",
+            "transition-all duration-200 outline-none",
+            /* focus — Terracotta ring */
             "focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20",
+            /* disabled */
             "disabled:cursor-not-allowed disabled:opacity-50",
-            "aria-invalid:border-status-danger aria-invalid:ring-2 aria-invalid:ring-status-danger/20",
-            leftIcon && "pl-9",
-            rightElement && "pr-9",
+            /* error state */
+            "aria-invalid:border-brand-primary aria-invalid:ring-2 aria-invalid:ring-brand-primary/20",
+            /* icon offsets */
+            leftIcon && "pl-10",
+            rightElement && "pr-10",
             className
           )}
           {...props}
         />
 
         {rightElement && (
-          <span className="absolute right-3 flex items-center text-text-muted [&>svg]:size-4">
+          <span className="absolute right-3.5 flex items-center text-text-muted [&>svg]:size-4">
             {rightElement}
           </span>
         )}
@@ -79,7 +84,7 @@ function InputField({
         <p
           id={`${inputId}-error`}
           role="alert"
-          className="text-xs text-status-danger flex items-center gap-1"
+          className="text-xs text-brand-primary flex items-center gap-1 font-medium"
         >
           <svg viewBox="0 0 16 16" className="size-3 shrink-0" fill="currentColor">
             <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3a.75.75 0 01-1.5 0V5zm.75 6.5a.875.875 0 110-1.75.875.875 0 010 1.75z" />
@@ -105,12 +110,12 @@ function Input({ className, ...props }: React.ComponentProps<"input">) {
   return (
     <input
       className={cn(
-        "h-9 w-full rounded-sm border border-border bg-surface px-3 py-2",
+        "h-10 w-full rounded-md border border-border bg-surface px-4 py-2.5",
         "text-sm text-text-primary placeholder:text-text-muted",
-        "transition-all duration-normal outline-none",
+        "transition-all duration-200 outline-none",
         "focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "aria-invalid:border-status-danger aria-invalid:ring-2 aria-invalid:ring-status-danger/20",
+        "aria-invalid:border-brand-primary aria-invalid:ring-2 aria-invalid:ring-brand-primary/20",
         className
       )}
       {...props}
@@ -118,4 +123,24 @@ function Input({ className, ...props }: React.ComponentProps<"input">) {
   )
 }
 
-export { Input, InputField }
+/* ─────────────────────────────────────────
+   TEXTAREA WRAPPER
+───────────────────────────────────────── */
+
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+  return (
+    <textarea
+      className={cn(
+        "min-h-[100px] w-full rounded-md border border-border bg-surface px-4 py-3",
+        "text-sm text-text-primary placeholder:text-text-muted",
+        "transition-all duration-200 outline-none resize-none",
+        "focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Input, InputField, Textarea }

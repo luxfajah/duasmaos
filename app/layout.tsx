@@ -1,16 +1,40 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Plus_Jakarta_Sans, Amaranth, Lato } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+/* ─────────────────────────────────────────
+   DUAS MÃOS BRAND TYPOGRAPHY
+   - Plus Jakarta Sans  → headings (expressive, editorial)
+   - Amaranth           → subheadings (warm, approachable)
+   - Lato               → body (highly readable)
+───────────────────────────────────────── */
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  weight: ["600", "700", "800"],
+  display: "swap",
+});
+
+const amaranth = Amaranth({
+  subsets: ["latin"],
+  variable: "--font-subheading",
+  weight: ["400", "700"],
+  display: "swap",
+});
+
+const lato = Lato({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Duas Mãos | Aprovação de Conteúdo",
-  description: "Plataforma de colaboração de conteúdo para social media",
+  title: "Duas Mãos | Plataforma Criativa",
+  description: "Plataforma de gestão de projetos e colaboração criativa da Duas Mãos",
 };
-
-import { ThemeProvider } from "@/components/theme-provider"
 
 export default function RootLayout({
   children,
@@ -19,7 +43,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.variable} ${manrope.variable} font-sans`}>
+      <body
+        className={`${plusJakartaSans.variable} ${amaranth.variable} ${lato.variable} font-body`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

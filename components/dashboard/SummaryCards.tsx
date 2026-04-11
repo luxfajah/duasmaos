@@ -7,9 +7,14 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
   const timelineHealth = total > 0 ? Math.round((healthyCount / total) * 100) : 100;
 
   const healthColor =
-    timelineHealth >= 80 ? 'text-emerald-600 dark:text-emerald-400'
-    : timelineHealth >= 50 ? 'text-amber-600 dark:text-amber-400'
-    : 'text-red-600 dark:text-red-400'
+    timelineHealth >= 80 ? 'text-olive'
+    : timelineHealth >= 50 ? 'text-yellow-dark'
+    : 'text-terracotta'
+
+  const progressColor =
+    timelineHealth >= 80 ? 'bg-olive'
+    : timelineHealth >= 50 ? 'bg-yellow'
+    : 'bg-terracotta'
 
   const healthLabel =
     timelineHealth >= 80 ? 'Saudável'
@@ -19,41 +24,40 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-      {/* Card 1: Timeline Health */}
+      {/* Card 1: Timeline Health — Sand elevated surface */}
       <div className={cn(
-        'rounded-xl p-6 flex flex-col justify-between',
-        'bg-surface shadow-sm',
-        'transition-all duration-200 hover:-translate-y-1.5 hover:shadow-lg',
+        'rounded-2xl p-6 flex flex-col justify-between',
+        'bg-surface-elevated shadow-sm border border-sand-dark/40',
+        'transition-all duration-200 hover:-translate-y-1.5 hover:shadow-card-hover',
         'cursor-default relative overflow-hidden'
       )}>
-        {/* Subtle editorial line decoration */}
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-highlight/60 via-brand-highlight/20 to-transparent rounded-t-xl" />
+        {/* Terracotta accent top line */}
+        <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-brand-primary/70 via-brand-primary/25 to-transparent rounded-t-2xl" />
+
+        {/* Olive accent dot right */}
+        <div className="absolute top-5 right-5 w-2 h-2 rounded-full bg-olive opacity-40" />
 
         <div>
           <p className="label-eyebrow text-text-muted">Saúde do Cronograma</p>
           <div className="mt-4 flex items-end gap-3">
-            <span className={`text-5xl font-black tracking-tight tabular-nums ${healthColor}`}>
+            <span className={`text-5xl font-black font-heading tracking-tight tabular-nums ${healthColor}`}>
               {timelineHealth}%
             </span>
-            <span className={`text-sm mb-2 font-bold ${healthColor}`}>{healthLabel}</span>
+            <span className={`text-sm mb-2 font-bold font-body ${healthColor}`}>{healthLabel}</span>
           </div>
-          {/* Mini progress bar */}
-          <div className="mt-4 h-2 bg-surface-muted rounded-full overflow-hidden">
+          {/* Progress bar — brand palette */}
+          <div className="mt-4 h-2 bg-sand rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-700 ${
-                timelineHealth >= 80 ? 'bg-emerald-500'
-                : timelineHealth >= 50 ? 'bg-amber-500'
-                : 'bg-red-500'
-              }`}
+              className={`h-full rounded-full transition-all duration-700 ${progressColor}`}
               style={{ width: `${timelineHealth}%` }}
             />
           </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-[10px] text-text-muted font-medium">0%</span>
-            <span className="text-[10px] text-text-muted font-medium">100%</span>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-[10px] text-text-muted font-medium font-body">0%</span>
+            <span className="text-[10px] text-text-muted font-medium font-body">100%</span>
           </div>
         </div>
-        <p className="text-sm text-text-secondary mt-5 leading-relaxed">
+        <p className="text-sm text-text-secondary mt-5 leading-relaxed font-body">
           {timelineHealth >= 80
             ? 'A maioria dos projetos está atingindo os marcos antecipadamente.'
             : timelineHealth >= 50
@@ -62,32 +66,34 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
         </p>
       </div>
 
-      {/* Card 2: Monthly Creative Review — DOMINANT BRAND BLOCK */}
+      {/* Card 2: Monthly Creative Review — TERRACOTTA DOMINANT BLOCK */}
       <div className={cn(
-        'bg-brand-primary rounded-xl p-6 flex flex-col justify-between',
-        'shadow-brand relative overflow-hidden',
-        'transition-all duration-200 hover:-translate-y-2',
-        'hover:shadow-[0_16px_48px_0_hsl(var(--brand-primary)/0.5)]',
+        'card-terracotta rounded-2xl p-6 flex flex-col justify-between',
+        'relative overflow-hidden',
+        'transition-all duration-220 hover:-translate-y-2',
+        'hover:shadow-[0_16px_52px_0_hsl(13_55%_50%/0.45)]',
         'cursor-default group'
       )}>
 
         {/* Organic blob decorations */}
         <div className="doodle-overlay">
-          {/* Large blob */}
-          <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/10 animate-blob-drift" />
-          <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-black/10 animate-blob-drift" style={{ animationDelay: '-4s' }} />
+          {/* Large blob top-right */}
+          <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full bg-white/10 animate-blob-drift" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-black/10 animate-blob-drift" style={{ animationDelay: '-4s' }} />
 
-          {/* Doodle lines */}
-          <svg className="absolute top-4 right-6 opacity-15" width="60" height="60" fill="none" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 50 Q30 10 50 50" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-            <circle cx="10" cy="50" r="3" fill="white" opacity="0.5"/>
-            <circle cx="50" cy="50" r="3" fill="white" opacity="0.5"/>
+          {/* Organic flowing curve */}
+          <svg className="absolute top-4 right-6 opacity-[0.14]" width="72" height="72" fill="none" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 56 Q36 8 64 56" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <circle cx="8" cy="56" r="3" fill="white" opacity="0.5"/>
+            <circle cx="64" cy="56" r="3" fill="white" opacity="0.5"/>
+            <circle cx="36" cy="20" r="2" fill="white" opacity="0.4"/>
           </svg>
-          <svg className="absolute bottom-6 right-4 opacity-15 rotate-12" width="32" height="32" fill="none" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 16 L16 4 L28 16 L16 28 Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
+          {/* Corner diamond doodle */}
+          <svg className="absolute bottom-5 right-5 opacity-[0.12] rotate-12" width="28" height="28" fill="none" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2L26 14L14 26L2 14Z" stroke="white" strokeWidth="1.5" strokeLinejoin="round" fill="none"/>
           </svg>
 
-          {/* Shimmer strip */}
+          {/* Shimmer on hover */}
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
             <div className="shimmer absolute inset-0" />
           </div>
@@ -96,25 +102,25 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
         {/* Content */}
         <div className="relative z-10">
           <p className="label-eyebrow text-white/60 mb-4">Relatório Criativo Mensal</p>
-          <h3 className="text-2xl font-black text-white leading-tight tracking-tight">
+          <h3 className="text-2xl font-black font-heading text-white leading-tight tracking-tight">
             Produtividade &<br />Entregas do Time
           </h3>
-          <p className="text-sm text-white/70 mt-3 leading-relaxed font-medium">
+          <p className="text-sm text-white/70 mt-3 leading-relaxed font-body font-medium">
             Gere um relatório completo sobre ativos entregues, performance e marcos do ciclo.
           </p>
         </div>
 
         <div className="mt-6 relative z-10 flex items-center gap-3">
           <button className={cn(
-            'bg-white text-brand-primary px-5 py-2.5 rounded-lg text-sm font-bold',
-            'hover:bg-white/90 transition-all duration-150',
+            'bg-white text-brand-primary px-5 py-2.5 rounded-xl text-sm font-bold font-heading',
+            'hover:bg-white/92 transition-all duration-150',
             'shadow-sm hover:shadow-md',
             'hover:scale-[1.02] active:scale-[0.98]',
             'animate-pulse-brand'
           )}>
             Gerar Relatório
           </button>
-          <span className="text-white/50 text-xs font-medium">Junho 2026</span>
+          <span className="text-white/50 text-xs font-medium font-body">Junho 2026</span>
         </div>
       </div>
 

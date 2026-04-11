@@ -11,21 +11,21 @@ interface MetricCardProps {
   trendValue?: string
   className?: string
   accent?: 'default' | 'success' | 'warning' | 'danger' | 'info'
-  /** Featured card gets a dominant orange brand treatment */
+  /** Featured card gets Terracotta dominant treatment */
   featured?: boolean
 }
 
 const accentMap = {
-  default: 'bg-brand-highlight/12 text-brand-highlight',
-  success: 'bg-status-success/12 text-status-success',
-  warning: 'bg-status-warning/12 text-status-warning',
-  danger: 'bg-status-danger/12 text-status-danger',
-  info: 'bg-status-info/12 text-status-info',
+  default:  'bg-terracotta-soft text-terracotta-dark',
+  success:  'bg-olive-soft text-olive-dark',
+  warning:  'bg-yellow-soft text-yellow-dark',
+  danger:   'bg-terracotta-soft text-terracotta-dark',
+  info:     'bg-deep-blue-soft text-deep-blue',
 }
 
 const trendIcon = {
-  up: TrendingUp,
-  down: TrendingDown,
+  up:      TrendingUp,
+  down:    TrendingDown,
   neutral: Minus,
 }
 
@@ -40,41 +40,45 @@ export function MetricCard({
   accent = 'default',
   featured = false,
 }: MetricCardProps) {
+
+  /* ── Featured — Terracotta dominant card ── */
   if (featured) {
     return (
       <div
         className={cn(
-          'group relative overflow-hidden rounded-xl p-6',
-          'card-brand',
+          'group relative overflow-hidden rounded-2xl p-6',
+          'card-terracotta',
           'cursor-default',
           className
         )}
       >
-        {/* Organic blob decoration */}
+        {/* Organic blob decorations */}
         <div className="doodle-overlay">
-          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 animate-blob-drift" />
-          <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/6 animate-blob-drift" style={{ animationDelay: '-3s' }} />
-          {/* Doodle cross */}
-          <svg className="absolute top-3 left-3 opacity-10" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2v20M2 12h20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+          <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/10 animate-blob-drift" />
+          <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-black/8 animate-blob-drift" style={{ animationDelay: '-3s' }} />
+          {/* Organic wave line */}
+          <svg className="absolute top-4 right-4 opacity-[0.12]" width="72" height="48" viewBox="0 0 72 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 24 Q20 8 36 24 Q52 40 68 24" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <path d="M4 34 Q20 18 36 34 Q52 50 68 34" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"/>
           </svg>
-          <svg className="absolute bottom-4 right-4 opacity-10 rotate-45" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 1v14M1 8h14" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+          {/* Small cross doodle */}
+          <svg className="absolute bottom-5 left-5 opacity-[0.10] rotate-12" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 2v16M2 10h16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
 
         <div className="relative z-10 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <p className="label-eyebrow text-white/60 mb-3">{label}</p>
-            <p className="text-4xl font-black text-white tabular-nums tracking-tight">{value}</p>
+            <p className="text-4xl font-black font-heading text-white tabular-nums tracking-tight">{value}</p>
             {description && (
-              <p className="mt-1.5 text-sm text-white/70 font-medium">{description}</p>
+              <p className="mt-1.5 text-sm text-white/70 font-medium font-body">{description}</p>
             )}
             {trendValue && (
               <p className={cn(
-                'mt-2 text-xs font-bold flex items-center gap-1',
-                trend === 'up' && 'text-emerald-300',
-                trend === 'down' && 'text-red-300',
+                'mt-2 text-xs font-bold flex items-center gap-1 font-body',
+                trend === 'up'      && 'text-yellow-light',
+                trend === 'down'    && 'text-white/60',
                 trend === 'neutral' && 'text-white/50'
               )}>
                 {trend && (() => {
@@ -85,7 +89,7 @@ export function MetricCard({
               </p>
             )}
           </div>
-          <div className="flex-shrink-0 rounded-lg p-3 bg-white/15 text-white">
+          <div className="flex-shrink-0 rounded-xl p-3 bg-white/18 text-white">
             <Icon size={22} strokeWidth={1.75} />
           </div>
         </div>
@@ -93,13 +97,14 @@ export function MetricCard({
     )
   }
 
+  /* ── Standard — Sand surface card ── */
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-xl bg-surface p-6',
-        'shadow-sm',
+        'group relative overflow-hidden rounded-2xl bg-surface-elevated p-6',
+        'shadow-sm border border-sand-dark/40',
         'transition-all duration-200 ease-out',
-        'hover:-translate-y-1.5 hover:shadow-lg',
+        'hover:-translate-y-1.5 hover:shadow-card-hover',
         'cursor-default',
         className
       )}
@@ -109,16 +114,16 @@ export function MetricCard({
           <p className="label-eyebrow text-text-muted mb-3">
             {label}
           </p>
-          <p className="text-3xl font-black text-text-primary tabular-nums tracking-tight">{value}</p>
+          <p className="text-3xl font-black font-heading text-text-primary tabular-nums tracking-tight">{value}</p>
           {description && (
-            <p className="mt-1.5 text-sm text-text-secondary">{description}</p>
+            <p className="mt-1.5 text-sm text-text-secondary font-body">{description}</p>
           )}
           {trendValue && (
             <p
               className={cn(
-                'mt-2 text-xs font-bold flex items-center gap-1',
-                trend === 'up' && 'text-status-success',
-                trend === 'down' && 'text-status-danger',
+                'mt-2 text-xs font-bold flex items-center gap-1 font-body',
+                trend === 'up'      && 'text-olive',
+                trend === 'down'    && 'text-terracotta',
                 trend === 'neutral' && 'text-text-muted'
               )}
             >
@@ -134,9 +139,10 @@ export function MetricCard({
           <Icon size={22} strokeWidth={1.75} />
         </div>
       </div>
-      {/* Subtle gradient decoration on hover */}
+
+      {/* Subtle terracotta glow on hover */}
       <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full blur-2xl bg-brand-highlight/6 translate-x-1/2 translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full blur-2xl bg-brand-primary/5 translate-x-1/2 translate-y-1/2" />
       </div>
     </div>
   )

@@ -5,76 +5,87 @@
 @layer base {
   :root {
     /* ─────────────────────────────────────────
-       SUPERFÍCIES E FUNDOS
+       SUPERFÍCIES — Sand & Warm Layers
     ───────────────────────────────────────── */
-    --background: 40 10% 95%;     /* Stone suave */
-    --foreground: 0 0% 11%;       /* Graphite #1C1C1C */
-    --surface: 0 0% 100%;         /* White puro para elevação */
-    --surface-muted: 40 10% 91%;
-    --surface-elevated: 0 0% 100%; /* White clean for primary cards */
-    --surface-graphite: 220 15% 16%; /* Dark graphite for sidebar + immersive */
-    --border: 40 10% 86%;
-    --border-strong: 40 10% 78%;
+    --background: 35 22% 93%;         /* Sand — Level 0 */
+    --foreground: 220 25% 14%;        /* Deep Blue dark — primary text */
+    --surface: 35 18% 97%;            /* Warm near-white — Level 1 cards */
+    --surface-muted: 35 20% 90%;      /* Slightly deeper sand */
+    --surface-elevated: 35 15% 98%;   /* Highest surface (modals) */
+    --surface-deep-blue: 222 45% 14%; /* Deep Blue — sidebar, immersive cards */
+    --border: 35 18% 84%;             /* Sand border */
+    --border-strong: 35 15% 74%;      /* Stronger sand border */
 
     /* ─────────────────────────────────────────
-       MARCA
+       MARCA — Duas Mãos Palette
     ───────────────────────────────────────── */
-    --brand-primary: 23 62% 49%;       /* Orange #C86C31 */
-    --brand-primary-hover: 23 62% 44%; 
-    --brand-secondary: 90 24% 29%;     /* Olive */
-    --brand-accent: 35 78% 62%;
-    --brand-highlight: 23 62% 49%;     /* Laranja para CTAs */
+    /* Terracotta — primary accent, energy, expression */
+    --brand-primary: 13 55% 50%;
+    --brand-primary-hover: 13 55% 43%;
+    /* Olive — secondary, maturity, balance */
+    --brand-secondary: 68 28% 32%;
+    --brand-secondary-light: 68 28% 42%;
+    /* Warm Yellow — highlight, microaccents */
+    --brand-accent: 43 90% 58%;
+    --brand-accent-soft: 43 90% 88%;
+    /* Deep Blue — trust, depth, immersive blocks */
+    --brand-deep-blue: 222 55% 22%;
+    --brand-deep-blue-light: 222 45% 30%;
+    /* Highlight alias (used by Tailwind shadow-brand etc.) */
+    --brand-highlight: 13 55% 50%;
 
     /* ─────────────────────────────────────────
        TEXTO
     ───────────────────────────────────────── */
-    --text-primary: 0 0% 11%;
-    --text-secondary: 0 0% 35%;
-    --text-muted: 240 5% 50%;
-    --text-inverse: 40 85% 94%;        /* CREME — usado no laranja e na seleção */
-    --text-on-dark: 40 85% 94%;        /* Creme sobre superfícies escuras */
+    --text-primary: 222 30% 12%;
+    --text-secondary: 222 15% 40%;
+    --text-muted: 222 10% 58%;
+    --text-inverse: 35 35% 95%;       /* Cream — on dark surfaces */
+    --text-on-dark: 35 35% 95%;       /* Same for dark bg contexts */
 
     /* ─────────────────────────────────────────
        ESTADOS
     ───────────────────────────────────────── */
-    --success: 145 55% 35%;
-    --warning: 35 90% 52%;
-    --danger: 2 72% 54%;
-    --info: 220 70% 52%;
-    --pending: 45 80% 50%;
-    --draft: 240 10% 60%;
+    --success: 68 35% 38%;            /* Olive-success */
+    --warning: 43 90% 48%;            /* Warm Yellow-warning */
+    --danger: 13 55% 50%;             /* Terracotta-danger */
+    --info: 222 50% 42%;              /* Deep Blue-info */
+    --pending: 43 80% 52%;
+    --draft: 220 10% 58%;
 
     /* ─────────────────────────────────────────
        EDITORIAL
     ───────────────────────────────────────── */
-    --editorial-highlight: 40 80% 95%;
-    --editorial-note: 30 50% 95%;
-    --editorial-quote: 240 15% 95%;
-    --editorial-frame: 240 10% 92%;
+    --editorial-highlight: 35 55% 92%;   /* Warm sand highlight */
+    --editorial-note: 13 30% 93%;        /* Terracotta blush note */
+    --editorial-quote: 222 25% 93%;      /* Blue-tinted quote */
+    --editorial-frame: 35 18% 88%;       /* Sand frame */
 
     /* ─────────────────────────────────────────
-       RADIUS — Sharp Modular Geometry
+       RADIUS — Organic Soft System
     ───────────────────────────────────────── */
-    --radius: 4px;
-    --radius-xs: 2px;
-    --radius-sm: 4px;
-    --radius-md: 6px;
-    --radius-lg: 10px;
-    --radius-xl: 14px;
-    --radius-2xl: 20px;
+    --radius: 6px;
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-2xl: 32px;
     --radius-full: 9999px;
 
     /* ─────────────────────────────────────────
-       SOMBRAS — Elevation System
+       SOMBRAS — Soft Diffused Elevation
     ───────────────────────────────────────── */
-    --shadow-xs: 0 1px 3px 0 rgb(0 0 0 / 0.05);
-    --shadow-sm: 0 2px 8px 0 rgb(0 0 0 / 0.07), 0 1px 2px 0 rgb(0 0 0 / 0.04);
-    --shadow-md: 0 4px 20px 0 rgb(0 0 0 / 0.09), 0 1px 4px 0 rgb(0 0 0 / 0.05);
-    --shadow-lg: 0 10px 40px -4px rgb(0 0 0 / 0.12), 0 2px 8px 0 rgb(0 0 0 / 0.06);
-    --shadow-xl: 0 20px 60px -8px rgb(0 0 0 / 0.14), 0 4px 16px 0 rgb(0 0 0 / 0.07);
-    --shadow-glass: 0 8px 32px -4px rgb(0 0 0 / 0.14), inset 0 1px 0 0 rgb(255 255 255 / 0.3);
-    --shadow-brand: 0 6px 24px 0 hsl(var(--brand-highlight) / 0.30);
-    --shadow-card-hover: 0 16px 48px -8px rgb(0 0 0 / 0.15), 0 4px 12px 0 rgb(0 0 0 / 0.08);
+    --shadow-xs: 0 1px 4px 0 rgb(0 0 0 / 0.04);
+    --shadow-sm: 0 2px 10px 0 rgb(0 0 0 / 0.06), 0 1px 3px 0 rgb(0 0 0 / 0.04);
+    --shadow-md: 0 4px 24px 0 rgb(0 0 0 / 0.08), 0 1px 4px 0 rgb(0 0 0 / 0.04);
+    --shadow-lg: 0 10px 44px -4px rgb(0 0 0 / 0.11), 0 2px 8px 0 rgb(0 0 0 / 0.05);
+    --shadow-xl: 0 20px 64px -8px rgb(0 0 0 / 0.13), 0 4px 16px 0 rgb(0 0 0 / 0.06);
+    --shadow-glass: 0 8px 32px -4px rgb(0 0 0 / 0.12), inset 0 1px 0 0 rgb(255 255 255 / 0.35);
+    --shadow-brand: 0 6px 28px 0 hsl(var(--brand-primary) / 0.28);
+    --shadow-terracotta: 0 6px 28px 0 hsl(13 55% 50% / 0.28);
+    --shadow-deep-blue: 0 8px 32px 0 hsl(222 55% 22% / 0.25);
+    --shadow-card-hover: 0 16px 52px -8px rgb(0 0 0 / 0.13), 0 4px 12px 0 rgb(0 0 0 / 0.07);
 
     /* ─────────────────────────────────────────
        TRANSIÇÕES
@@ -95,45 +106,52 @@
      DARK MODE
   ───────────────────────────────────────── */
   .dark {
-    --background: 223 20% 10%;
-    --foreground: 40 85% 94%;
-    --surface: 223 20% 14%;
-    --surface-muted: 223 15% 18%;
-    --surface-elevated: 223 20% 17%;
-    --surface-graphite: 220 22% 10%;
-    --border: 223 15% 22%;
-    --border-strong: 223 15% 30%;
+    --background: 222 28% 9%;
+    --foreground: 35 30% 92%;
+    --surface: 222 25% 13%;
+    --surface-muted: 222 22% 17%;
+    --surface-elevated: 222 25% 16%;
+    --surface-deep-blue: 222 30% 10%;
+    --border: 222 18% 22%;
+    --border-strong: 222 18% 30%;
 
-    --brand-primary: 223 35% 45%;
-    --brand-primary-hover: 223 35% 50%;
-    --brand-secondary: 90 24% 29%;
-    --brand-accent: 40 85% 75%;
-    --brand-highlight: 223 45% 55%;
+    --brand-primary: 13 52% 56%;
+    --brand-primary-hover: 13 52% 62%;
+    --brand-secondary: 68 28% 42%;
+    --brand-secondary-light: 68 28% 52%;
+    --brand-accent: 43 85% 65%;
+    --brand-accent-soft: 43 60% 22%;
+    --brand-deep-blue: 222 50% 35%;
+    --brand-deep-blue-light: 222 45% 45%;
+    --brand-highlight: 13 52% 56%;
 
-    --text-primary: 40 85% 94%;
-    --text-secondary: 223 15% 75%;
-    --text-muted: 223 10% 60%;
-    --text-inverse: 40 85% 94%;
-    --text-on-dark: 40 85% 94%;
+    --text-primary: 35 30% 92%;
+    --text-secondary: 222 15% 72%;
+    --text-muted: 222 10% 55%;
+    --text-inverse: 35 30% 92%;
+    --text-on-dark: 35 30% 92%;
 
-    --success: 145 45% 45%;
-    --warning: 35 80% 60%;
-    --danger: 2 60% 60%;
-    --info: 220 60% 60%;
-    --pending: 45 70% 50%;
-    --draft: 240 10% 40%;
+    --success: 68 35% 50%;
+    --warning: 43 80% 58%;
+    --danger: 13 52% 56%;
+    --info: 222 50% 55%;
+    --pending: 43 75% 58%;
+    --draft: 220 10% 42%;
 
-    --editorial-highlight: 40 80% 15%;
-    --editorial-note: 30 50% 15%;
-    --editorial-quote: 240 15% 15%;
-    --editorial-frame: 240 10% 12%;
+    --editorial-highlight: 35 25% 14%;
+    --editorial-note: 13 25% 14%;
+    --editorial-quote: 222 22% 14%;
+    --editorial-frame: 222 18% 12%;
 
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
-    --shadow-md: 0 4px 16px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-    --shadow-lg: 0 10px 30px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.25);
-    --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.5), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
-    --shadow-card-hover: 0 16px 48px -8px rgb(0 0 0 / 0.5), 0 4px 12px 0 rgb(0 0 0 / 0.3);
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+    --shadow-sm: 0 1px 4px 0 rgb(0 0 0 / 0.35), 0 1px 2px -1px rgb(0 0 0 / 0.25);
+    --shadow-md: 0 4px 18px -1px rgb(0 0 0 / 0.40), 0 2px 4px -2px rgb(0 0 0 / 0.25);
+    --shadow-lg: 0 10px 32px -3px rgb(0 0 0 / 0.45), 0 4px 6px -4px rgb(0 0 0 / 0.30);
+    --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.55), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+    --shadow-card-hover: 0 16px 52px -8px rgb(0 0 0 / 0.55), 0 4px 12px 0 rgb(0 0 0 / 0.35);
+    --shadow-brand: 0 6px 28px 0 hsl(13 52% 56% / 0.32);
+    --shadow-terracotta: 0 6px 28px 0 hsl(13 52% 56% / 0.32);
+    --shadow-deep-blue: 0 8px 32px 0 hsl(222 50% 35% / 0.35);
   }
 
   /* ─────────────────────────────────────────
@@ -146,13 +164,13 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    @apply antialiased font-sans;
+    @apply antialiased font-body;
   }
 
-  /* Seleção de texto — Creme sobre fundo laranja em modo claro */
+  /* Seleção — Creme sobre Terracotta */
   ::selection {
     background-color: hsl(var(--brand-primary));
-    color: hsl(40 85% 94%); /* CREME — legível sobre laranja em light mode */
+    color: hsl(35 35% 95%);
   }
 
   /* Scrollbar sutil */
@@ -181,7 +199,7 @@
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -231,6 +249,17 @@
   to   { transform: rotate(360deg); }
 }
 
+@keyframes wave-organic {
+  0%   { d: path("M0 40 Q30 20 60 40 Q90 60 120 40"); }
+  50%  { d: path("M0 40 Q30 60 60 40 Q90 20 120 40"); }
+  100% { d: path("M0 40 Q30 20 60 40 Q90 60 120 40"); }
+}
+
+@keyframes draw-line {
+  from { stroke-dashoffset: 200; }
+  to   { stroke-dashoffset: 0; }
+}
+
 /* ─────────────────────────────────────────
    UTILITÁRIOS CUSTOMIZADOS
 ───────────────────────────────────────── */
@@ -239,36 +268,67 @@
     animation: fade-in 200ms ease both;
   }
   .animate-fade-in-up {
-    animation: fade-in-up 350ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    animation: fade-in-up 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
   .animate-fade-in-down {
     animation: fade-in-down 300ms ease both;
   }
   .animate-scale-in {
-    animation: scale-in 200ms ease both;
+    animation: scale-in 220ms ease both;
   }
   .animate-slide-in-left {
-    animation: slide-in-left 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    animation: slide-in-left 320ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
   .animate-slide-in-right {
     animation: slide-in-right 300ms ease both;
   }
   .animate-blob-drift {
-    animation: blob-drift 8s ease-in-out infinite;
+    animation: blob-drift 9s ease-in-out infinite;
   }
   .animate-spin-slow {
     animation: spin-slow 30s linear infinite;
   }
 
-  /* Glassmorphism base */
+  /* ── Typography Font Utilities ── */
+  .font-heading {
+    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+  .font-subheading {
+    font-family: var(--font-subheading), 'Amaranth', 'Georgia', serif;
+  }
+  .font-body {
+    font-family: var(--font-body), 'Lato', system-ui, sans-serif;
+  }
+
+  /* ── Heading Editorial Style ── */
+  .heading-editorial {
+    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+  .heading-section {
+    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .label-eyebrow {
+    font-family: var(--font-body), 'Lato', system-ui, sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ── Glassmorphism ── */
   .glass {
-    background: hsl(var(--surface) / 0.75);
+    background: hsl(var(--surface) / 0.78);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     box-shadow: var(--shadow-glass);
   }
 
-  /* Vidro Canelado (Fluted Glass) — textura de listras + blur */
   .glass-fluted {
     background:
       repeating-linear-gradient(
@@ -284,7 +344,7 @@
     box-shadow: var(--shadow-xl);
   }
 
-  /* Texto com gradiente da marca */
+  /* ── Gradient Text Utilities ── */
   .text-gradient-brand {
     background: linear-gradient(
       135deg,
@@ -296,12 +356,34 @@
     background-clip: text;
   }
 
-  /* Overlay de background */
+  .text-gradient-terracotta {
+    background: linear-gradient(
+      135deg,
+      hsl(13 55% 50%),
+      hsl(43 90% 58%)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-deep-blue {
+    background: linear-gradient(
+      135deg,
+      hsl(222 55% 22%),
+      hsl(222 45% 40%)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Surface Tint ── */
   .surface-tint {
     background: hsl(var(--brand-primary) / 0.04);
   }
 
-  /* Borda gradiente da marca */
+  /* ── Brand Border Gradient ── */
   .border-gradient-brand {
     border: 1px solid transparent;
     background-clip: padding-box;
@@ -320,9 +402,25 @@
     );
   }
 
-  /* ── Card Surface Hierarchy ── */
+  /* ════════════════════════════════════════════
+     CARD SURFACE HIERARCHY — Duas Mãos System
+  ════════════════════════════════════════════ */
 
-  /* Nível 0 — card neutro padrão */
+  /* Level 0 — Sand card (background-near, calm) */
+  .card-sand {
+    background: hsl(35 22% 93%);
+    box-shadow: var(--shadow-xs);
+    border-radius: var(--radius-lg);
+    border: 1px solid hsl(var(--border));
+    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .card-sand:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Level 1 — Default light card */
   .card-default {
     background: hsl(var(--surface-elevated));
     box-shadow: var(--shadow-sm);
@@ -335,37 +433,54 @@
     box-shadow: var(--shadow-card-hover);
   }
 
-  /* Nível 1 — card primário (laranja da marca) */
-  .card-brand {
-    background: hsl(var(--brand-primary));
-    box-shadow: var(--shadow-brand);
+  /* Level 2 — Elevated card (stronger shadow) */
+  .card-elevated {
+    background: hsl(var(--surface-elevated));
+    box-shadow: var(--shadow-md);
     border-radius: var(--radius-lg);
-    color: hsl(40 85% 94%);
     transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    overflow: hidden;
   }
-  .card-brand:hover {
+  .card-elevated:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 40px 0 hsl(var(--brand-primary) / 0.45);
+    box-shadow: var(--shadow-card-hover);
   }
 
-  /* Nível 2 — card imersivo (grafite escuro) */
-  .card-graphite {
-    background: hsl(var(--surface-graphite));
-    box-shadow: var(--shadow-lg);
+  /* Level 3a — Terracotta highlight card */
+  .card-terracotta {
+    background: hsl(var(--brand-primary));
+    box-shadow: var(--shadow-terracotta);
     border-radius: var(--radius-lg);
-    color: hsl(40 85% 94%);
-    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    color: hsl(35 35% 95%);
+    transition: transform 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
   }
-  .card-graphite:hover {
+  .card-terracotta:hover {
     transform: translateY(-3px);
-    box-shadow: 0 20px 60px -8px rgb(0 0 0 / 0.35);
+    box-shadow: 0 14px 44px 0 hsl(var(--brand-primary) / 0.45);
   }
+
+  /* Level 3b — Deep Blue immersive card */
+  .card-deep-blue {
+    background: hsl(var(--surface-deep-blue));
+    box-shadow: var(--shadow-deep-blue);
+    border-radius: var(--radius-lg);
+    color: hsl(35 35% 95%);
+    transition: transform 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-deep-blue:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 64px -8px rgb(0 0 0 / 0.40);
+  }
+
+  /* Legacy aliases — keep backward compat */
+  .card-brand    { @apply card-terracotta; }
+  .card-graphite { @apply card-deep-blue; }
 
   /* ── Doodle / Organic Shape Overlay ── */
   .doodle-overlay {
@@ -377,13 +492,20 @@
     z-index: 0;
   }
 
+  /* Organic SVG wave decoration */
+  .doodle-wave {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.08;
+  }
+
   /* Shimmer gradient effect */
   .shimmer {
     background: linear-gradient(
       90deg,
       transparent 0%,
       hsl(var(--surface) / 0.15) 40%,
-      hsl(var(--surface) / 0.25) 50%,
+      hsl(var(--surface) / 0.28) 50%,
       hsl(var(--surface) / 0.15) 60%,
       transparent 100%
     );
@@ -391,28 +513,28 @@
     animation: shimmer 3s linear infinite;
   }
 
-  /* ── Typography Utilities ── */
-  .heading-editorial {
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-  }
-  .label-eyebrow {
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  /* ── Sidebar Graphite Surface ── */
+  /* ── Sidebar Surface — Deep Blue immersive ── */
   .sidebar-surface {
-    background: hsl(var(--surface-graphite));
-    border-right: 1px solid hsl(var(--border-strong) / 0.12);
+    background: hsl(var(--surface-deep-blue));
+    border-right: 1px solid hsl(222 35% 20%);
   }
 
-  /* In dark mode, sidebar stays graphite but lighter */
   .dark .sidebar-surface {
-    background: hsl(220 22% 12%);
-    border-right-color: hsl(var(--border) / 0.2);
+    background: hsl(222 30% 9%);
+    border-right-color: hsl(222 25% 16%);
+  }
+
+  /* ── Organic Background Blobs ── */
+  .organic-blob {
+    position: absolute;
+    border-radius: 50% 60% 40% 50% / 50% 40% 60% 50%;
+    pointer-events: none;
+    animation: blob-drift 10s ease-in-out infinite;
+  }
+
+  /* ── Progress Bar: Terracotta accent ── */
+  .progress-terracotta {
+    background: linear-gradient(90deg, hsl(var(--brand-primary)), hsl(var(--brand-accent)));
+    border-radius: var(--radius-full);
   }
 }
