@@ -8,7 +8,7 @@ export async function getTasks(projectId?: string) {
   const supabase = createClient()
   let query = supabase
     .from('v2_tasks')
-    .select('*, v2_projects(name, client_id, clients(name))')
+    .select('*, v2_projects(name, client_id, clients(name)), v2_task_assignees(user_id, profiles(full_name))')
     .order('due_date', { ascending: true, nullsFirst: false })
 
   if (projectId) query = query.eq('project_id', projectId)
@@ -16,10 +16,12 @@ export async function getTasks(projectId?: string) {
   const { data, error } = await query
   if (error) throw error
   
-  return (data ?? []).map(t => ({
+  return (data ?? []).map((t: any) => ({
     ...t,
     deadline: t.due_date,
-    projects: (t as any).v2_projects
+    assigned_to: t.v2_task_assignees?.[0]?.user_id ?? null,
+    profiles: t.v2_task_assignees?.[0]?.profiles ?? null,
+    projects: t.v2_projects
   }))
 }
 
@@ -30,10 +32,11 @@ export async function createTask(formData: {
   status?: TaskStatusV2
   priority?: TaskPriorityV2
   due_date?: string
+  assigned_to?: string
 }) {
   const supabase = createClient()
 
-  // 1. Find the current stage (the one that is in_progress or the first one)
+  // 1. Find the current stage
   const { data: stages } = await supabase
     .from('v2_project_stages')
     .select('id, status, order')
@@ -45,7 +48,7 @@ export async function createTask(formData: {
   const currentStage = stages.find(s => s.status === 'in_progress') || stages[0]
 
   // 2. Insert Task
-  const { error } = await supabase.from('v2_tasks').insert({
+  const { data: task, error } = await supabase.from('v2_tasks').insert({
     project_id: formData.project_id,
     stage_id: currentStage.id,
     title: formData.title,
@@ -53,9 +56,18 @@ export async function createTask(formData: {
     status: formData.status ?? 'pending',
     priority: formData.priority ?? 'medium',
     due_date: formData.due_date ?? null,
-  })
+  }).select('id').single()
 
   if (error) throw error
+
+  // 3. Insert assignee if provided
+  if (formData.assigned_to && task?.id) {
+    await supabase.from('v2_task_assignees').insert({
+      task_id: task.id,
+      user_id: formData.assigned_to,
+    })
+  }
+
   revalidatePath('/dashboard/tasks')
   revalidatePath(`/dashboard/projects/${formData.project_id}`)
 }
@@ -82,10 +94,21 @@ export async function updateTask(
     status: TaskStatusV2
     priority: TaskPriorityV2
     due_date: string
+    assigned_to: string
   }>
 ) {
   const supabase = createClient()
-  const { error } = await supabase.from('v2_tasks').update(formData).eq('id', id)
+  const { assigned_to, ...taskData } = formData
+  const { error } = await supabase.from('v2_tasks').update(taskData).eq('id', id)
   if (error) throw error
+
+  // Update assignee via join table
+  if (assigned_to !== undefined) {
+    await supabase.from('v2_task_assignees').delete().eq('task_id', id)
+    if (assigned_to) {
+      await supabase.from('v2_task_assignees').insert({ task_id: id, user_id: assigned_to })
+    }
+  }
+
   revalidatePath('/dashboard/tasks')
 }

@@ -248,6 +248,8 @@ export interface V2Task {
   priority: TaskPriorityV2;
   order: number | null;
   due_date: string | null;
+  /** Populated via v2_task_assignees join or direct column if migrated */
+  assigned_to?: string | null;
   created_at: string;
   updated_at: string;
 }
