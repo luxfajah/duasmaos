@@ -37,29 +37,6 @@ export function TopBar({ className, userName, userEmail, userAvatar }: TopBarPro
       {/* Spacer para equilibrar o flex */}
       <div className="flex-1" />
 
-      {/* Buscar Centralizado Absoluto (ou com flex) */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm px-4">
-        <div className="relative group">
-          <Search
-            className="absolute left-7 top-1/2 -translate-y-1/2 text-text-muted transition-colors duration-200 group-focus-within:text-brand-primary"
-            size={14}
-            strokeWidth={2}
-          />
-          <input
-            type="text"
-            placeholder="Buscar tarefas, projetos..."
-            className={cn(
-              'w-full rounded-xl pl-9 pr-4 py-2 text-sm outline-none',
-              'bg-sand-warm/60 hover:bg-sand-warm',
-              'border border-sand-dark/40 hover:border-sand-dark',
-              'focus:border-brand-primary/50 focus:ring-2 focus:ring-brand-primary/10',
-              'text-text-primary placeholder:text-text-muted',
-              'transition-all duration-200',
-            )}
-          />
-        </div>
-      </div>
-
       {/* Controladores Direitos */}
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
         

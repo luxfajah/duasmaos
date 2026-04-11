@@ -1,8 +1,29 @@
 'use client'
 
-import * as React from "react"
+import * as ReactDOM from "react-dom"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+/* ─────────────────────────────────────────
+   PORTAL COMPONENT
+───────────────────────────────────────── */
+
+interface PortalProps {
+  children: React.ReactNode
+}
+
+function Portal({ children }: PortalProps) {
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
+
+  if (!mounted) return null
+
+  return ReactDOM.createPortal(children, document.body)
+}
 
 /* ─────────────────────────────────────────
    MODAL CONTEXT
@@ -53,19 +74,21 @@ function Modal({ open, onClose, children }: ModalProps) {
 
   return (
     <ModalContext.Provider value={{ open, onClose }}>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-0 sm:p-6"
-        aria-modal="true"
-        role="dialog"
-      >
+      <Portal>
+        {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-slate-950/60 backdrop-blur-xl animate-fade-in"
-          onClick={onClose}
-          aria-hidden
-        />
-        {children}
-      </div>
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          aria-modal="true"
+          role="dialog"
+        >
+          <div
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-2xl animate-fade-in transition-opacity"
+            onClick={onClose}
+            aria-hidden
+          />
+          {children}
+        </div>
+      </Portal>
     </ModalContext.Provider>
   )
 }
@@ -75,7 +98,7 @@ function Modal({ open, onClose, children }: ModalProps) {
 ───────────────────────────────────────── */
 
 interface ModalContentProps extends React.ComponentProps<"div"> {
-  size?: "sm" | "md" | "lg" | "xl" | "full"
+  size?: "sm" | "md" | "lg" | "xl" | "full" | "giant"
 }
 
 const sizeMap = {
@@ -84,15 +107,17 @@ const sizeMap = {
   lg: "max-w-lg",
   xl: "max-w-2xl",
   full: "max-w-5xl",
+  giant: "max-w-[85vw] h-[85vh]",
 }
 
 function ModalContent({ className, size = "md", children, ...props }: ModalContentProps) {
   return (
     <div
       className={cn(
-        "relative z-50 w-full bg-surface border border-border shadow-xl animate-scale-in",
+        "relative z-[10000] w-full bg-surface border border-border/50 shadow-2xl animate-scale-in flex flex-col overflow-hidden",
         sizeMap[size],
-        size === "full" ? "h-[100dvh] rounded-none sm:rounded-xl sm:h-auto" : "h-auto rounded-xl m-4 sm:m-0",
+        size === "full" ? "h-[100dvh] rounded-none sm:rounded-xl sm:h-auto" : "rounded-[32px] m-4 sm:m-0",
+        size === "giant" && "max-h-[85vh]",
         className
       )}
       {...props}

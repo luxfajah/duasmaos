@@ -42,8 +42,8 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalContent size="full" className="max-h-[100dvh] sm:max-h-[90vh] overflow-hidden flex flex-col rounded-none sm:rounded-[32px] border-0 sm:border border-white/10 shadow-2xl bg-gradient-to-br from-surface to-background/50 dark:from-surface dark:to-background/80">
-        <ModalHeader showClose={false} className="border-b border-sand-dark/10 px-5 sm:px-8 py-5 sm:py-7 relative shrink-0 flex items-start justify-between">
+      <ModalContent size="giant" className="overflow-hidden flex flex-col border-0 sm:border border-white/10 shadow-2xl bg-gradient-to-br from-surface to-background/50 dark:from-surface dark:to-background/80">
+        <ModalHeader showClose={false} className="border-b border-sand-dark/10 px-5 sm:px-10 py-5 sm:py-8 relative shrink-0 flex items-start justify-between">
           <div className="flex flex-col gap-1.5 pt-2 sm:pt-0">
             {/* Mobile Back Button */}
             <button 
