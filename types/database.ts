@@ -248,7 +248,7 @@ export const PIPELINE_STAGE_LABELS: Record<PipelineStage, string> = {
 
 // ── V2 Workflow System ─────────────────────────────────────────────────────
 
-export type WorkflowTypeV2 = 'branding' | 'social_media' | 'website';
+export type WorkflowTypeV2 = 'branding' | 'social_media' | 'website' | 'consultoria';
 export type StageStatusV2 = 'pending' | 'in_progress' | 'waiting_approval' | 'approved' | 'done';
 export type TaskStatusV2 = 'locked' | 'pending' | 'in_progress' | 'in_review' | 'approved' | 'done' | 'blocked';
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
@@ -412,6 +412,7 @@ export interface ProductTemplate {
   base_price: number | null;
   type: string;
   is_active: boolean;
+  is_sequential: boolean;
   created_at: string;
   stages_count?: number;
   tasks_count?: number;
@@ -424,6 +425,7 @@ export interface ProductTemplateStage {
   order_index: number;
   duration_days: number;
   auto_start: boolean;
+  requires_approval: boolean;
   created_at: string;
 }
 

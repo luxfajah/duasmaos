@@ -20,6 +20,17 @@ export function SettingsClient({ profile, users, invitations, clients }: Setting
   const searchParams = useSearchParams()
   const router = useRouter()
   const [activeSection, setActiveSection] = useState(searchParams.get('section') || 'profile')
+
+  if (!profile) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <ShieldAlert size={48} className="text-text-muted" />
+        <h3 className="text-xl font-bold">Perfil não encontrado</h3>
+        <p className="text-text-muted">Não conseguimos carregar suas informações no momento.</p>
+      </div>
+    )
+  }
+
   const isAdmin = profile.role === 'admin'
 
   useEffect(() => {

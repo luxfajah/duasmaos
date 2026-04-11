@@ -53,7 +53,7 @@ interface ProductTemplate {
   name: string
   category: string
   type: string
-  base_price: number
+  base_price: number | null
   is_active: boolean
   stages_count: number
   tasks_count: number
@@ -355,7 +355,9 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               <div className="flex flex-col">
                 <span className="text-[9px] font-black text-text-muted uppercase tracking-widest group-hover:text-white/60">Investimento Base</span>
                 <span className="text-base font-black text-text-primary group-hover:text-white font-mono">
-                  R$ {product.base_price.toLocaleString('pt-BR')}
+                  {product.base_price !== null && product.base_price !== undefined 
+                    ? `R$ ${product.base_price.toLocaleString('pt-BR')}`
+                    : 'A definir'}
                 </span>
               </div>
               <Button 

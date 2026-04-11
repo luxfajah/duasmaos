@@ -19,7 +19,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   // Use a ref or state for avatar URL to allow immediate preview
-  const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url)
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '')
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -84,7 +84,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
       <div className="flex items-center gap-6 p-6 glass rounded-xl">
         <div className="relative group">
           <Avatar 
-            name={profile.full_name} 
+            name={profile?.full_name || 'Usuário'} 
             src={avatarUrl} 
             size="xl" 
             variant="brand" 
@@ -107,7 +107,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
           />
         </div>
         <div>
-          <h3 className="font-bold text-text-primary">{profile.full_name || 'Usuário'}</h3>
+          <h3 className="font-bold text-text-primary">{profile?.full_name || 'Usuário'}</h3>
           <p className="text-sm text-text-muted">Clique na imagem para alterar seu avatar.</p>
         </div>
       </div>
@@ -116,14 +116,14 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
         <InputField
           label="Nome"
           name="first_name"
-          defaultValue={profile.first_name}
+          defaultValue={profile?.first_name || ''}
           required
           placeholder="Ex: João"
         />
         <InputField
           label="Sobrenome"
           name="last_name"
-          defaultValue={profile.last_name}
+          defaultValue={profile?.last_name || ''}
           required
           placeholder="Ex: Silva"
         />
@@ -131,7 +131,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
           label="Data de Nascimento"
           name="birth_date"
           type="date"
-          defaultValue={profile.birth_date}
+          defaultValue={profile?.birth_date || ''}
           max={new Date().toISOString().split('T')[0]} // No future dates
           placeholder="dd/mm/aaaa"
           leftIcon={<Calendar size={16} />}

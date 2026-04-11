@@ -137,6 +137,13 @@ export async function createProjectV3(data: {
 }) {
   const supabase = createClient()
   
+  // 0. Fetch template details to get type
+  const { data: template } = await supabase
+    .from('product_templates')
+    .select('type')
+    .eq('id', data.template_id)
+    .single()
+
   // 1. Create Project
   const { data: project, error: pError } = await supabase
     .from('v2_projects')
@@ -144,6 +151,7 @@ export async function createProjectV3(data: {
       name: data.name,
       client_id: data.client_id,
       template_id: data.template_id,
+      workflow_type: (template?.type || 'branding') as WorkflowTypeV2,
       type: data.project_type,
       amount: data.amount,
       payment_type: data.payment_type,
@@ -175,7 +183,7 @@ export async function createProjectV3(data: {
           name: stage.name,
           order: stage.order_index,
           status: 'pending',
-          requires_approval: true
+          requires_approval: stage.requires_approval
         })
         .select()
         .single()
