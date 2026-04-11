@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { V2Task, TaskStatusV2, TaskWithRelations } from '@/types/database'
 import { TasksTable } from '@/components/tasks/TasksTable'
-import { TaskModal } from '@/components/tasks/TaskModal'
+import { TaskEditModal } from '@/components/tasks/TaskEditModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
@@ -71,10 +71,11 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
       </div>
 
       {(showModal || editingTask) && (
-        <TaskModal
+        <TaskEditModal
           task={editingTask}
+          open={showModal || !!editingTask}
+          projectId={editingTask?.project_id}
           projects={projects}
-          team={team}
           onClose={() => {
             setShowModal(false)
             setEditingTask(null)

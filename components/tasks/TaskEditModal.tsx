@@ -3,16 +3,17 @@
 import React, { useState, useEffect, useTransition } from 'react'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { TaskStatusV2, TaskPriorityV2, PRIORITY_LABELS, TASK_STATUS_V2_LABELS, DeliverableTypeV2 } from '@/types/database'
-import { updateV2Task, getAllProfiles, syncSocialPosts } from '@/app/dashboard/v2/task-actions'
+import { updateV2Task, createV2Task, getAllProfiles, syncSocialPosts } from '@/app/dashboard/v2/task-actions'
 import { X, Save, Loader2, Users, Calendar, AlertCircle, Type, AlignLeft } from 'lucide-react'
 import { Avatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 
 interface TaskEditModalProps {
-  task?: any // Optional for creation
+  task?: any
   open: boolean
   onClose: () => void
   projectId?: string
+  projects?: { id: string; name: string }[] // New prop for project list
 }
 
 export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalProps) {
@@ -21,6 +22,7 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
   
   // Form State
   const [formData, setFormData] = useState({
+    project_id: projectId || '',
     title: '',
     description: '',
     status: 'pending' as TaskStatusV2,
@@ -32,17 +34,33 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
   })
 
   useEffect(() => {
-    if (open && task) {
-      setFormData({
-        title: task.title || '',
-        description: task.description || '',
-        status: task.status || 'pending',
-        priority: task.priority || 'medium',
-        due_date: task.due_date ? task.due_date.split('T')[0] : '',
-        assignees: task.v2_task_assignees?.map((a: any) => a.user_id) || [],
-        deliverable_type: task.deliverable_type || 'default',
-        social_post_count: task.social_post_count || 0
-      })
+    if (open) {
+      if (task) {
+        setFormData({
+          project_id: task.project_id || projectId || '',
+          title: task.title || '',
+          description: task.description || '',
+          status: task.status || 'pending',
+          priority: task.priority || 'medium',
+          due_date: task.due_date ? task.due_date.split('T')[0] : '',
+          assignees: task.v2_task_assignees?.map((a: any) => a.user_id) || [],
+          deliverable_type: task.deliverable_type || 'default',
+          social_post_count: task.social_post_count || 0
+        })
+      } else {
+        // Reset for creation
+        setFormData({
+          project_id: projectId || '',
+          title: '',
+          description: '',
+          status: 'pending',
+          priority: 'medium',
+          due_date: '',
+          assignees: [],
+          deliverable_type: 'default',
+          social_post_count: 0
+        })
+      }
 
       getAllProfiles().then(setProfiles).catch(console.error)
     }
@@ -58,16 +76,20 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
         }
 
         if (task?.id) {
-          await updateV2Task(task.id, projectId!, payload)
+          await updateV2Task(task.id, formData.project_id, payload)
           
           if (formData.deliverable_type === 'social_copy' || formData.deliverable_type === 'social_design') {
             await syncSocialPosts(task.id, formData.social_post_count)
           }
+        } else if (formData.project_id) {
+          const res = await createV2Task(formData.project_id, payload)
+          
+          if (res.id && (formData.deliverable_type === 'social_copy' || formData.deliverable_type === 'social_design')) {
+            await syncSocialPosts(res.id, formData.social_post_count)
+          }
         } else {
-          // If creation is needed, we'd need a createV2Task action
-          // For now, let's keep it as an edit-only component if creation logic is different
-          // But to satisfy the rule, I'll assume we can pass it
-          alert('Criação não implementada neste componente v2 ainda.')
+          alert('ID do projeto é necessário para criar uma nova tarefa.')
+          return
         }
         
         onClose()
@@ -86,7 +108,7 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
     }))
   }
 
-  if (!task) return null
+  if (!open) return null
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -126,6 +148,23 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                   </div>
                   
                   <div className="space-y-6">
+                    {!projectId && projects && (
+                       <div>
+                         <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-3 block px-1">Projeto Relacionado</label>
+                         <select 
+                           value={formData.project_id}
+                           onChange={e => setFormData(p => ({ ...p, project_id: e.target.value }))}
+                           className="glass-input w-full p-4 rounded-xl text-sm font-black uppercase tracking-widest appearance-none cursor-pointer"
+                           required
+                         >
+                           <option value="" disabled className="bg-surface">Selecionar Projeto...</option>
+                           {projects.map(p => (
+                             <option key={p.id} value={p.id} className="bg-surface">{p.name}</option>
+                           ))}
+                         </select>
+                       </div>
+                    )}
+
                     <div>
                       <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-3 block flex items-center gap-2 px-1">
                         <Type size={12} className="text-brand-primary/60" /> Título Editorial

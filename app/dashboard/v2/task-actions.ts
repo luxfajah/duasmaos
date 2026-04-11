@@ -2,7 +2,75 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { TaskStatusV2, TaskPriorityV2 } from '@/types/database'
+import { TaskStatusV2, TaskPriorityV2, DeliverableTypeV2 } from '@/types/database'
+
+export async function createV2Task(
+  projectId: string,
+  data: {
+    title: string
+    description?: string
+    status?: TaskStatusV2
+    priority?: TaskPriorityV2
+    due_date?: string | null
+    assignees?: string[]
+    deliverable_type?: DeliverableTypeV2
+    social_post_count?: number
+  }
+) {
+  const supabase = createClient()
+
+  // 1. Find the current stage for the project
+  const { data: stages } = await supabase
+    .from('v2_project_stages')
+    .select('id, status')
+    .eq('project_id', projectId)
+    .order('order', { ascending: true })
+
+  if (!stages || stages.length === 0) throw new Error('Projeto não possui etapas.')
+  
+  // Use first in-progress stage or the first stage
+  const targetStage = stages.find(s => s.status === 'in_progress') || stages[0]
+
+  // 2. Insert Task
+  const { data: task, error: taskError } = await supabase
+    .from('v2_tasks')
+    .insert({
+      project_id: projectId,
+      stage_id: targetStage.id,
+      title: data.title,
+      description: data.description,
+      status: data.status || 'pending',
+      priority: data.priority || 'medium',
+      due_date: data.due_date,
+      deliverable_type: data.deliverable_type || 'default',
+      social_post_count: data.social_post_count || 0
+    })
+    .select('id')
+    .single()
+
+  if (taskError) throw taskError
+
+  // 3. Insert assignees
+  if (data.assignees && data.assignees.length > 0 && task) {
+    const { error: assigneeError } = await supabase
+      .from('v2_task_assignees')
+      .insert(data.assignees.map(userId => ({
+        task_id: task.id,
+        user_id: userId
+      })))
+
+    if (assigneeError) throw assigneeError
+  }
+
+  // 4. Initial Sync Social Posts if needed
+  if (data.social_post_count && data.social_post_count > 0 && task) {
+    await syncSocialPosts(task.id, data.social_post_count)
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath(`/dashboard/projects/${projectId}`)
+  return { id: task?.id }
+}
 
 export async function updateV2Task(
   taskId: string,

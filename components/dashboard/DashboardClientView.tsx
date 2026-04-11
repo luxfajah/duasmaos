@@ -23,6 +23,7 @@ import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { TaskDetailModal } from '@/components/tasks/TaskDetailModal'
+import { TaskEditModal } from '@/components/tasks/TaskEditModal'
 
 function getGreeting(hour: number) {
   if (hour < 12) return 'Bom dia'
@@ -422,21 +423,12 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
       </div>
 
       {/* Modals for Quick Actions */}
-      <Modal open={taskModalOpen} onClose={() => setTaskModalOpen(false)}>
-        <ModalContent>
-          <ModalHeader>
-            <ModalTitle>Nova Tarefa</ModalTitle>
-          </ModalHeader>
-          <ModalBody>
-            <p className="text-sm text-text-secondary">
-              Criando tarefa vinculada ao projeto: <span className="font-bold">{safeSelectedProject?.name}</span> (ID: {activeProjectId}).
-            </p>
-            <div className="mt-4 p-4 border border-border bg-surface-muted rounded-xl text-xs text-text-muted">
-              (Formulário de criação seria renderizado aqui)
-            </div>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <TaskEditModal 
+        open={taskModalOpen} 
+        onClose={() => setTaskModalOpen(false)} 
+        projectId={activeProjectId}
+        projects={projects}
+      />
 
       <Modal open={meetingModalOpen} onClose={() => setMeetingModalOpen(false)}>
         <ModalContent>
