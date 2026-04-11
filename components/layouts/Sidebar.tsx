@@ -8,21 +8,7 @@ import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import {
-  DoodleDashboard,
-  DoodleProjects,
-  DoodleClients,
-  DoodleFinancials,
-  DoodleTeam,
-  DoodleTasks,
-  DoodleCalendarRound,
-  DoodleClip,
-  DoodleSupport,
-  DoodleArchive,
-  DoodleSettings,
-  DoodlePlus,
-  DoodleLogout,
-} from '@/components/ui/EthosIcons'
+import { SlIcon } from '@/components/ui/StreamlineIcon'
 
 /* ─────────────────────────────────────────
    NAV CONFIG
@@ -32,26 +18,26 @@ const navGroups = [
   {
     label: 'Principal',
     items: [
-      { href: '/dashboard', label: 'Dashboard', icon: DoodleDashboard, exact: true },
-      { href: '/dashboard/projects', label: 'Projetos', icon: DoodleProjects },
-      { href: '/dashboard/clients', label: 'Clientes', icon: DoodleClients, exact: true },
-      { href: '/dashboard/financials', label: 'Financeiro', icon: DoodleFinancials },
-      { href: '/dashboard/team', label: 'Equipe', icon: DoodleTeam },
+      { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', exact: true },
+      { href: '/dashboard/projects', label: 'Projetos', icon: 'projects' },
+      { href: '/dashboard/clients', label: 'Clientes', icon: 'clients', exact: true },
+      { href: '/dashboard/financials', label: 'Financeiro', icon: 'financials' },
+      { href: '/dashboard/team', label: 'Equipe', icon: 'team' },
     ],
   },
   {
     label: 'Produção',
     items: [
-      { href: '/dashboard/tasks', label: 'Tarefas', icon: DoodleTasks },
-      { href: '/dashboard/calendar', label: 'Calendário', icon: DoodleCalendarRound },
-      { href: '/dashboard/files', label: 'Arquivos', icon: DoodleClip },
+      { href: '/dashboard/tasks', label: 'Tarefas', icon: 'tasks' },
+      { href: '/dashboard/calendar', label: 'Calendário', icon: 'calendar' },
+      { href: '/dashboard/files', label: 'Arquivos', icon: 'files' },
     ],
   },
   {
     label: 'Sistema',
     items: [
-      { href: '/dashboard/support', label: 'Suporte', icon: DoodleSupport },
-      { href: '/dashboard/archive', label: 'Arquivados', icon: DoodleArchive },
+      { href: '/dashboard/support', label: 'Suporte', icon: 'support' },
+      { href: '/dashboard/archive', label: 'Arquivados', icon: 'archive' },
     ],
   }
 ]
@@ -140,7 +126,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
           )}>
             {/* Ícone — fixo, sempre visível */}
             <span className="flex items-center justify-center w-10 h-10 shrink-0">
-              <DoodlePlus size={20} strokeWidth={2.5} />
+              <SlIcon name="plus" size={20} />
             </span>
             {/* Texto — só aparece quando aberto */}
             <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-150 text-sm whitespace-nowrap pr-4 -ml-1">
@@ -176,7 +162,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
                           <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-highlight rounded-full" />
                         )}
                         <div className="flex items-center justify-center w-8 h-8 shrink-0">
-                          <item.icon size={20} strokeWidth={active ? 2 : 1.6} />
+                          <SlIcon name={item.icon} size={22} />
                         </div>
                         <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           {item.label}
@@ -203,7 +189,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
             )}
           >
             <div className="flex items-center justify-center w-8 h-8 shrink-0">
-              <DoodleSettings size={20} strokeWidth={1.6} />
+              <SlIcon name="settings" size={22} />
             </div>
             <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               Configurações
@@ -226,7 +212,7 @@ export function Sidebar({ className, userEmail, userName }: SidebarProps) {
               className="w-full flex items-center rounded-sm p-2 transition-all duration-150 overflow-hidden text-text-secondary hover:bg-status-danger/10 hover:text-status-danger"
             >
               <div className="flex items-center justify-center w-8 h-8 shrink-0">
-                <DoodleLogout size={20} strokeWidth={1.6} />
+                <SlIcon name="logout" size={22} />
               </div>
               <span className="ml-3 text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 Sair do sistema
