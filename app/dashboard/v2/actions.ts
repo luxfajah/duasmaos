@@ -406,7 +406,7 @@ export async function getV2AllTasks() {
   
   const { data: tasks, error } = await supabase
     .from('v2_tasks')
-    .select('*, v2_project_stages(*), v2_task_assignees(*, profiles(*))')
+    .select('*, v2_projects(name), v2_project_stages(*), v2_task_assignees(*, profiles(*))')
     .order('due_date', { ascending: true })
 
   if (error) throw error

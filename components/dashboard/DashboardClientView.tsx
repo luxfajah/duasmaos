@@ -43,7 +43,8 @@ interface DashboardClientViewProps {
 
 export function DashboardClientView({ user, team, initialProjects, initialTasks }: DashboardClientViewProps) {
   const { projects, selectedProject, setProjects, setSelectedProject } = useProjectContext()
-  const greeting = getGreeting(new Date().getHours())
+  const now = new Date()
+  const greeting = getGreeting(now.getHours())
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [meetingModalOpen, setMeetingModalOpen] = useState(false)
@@ -71,25 +72,33 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
   const activeProjectId = safeSelectedProject?.id
   const projectTasks = initialTasks.filter(t => t.project_id === activeProjectId)
   
-  const pendingTasks = projectTasks.filter(t => t.status !== 'done')
-  const completedTasks = projectTasks
+  // Global Agency Tasks Logic
+  const allTasks = initialTasks || []
+  const globalPendingTasks = allTasks.filter(t => t.status !== 'done')
+  
+  // Sort global tasks: Overdue first, then by deadline
+  const tasksToDisplay = [...globalPendingTasks].sort((a, b) => {
+    const isAOverdue = a.deadline && new Date(a.deadline) < now
+    const isBOverdue = b.deadline && new Date(b.deadline) < now
+    
+    if (isAOverdue && !isBOverdue) return -1
+    if (!isAOverdue && isBOverdue) return 1
+    
+    // Fallback to deadline date
+    if (!a.deadline) return 1
+    if (!b.deadline) return -1
+    return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
+  })
+
+  const globalCompletedTasks = allTasks
     .filter(t => t.status === 'done')
     .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     .slice(0, 5)
 
-  // Cascade Load Strategy logic (Today > Upcoming > Recent/All)
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
-  const todayEnd = new Date()
-  todayEnd.setHours(23, 59, 59, 999)
-
-  let tasksToDisplay = pendingTasks.filter(t => t.deadline && new Date(t.deadline) <= todayEnd)
-  if (tasksToDisplay.length === 0) {
-    tasksToDisplay = pendingTasks.filter(t => t.deadline && new Date(t.deadline) > todayEnd)
-  }
-  if (tasksToDisplay.length === 0) {
-    tasksToDisplay = pendingTasks.slice(0, 3) // Fallback to recent pending
-  }
+  const completedTasks = projectTasks
+    .filter(t => t.status === 'done')
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, 5)
 
   // Active Health Logic
   // Mimicking dynamic 85% visually
@@ -227,25 +236,43 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
         {/* CENTER: Task Cards (flex-1 main content) */}
         <div className="flex-1 flex flex-col gap-6 pt-2">
           {tasksToDisplay.length === 0 ? (
-            <div className="p-8 text-center rounded-3xl floating-card text-text-muted">
-              Nenhuma tarefa para listar.
-            </div>
-          ) : tasksToDisplay.map((task, index) => {
-            
-            const isHighPriority = task.priority === 'urgent' || task.priority === 'high'
-            const isMeeting = task.status === 'review' // Simple mocked fallback logic to show variation
-            const dateObj = task.deadline ? new Date(task.deadline) : null
-            const isToday = dateObj && dateObj.toDateString() === now.toDateString()
+             <div className="p-8 text-center rounded-3xl floating-card text-text-muted">
+               Nenhuma tarefa para listar.
+             </div>
+           ) : tasksToDisplay.map((task, index) => {
+             
+             const dateObj = task.deadline ? new Date(task.deadline) : null
+             const isOverdue = dateObj && dateObj < now && task.status !== 'done'
+             const isHighPriority = task.priority === 'urgent' || task.priority === 'high' || isOverdue
+             const isMeeting = task.status === 'review' 
+             const isToday = dateObj && dateObj.toDateString() === now.toDateString()
 
-            return (
-            <div key={task.id} className={`floating-card rounded-[32px] p-7 xl:p-9 transition-all group ${index % 2 !== 0 ? 'ml-0 xl:ml-6 mt-2' : ''}`}>
-              {isHighPriority && <div className="absolute top-0 right-0 w-32 h-32 bg-brand-terracotta/5 rounded-bl-[100px] pointer-events-none" />}
-              
-              <div className="flex items-center justify-between mb-6 flex-wrap gap-2 relative z-10">
-                <h3 className="text-xl font-bold font-heading flex items-center gap-3">
-                  {isMeeting ? <PhoneCall size={20} strokeWidth={2.5}/> : <Layout size={20} className={isHighPriority ? "text-brand-terracotta" : ""} strokeWidth={2.5}/>}
-                  {task.title}
-                </h3>
+             return (
+             <div key={task.id} className={`floating-card rounded-[32px] p-7 xl:p-9 transition-all group relative overflow-hidden w-full ${isOverdue ? 'border-status-danger/30' : ''}`}>
+               {isHighPriority && <div className={`absolute top-0 right-0 w-32 h-32 ${isOverdue ? 'bg-status-danger/5' : 'bg-brand-terracotta/5'} rounded-bl-[100px] pointer-events-none`} />}
+               
+               <div className="flex items-center justify-between mb-6 flex-wrap gap-2 relative z-10">
+                 <div className="flex flex-col gap-1">
+                    <h3 className="text-xl font-bold font-heading flex items-center gap-3">
+                      {isMeeting ? <PhoneCall size={20} strokeWidth={2.5}/> : <Layout size={20} className={isOverdue ? "text-status-danger" : isHighPriority ? "text-brand-terracotta" : ""} strokeWidth={2.5}/>}
+                      {task.title}
+                    </h3>
+                    <p className="text-[10px] text-text-muted font-bold flex items-center gap-1">
+                       <Layout size={10} /> {task.v2_projects?.name || 'Projeto Geral'}
+                    </p>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   {isOverdue && (
+                     <span className="px-3 py-1.5 bg-status-danger text-white rounded-full text-[10px] font-black font-body uppercase tracking-widest shadow-lg animate-pulse">
+                        Atrasada
+                     </span>
+                   )}
+                   {isHighPriority && !isOverdue && <span className="px-3 py-1.5 bg-terracotta text-white rounded-full text-[11px] font-bold font-body shadow-sm whitespace-nowrap">Alta Prioridade</span>}
+                   <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold font-body tracking-wide whitespace-nowrap ${isMeeting ? 'bg-[#34A853]/15 text-[#21813A]' : 'bg-[#FFD166] text-[#4a3915]'}`}>
+                     {isMeeting ? 'Reunião' : 'Tarefa'}
+                   </span>
+                 </div>
+               </div>
                 <div className="flex items-center gap-2">
                   {isHighPriority && <span className="px-3 py-1.5 bg-terracotta text-white rounded-full text-[11px] font-bold font-body shadow-sm whitespace-nowrap">Alta Prioridade</span>}
                   <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold font-body tracking-wide whitespace-nowrap ${isMeeting ? 'bg-[#34A853]/15 text-[#21813A]' : 'bg-[#FFD166] text-[#4a3915]'}`}>
@@ -347,19 +374,21 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
             </div>
 
             <div className="flex flex-col gap-5 mt-1 relative z-10">
-              {completedTasks.length === 0 ? (
-                 <p className="text-xs text-text-muted text-center py-4">Nenhuma tarefa concluída neste projeto.</p>
+              {globalCompletedTasks.length === 0 ? (
+                 <p className="text-xs text-text-muted text-center py-4">Nenhuma tarefa concluída.</p>
               ) : (
-                completedTasks.map(t => (
+                globalCompletedTasks.map(t => (
                   <div key={t.id} className="flex items-center gap-3">
                      <div className="w-8 h-8 rounded-full bg-sand-dark flex items-center justify-center shrink-0">
                        <Clock size={14} className="text-text-muted" />
                      </div>
                      <div className="flex flex-col flex-1 truncate">
                         <span className="text-xs font-bold text-text-primary truncate">{t.title}</span>
-                        <span className="text-[10px] text-text-muted uppercase tracking-wider">
-                           {new Date(t.updated_at).toLocaleDateString()}
-                        </span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] text-text-muted uppercase tracking-wider">
+                            {new Date(t.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
                      </div>
                      <Avatar 
                         name={t.profiles?.full_name || 'IA'} 
@@ -371,6 +400,14 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                 ))
               )}
             </div>
+
+            <Link 
+              href="/dashboard/tasks/log"
+              className="mt-2 w-full py-3 rounded-xl bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-black uppercase tracking-[0.2em] text-center hover:bg-brand-primary/20 transition-all flex items-center justify-center gap-2 group"
+            >
+               Ver Histórico Completo
+               <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
             
           </div>
 
