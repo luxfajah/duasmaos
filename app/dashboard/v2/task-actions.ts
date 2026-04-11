@@ -205,6 +205,8 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
       
       if (deleteError) throw deleteError
     }
+  }
+
   revalidatePath('/dashboard', 'layout')
   revalidatePath('/dashboard/tasks')
   return { success: true }
