@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import { getClientById, getClientStats } from '../actions'
-import { getProjects } from '@/app/dashboard/projects/actions'
+import { getV2ProjectsByClient } from '@/app/dashboard/v2/actions'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 import { Badge } from '@/components/ui/badge'
 import { MetricCard } from '@/components/dashboard/MetricCard'
@@ -26,12 +26,10 @@ interface Props {
 }
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  draft: { label: 'Rascunho', variant: 'outline' },
-  copy: { label: 'Copy', variant: 'secondary' },
-  review: { label: 'Revisão', variant: 'secondary' },
-  approved: { label: 'Aprovado', variant: 'default' },
-  delayed: { label: 'Atrasado', variant: 'destructive' },
+  active: { label: 'Ativo', variant: 'default' },
+  paused: { label: 'Pausado', variant: 'destructive' },
   completed: { label: 'Concluído', variant: 'default' },
+  archived: { label: 'Arquivado', variant: 'outline' },
 }
 
 const clientStatusMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' }> = {
@@ -50,7 +48,7 @@ export default async function ClientDetailPage({ params }: Props) {
     ;[client, stats, projects] = await Promise.all([
       getClientById(params.id),
       getClientStats(params.id),
-      getProjects(params.id),
+      getV2ProjectsByClient(params.id),
     ])
   } catch {
     notFound()
@@ -178,9 +176,9 @@ export default async function ClientDetailPage({ params }: Props) {
                     <div className="flex items-center gap-3">
                       <div>
                         <p className="font-medium text-text-primary">{project.name}</p>
-                        {project.deadline && (
+                        {project.created_at && (
                           <p className="text-xs text-text-muted mt-0.5">
-                            Prazo: {new Date(project.deadline).toLocaleDateString('pt-BR')}
+                            Criado em: {new Date(project.created_at).toLocaleDateString('pt-BR')}
                           </p>
                         )}
                       </div>

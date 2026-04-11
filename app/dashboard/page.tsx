@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { getProjects } from './projects/actions'
+import { getV2AllProjects, getV2AllTasks } from './v2/actions'
 import { DashboardClientView } from '@/components/dashboard/DashboardClientView'
 
 export default async function DashboardPage() {
@@ -9,14 +9,13 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login')
 
-  const [projects, rawTasks, profileResponse, teamResponse] = await Promise.all([
-    getProjects(),
-    supabase.from('tasks').select('*, profiles(full_name, avatar_url)').order('deadline', { ascending: true }),
+  const [projects, initialTasks, profileResponse, teamResponse] = await Promise.all([
+    getV2AllProjects(),
+    getV2AllTasks(),
     supabase.from('profiles').select('full_name, avatar_url').eq('id', user.id).single(),
     supabase.from('profiles').select('id, full_name, avatar_url').neq('id', user.id).limit(10)
   ])
 
-  const initialTasks = rawTasks.data ?? []
   const profile = profileResponse.data
   const avatarUrl = profile?.avatar_url
   const team = teamResponse.data ?? []

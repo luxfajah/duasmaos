@@ -343,3 +343,113 @@ export async function getV2ProjectById(projectId: string) {
     progress
   }
 }
+
+/**
+ * 6. Get All V2 Projects
+ */
+export async function getV2AllProjects() {
+  const supabase = createClient()
+  
+  const { data: projects, error } = await supabase
+    .from('v2_projects')
+    .select('*, clients(name, company), v2_project_stages(*)')
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  return (projects ?? []).map(p => {
+    const stages = p.v2_project_stages || []
+    const completedStages = stages.filter((s: any) => s.status === 'done' || s.status === 'approved').length
+    const progress = stages.length > 0 ? Math.round((completedStages / stages.length) * 100) : 0
+    
+    return {
+      ...p,
+      clients: p.clients,
+      progress,
+      type: p.workflow_type // Map for UI compatibility
+    }
+  })
+}
+
+/**
+ * 6b. Get V2 Projects by Client
+ */
+export async function getV2ProjectsByClient(clientId: string) {
+  const supabase = createClient()
+  
+  const { data: projects, error } = await supabase
+    .from('v2_projects')
+    .select('*, v2_project_stages(*)')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+
+  return (projects ?? []).map(p => {
+    const stages = p.v2_project_stages || []
+    const completedStages = stages.filter((s: any) => s.status === 'done' || s.status === 'approved').length
+    const progress = stages.length > 0 ? Math.round((completedStages / stages.length) * 100) : 0
+    
+    return {
+      ...p,
+      progress,
+      type: p.workflow_type
+    }
+  })
+}
+
+/**
+ * 7. Get All V2 Tasks
+ */
+export async function getV2AllTasks() {
+  const supabase = createClient()
+  
+  const { data: tasks, error } = await supabase
+    .from('v2_tasks')
+    .select('*, v2_project_stages(*), v2_task_assignees(*, profiles(*))')
+    .order('due_date', { ascending: true })
+
+  if (error) throw error
+
+  return (tasks ?? []).map(t => ({
+    ...t,
+    deadline: t.due_date, // Map for UI compatibility
+    profiles: t.v2_task_assignees?.[0]?.profiles // Take first assignee for simple UI
+  }))
+}
+
+/**
+ * 8. Get V2 Dashboard Stats
+ */
+export async function getV2DashboardStats() {
+  const supabase = createClient()
+
+  const [clientsRes, projectsRes, tasksRes] = await Promise.all([
+    supabase.from('clients').select('id, status'),
+    supabase.from('v2_projects').select('id, status'),
+    supabase.from('v2_tasks').select('id, status, due_date')
+  ])
+
+  const clients = clientsRes.data ?? []
+  const projects = projectsRes.data ?? []
+  const tasks = tasksRes.data ?? []
+
+  const now = new Date()
+  const weekEnd = new Date(now)
+  weekEnd.setDate(weekEnd.getDate() + 7)
+
+  return {
+    totalClients: clients.filter((c) => c.status === 'active').length,
+    activeProjects: projects.filter((p) => p.status === 'active').length,
+    completedProjects: projects.filter((p) => p.status === 'completed').length,
+    weekTasks: tasks.filter((t) => {
+      if (!t.due_date) return false
+      const dl = new Date(t.due_date)
+      return dl >= now && dl <= weekEnd
+    }).length,
+    overdueTasks: tasks.filter((t) => {
+      if (!t.due_date || t.status === 'done') return false
+      return new Date(t.due_date) < now
+    }).length,
+  }
+}

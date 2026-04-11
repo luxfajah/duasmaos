@@ -82,16 +82,16 @@ export async function deleteClient(id: string) {
 export async function getClientStats(clientId: string) {
   const supabase = createClient()
   const { data, error } = await supabase
-    .from('projects')
-    .select('id, status')
+    .from('v2_projects')
+    .select('id, status, created_at')
     .eq('client_id', clientId)
   if (error) throw error
   const projects = data ?? []
   return {
     total: projects.length,
-    active: projects.filter((p) => ['draft', 'copy', 'review'].includes(p.status)).length,
+    active: projects.filter((p) => p.status === 'active').length,
     completed: projects.filter((p) => p.status === 'completed').length,
-    delayed: projects.filter((p) => p.status === 'delayed').length,
+    delayed: 0, // V2 uses stages for health/delays, setting to 0 for now as it doesn't have a status field for delay yet
   }
 }
 

@@ -11,12 +11,11 @@ type KanbanProject = Project & {
   profiles: { full_name: string } | null
 }
 
-const COLUMNS: { id: ProjectStatus; label: string; color: string }[] = [
-  { id: 'draft', label: 'Backlog', color: 'bg-status-draft/10 text-status-draft' },
-  { id: 'copy', label: 'Copy', color: 'bg-status-info/10 text-status-info' },
-  { id: 'review', label: 'Design / Revisão', color: 'bg-status-warning/10 text-status-warning' },
-  { id: 'approved', label: 'Aprovado', color: 'bg-status-success/10 text-status-success' },
-  { id: 'completed', label: 'Concluído', color: 'bg-brand-primary/10 text-brand-primary' },
+const COLUMNS: { id: string; label: string; color: string }[] = [
+  { id: 'active', label: 'Ativos', color: 'bg-status-info/10 text-status-info' },
+  { id: 'paused', label: 'Pausados', color: 'bg-status-warning/10 text-status-warning' },
+  { id: 'completed', label: 'Finalizados', color: 'bg-status-success/10 text-status-success' },
+  { id: 'archived', label: 'Arquivados', color: 'bg-surface-muted text-text-muted' },
 ]
 
 interface KanbanBoardProps {

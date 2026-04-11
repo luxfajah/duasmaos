@@ -1,7 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { getTasks } from './actions'
-import { getProjects } from '@/app/dashboard/projects/actions'
+import { getV2AllTasks, getV2AllProjects } from '@/app/dashboard/v2/actions'
 import { TasksPageClient } from './TasksPageClient'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 
@@ -13,12 +12,12 @@ export default async function TasksPage() {
   const { data: teamData } = await supabase
     .from('profiles')
     .select('id, full_name')
-    .in('role', ['admin', 'writer', 'designer'])
+    .in('role', ['admin', 'gestor', 'writer', 'designer'])
     .order('full_name')
 
   const [tasks, projects] = await Promise.all([
-    getTasks(),
-    getProjects(),
+    getV2AllTasks(),
+    getV2AllProjects(),
   ])
 
   const team = (teamData ?? []) as { id: string; full_name: string }[]

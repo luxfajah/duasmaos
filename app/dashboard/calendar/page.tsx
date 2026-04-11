@@ -1,7 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { getProjects } from '@/app/dashboard/projects/actions'
-import { getTasks } from '@/app/dashboard/tasks/actions'
+import { getV2AllProjects, getV2AllTasks } from '@/app/dashboard/v2/actions'
 import { CalendarView } from '@/components/calendar/CalendarView'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 
@@ -11,27 +10,26 @@ export default async function CalendarPage() {
   if (!user) redirect('/login')
 
   const [projects, tasks] = await Promise.all([
-    getProjects(),
-    getTasks(),
+    getV2AllProjects(),
+    getV2AllTasks(),
   ])
 
-  // Build calendar events from projects (deadline) and tasks (deadline)
+  // Build calendar events from V2 projects (deadline/created_at fallback) and tasks (due_date)
   const events = [
     ...projects
-      .filter((p) => p.deadline)
       .map((p) => ({
         id: `project-${p.id}`,
         title: p.name,
-        date: p.deadline!,
+        date: p.deadline || p.created_at || new Date().toISOString(),
         type: 'project' as const,
         status: p.status,
       })),
     ...tasks
-      .filter((t) => t.deadline)
+      .filter((t) => t.due_date)
       .map((t) => ({
         id: `task-${t.id}`,
         title: t.title,
-        date: t.deadline!,
+        date: t.due_date!,
         type: 'task' as const,
         status: t.status,
       })),

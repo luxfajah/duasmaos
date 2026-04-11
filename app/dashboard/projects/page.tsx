@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { getProjects } from './actions'
+import { getV2AllProjects } from '@/app/dashboard/v2/actions'
 import { getClients } from '@/app/dashboard/clients/actions'
 import { ProjectsPageClient } from './ProjectsPageClient'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
@@ -14,11 +14,11 @@ export default async function ProjectsPage() {
   const { data: teamData } = await supabase
     .from('profiles')
     .select('id, full_name')
-    .in('role', ['admin', 'writer', 'designer'])
+    .in('role', ['admin', 'gestor', 'writer', 'designer'])
     .order('full_name')
 
   const [projects, clients] = await Promise.all([
-    getProjects(),
+    getV2AllProjects(),
     getClients(),
   ])
 
