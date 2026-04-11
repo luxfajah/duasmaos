@@ -3,13 +3,13 @@ import { createClient } from '@/utils/supabase/server'
 import { Sidebar } from '@/components/layouts/Sidebar'
 import { TopBar, ContentWrapper } from '@/components/layouts/TopBar'
 import { ProjectProvider } from '@/components/providers/project-provider'
+import { redirect } from 'next/navigation'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    const { redirect } = await import('next/navigation')
     redirect('/login')
   }
 

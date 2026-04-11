@@ -159,7 +159,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
           {/* Project Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="floating-card rounded-[20px] bg-white/40 backdrop-blur-md border border-white/60 p-4 inline-flex items-center justify-between gap-6 cursor-pointer shadow-sm hover:shadow-md transition-all self-start min-w-[280px]">
+              <div className="floating-card rounded-[20px] p-4 inline-flex items-center justify-between gap-6 cursor-pointer self-start min-w-[280px]">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[#F6E3A2] text-[#A67C00] flex items-center justify-center shadow-inner">
                      <Layout size={20} strokeWidth={2.5}/>
@@ -226,7 +226,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
         {/* CENTER: Task Cards (flex-1 main content) */}
         <div className="flex-1 flex flex-col gap-6 pt-2">
           {tasksToDisplay.length === 0 ? (
-            <div className="p-8 text-center bg-white/40 rounded-3xl border border-white/50 floating-card text-text-muted">
+            <div className="p-8 text-center rounded-3xl floating-card text-text-muted">
               Nenhuma tarefa para listar.
             </div>
           ) : tasksToDisplay.map((task, index) => {
@@ -237,7 +237,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
             const isToday = dateObj && dateObj.toDateString() === now.toDateString()
 
             return (
-            <div key={task.id} className={`floating-card rounded-[32px] bg-white text-text-primary p-7 xl:p-9 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative overflow-hidden transition-all hover:-translate-y-1 hover:shadow-lg group ${index % 2 !== 0 ? 'ml-0 xl:ml-6 mt-2' : ''}`}>
+            <div key={task.id} className={`floating-card rounded-[32px] p-7 xl:p-9 transition-all group ${index % 2 !== 0 ? 'ml-0 xl:ml-6 mt-2' : ''}`}>
               {isHighPriority && <div className="absolute top-0 right-0 w-32 h-32 bg-brand-terracotta/5 rounded-bl-[100px] pointer-events-none" />}
               
               <div className="flex items-center justify-between mb-6 flex-wrap gap-2 relative z-10">
@@ -321,7 +321,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
           </div>
 
           {/* Últimas tarefas concluídas Block instead of Voice AI Block  */}
-          <div className="mt-8 floating-card rounded-[28px] bg-white/50 backdrop-blur-md border border-white/70 p-6 flex flex-col gap-5 shadow-[0_10px_30px_rgb(0,0,0,0.03)] cursor-default transition-colors group relative overflow-hidden">
+          <div className="mt-8 floating-card rounded-[28px] p-6 flex flex-col gap-5 shadow-lg cursor-default group relative overflow-hidden">
              
             <div className="flex items-center justify-between relative z-10 w-full mb-1 border-b border-sand-dark/20 pb-4">
               <h4 className="font-bold font-heading text-text-primary text-[1.10rem] leading-snug">

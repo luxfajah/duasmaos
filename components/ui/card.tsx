@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 const cardVariants = cva(
   [
     "group/card flex flex-col gap-4 overflow-hidden rounded-2xl py-4 text-sm",
-    "ring-1 ring-border/60",
+    "ring-0", // Remove global ring
     "has-data-[slot=card-footer]:pb-0",
     "has-[>img:first-child]:pt-0",
     "data-[size=sm]:gap-3 data-[size=sm]:py-3",
@@ -27,15 +27,15 @@ const cardVariants = cva(
       variant: {
         /* Level 0 — Sand, calming background surface */
         sand:
-          "bg-sand text-text-primary ring-0 border border-sand-dark/50 shadow-xs hover:-translate-y-0.5 hover:shadow-md",
+          "bg-sand text-text-primary border border-sand-dark/50 shadow-xs hover:-translate-y-0.5 hover:shadow-md",
 
         /* Level 1 — Default light surface on white/near-white */
         default:
-          "bg-surface-elevated text-text-primary shadow-sm hover:-translate-y-1 hover:shadow-card-hover",
+          "glass glass-reflection text-text-primary hover:-translate-y-1 hover:shadow-card-hover",
 
         /* Level 2 — Elevated, stronger shadow */
         elevated:
-          "bg-surface-elevated text-text-primary shadow-md hover:-translate-y-1.5 hover:shadow-card-hover",
+          "glass glass-reflection text-text-primary shadow-md hover:-translate-y-1.5 hover:shadow-card-hover",
 
         /* Level 3a — Terracotta: energy and expression */
         terracotta:
@@ -55,7 +55,7 @@ const cardVariants = cva(
         client:
           "bg-surface border border-border shadow-sm text-text-primary",
         highlight:
-          "bg-editorial-highlight text-brand-primary border border-brand-accent/40",
+          "bg-editorial-highlight text-brand-primary border border-brand-accent/40 shadow-sm", // Keep solid
 
         /* Legacy aliases */
         graphite:

@@ -43,7 +43,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     if (initialProject && (!selectedProject || selectedProject.id !== initialProject.id)) {
       setSelectedProjectState(initialProject)
     }
-  }, [projects]) // run when projects are safely loaded
+  }, [projects, selectedProject]) // run when projects are safely loaded
 
   const setSelectedProject = (project: BaseProject | null) => {
     setSelectedProjectState(project)
