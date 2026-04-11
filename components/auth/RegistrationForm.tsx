@@ -29,13 +29,13 @@ export function RegistrationForm({ invitation }: RegistrationFormProps) {
 
   const isClient = invitation.role === 'client'
 
-  // Dynamic email generation for clients: firstname.lastname@duasmaos.com.br
+  // Dynamic email generation: firstname.lastname@duasmaos.com.br
   useEffect(() => {
-    if (isClient && firstName && lastName) {
+    if (firstName && lastName) {
       const prefix = `${firstName.toLowerCase().trim().replace(/\s+/g, '')}.${lastName.toLowerCase().trim().replace(/\s+/g, '')}`
       setEmail(`${prefix}@duasmaos.com.br`)
     }
-  }, [firstName, lastName, isClient])
+  }, [firstName, lastName])
 
   const validations = {
     length: password.length >= 8,
@@ -46,7 +46,7 @@ export function RegistrationForm({ invitation }: RegistrationFormProps) {
 
   const allValid = Object.values(validations).every(v => v)
   const passwordsMatch = password && password === confirmPassword
-  const canSubmit = firstName && (isClient ? lastName : true) && email && allValid && passwordsMatch
+  const canSubmit = firstName && lastName && email && allValid && passwordsMatch
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -95,7 +95,7 @@ export function RegistrationForm({ invitation }: RegistrationFormProps) {
             name="lastName"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            required={isClient}
+            required
             placeholder="Silva"
           />
         </div>
@@ -109,22 +109,19 @@ export function RegistrationForm({ invitation }: RegistrationFormProps) {
             <input
               name="email"
               type="email"
-              readOnly={isClient}
+              readOnly
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="exemplo@email.com"
               className={cn(
-                "w-full h-11 pl-10 pr-4 bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400",
-                isClient && "bg-zinc-50 text-brand-primary font-medium cursor-not-allowed border-brand-primary/20"
+                "w-full h-11 pl-10 pr-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg focus:outline-none transition-all text-brand-primary dark:text-brand-primary font-medium cursor-not-allowed border-brand-primary/20 placeholder:text-zinc-400"
               )}
             />
           </div>
-          {isClient && (
-            <p className="text-[10px] text-brand-primary font-bold uppercase tracking-wider mt-1 px-1">
-              E-mail gerado automaticamente pela agência
-            </p>
-          )}
+          <p className="text-[10px] text-brand-primary font-bold uppercase tracking-wider mt-1 px-1">
+            E-mail gerado automaticamente pela agência
+          </p>
         </div>
 
         <div className="space-y-4 pt-2">
