@@ -40,6 +40,12 @@ export async function seedWorkflowTemplates() {
     { name: 'Publicação', key: 'publicacao', order: 3, approval: false },
   ]
 
+  const websiteStages = [
+    { name: 'Alinhamento', key: 'alinhamento', order: 0, approval: false },
+    { name: 'Conteúdo', key: 'conteudo', order: 1, approval: false },
+    { name: 'Estrutura', key: 'estrutura', order: 2, approval: true },
+    { name: 'Desenvolvimento', key: 'desenvolvimento', order: 3, approval: false },
+    { name: 'Revisão', key: 'revisao', order: 4, approval: true },
     { name: 'Entrega', key: 'entrega', order: 5, approval: false },
   ]
 
