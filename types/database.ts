@@ -192,3 +192,103 @@ export const PIPELINE_STAGE_LABELS: Record<PipelineStage, string> = {
   Fechado: 'Fechado',
   Onboarding: 'Onboarding',
 };
+
+// ── V2 Workflow System ─────────────────────────────────────────────────────
+
+export type WorkflowTypeV2 = 'branding' | 'social_media' | 'website';
+export type StageStatusV2 = 'pending' | 'in_progress' | 'waiting_approval' | 'approved' | 'done';
+export type TaskStatusV2 = 'pending' | 'in_progress' | 'in_review' | 'approved' | 'done' | 'blocked';
+export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
+export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
+export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval';
+export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website';
+export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
+
+export interface V2Workspace {
+  id: string;
+  name: string;
+  owner_id: string;
+  slug: string | null;
+  created_at: string;
+}
+
+export interface V2Project {
+  id: string;
+  workspace_id: string;
+  client_id: string;
+  name: string;
+  workflow_type: WorkflowTypeV2;
+  status: ProjectStatusV2;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface V2ProjectStage {
+  id: string;
+  project_id: string;
+  name: string;
+  stage_key: string;
+  order: number;
+  status: StageStatusV2;
+  requires_approval: boolean;
+  started_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+}
+
+export interface V2Task {
+  id: string;
+  project_id: string;
+  stage_id: string;
+  title: string;
+  description: string | null;
+  type: TaskTypeV2;
+  deliverable_type: DeliverableTypeV2 | null;
+  status: TaskStatusV2;
+  priority: TaskPriorityV2;
+  order: number | null;
+  due_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface V2TaskAssignee {
+  id: string;
+  task_id: string;
+  user_id: string;
+}
+
+export interface V2StageTemplate {
+  id: string;
+  workflow_type: WorkflowTypeV2;
+  name: string;
+  stage_key: string;
+  order: number;
+  requires_approval: boolean;
+}
+
+export interface V2TaskTemplate {
+  id: string;
+  workflow_type: WorkflowTypeV2;
+  stage_key: string;
+  title: string;
+  type: TaskTypeV2;
+  deliverable_type: DeliverableTypeV2 | null;
+  order: number | null;
+}
+
+export interface V2StageApproval {
+  id: string;
+  stage_id: string;
+  approved_by: string;
+  approved_at: string | null;
+  status: ApprovalStatusV2;
+}
+
+export interface V2TaskComment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
