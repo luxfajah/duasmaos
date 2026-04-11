@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { InputField } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Loader2, Check, X, ShieldCheck, ShieldAlert } from 'lucide-react'
-import { changePassword } from '../actions'
+import { changePassword } from '@/app/dashboard/settings/actions'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 

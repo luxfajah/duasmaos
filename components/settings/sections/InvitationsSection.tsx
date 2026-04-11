@@ -14,7 +14,7 @@ import {
   UserPlus,
   ArrowRight
 } from 'lucide-react'
-import { createInvitation, invalidateInvitation } from '../actions'
+import { createInvitation, invalidateInvitation } from '@/app/dashboard/settings/actions'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'

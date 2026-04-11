@@ -29,7 +29,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown'
-import { resetUserPassword, deleteUser } from '../actions'
+import { resetUserPassword, deleteUser } from '@/app/dashboard/settings/actions'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'

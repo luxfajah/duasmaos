@@ -5,7 +5,7 @@ import { InputField } from '@/components/ui/input'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Camera, Loader2, Calendar } from 'lucide-react'
-import { updateProfile } from '../actions'
+import { updateProfile } from '@/app/dashboard/settings/actions'
 import { createClient } from '@/utils/supabase/client'
 import { toast } from 'sonner'
 
