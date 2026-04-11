@@ -10,7 +10,7 @@ import { ProjectPipeline } from '@/components/projects/ProjectPipeline'
 import { V2ProjectWorkspace } from '@/components/projects/V2ProjectWorkspace'
 import { ProjectTypeBadge } from '@/components/projects/ProjectTypeSelect'
 import { TaskKanban } from '@/components/tasks/TaskKanban'
-import { PROJECT_STATUS_LABELS, PRIORITY_LABELS, ProjectType } from '@/types/database'
+import { PROJECT_STATUS_LABELS, PRIORITY_LABELS, WorkflowTypeV2 } from '@/types/database'
 import {
   Calendar,
   User,
@@ -96,12 +96,12 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
           <EditorialHeader
             title={project.name}
-            subtitle={project.clients.name + (project.clients.company ? ` · ${project.clients.company}` : '')}
+            subtitle={project.clients ? project.clients.name + (project.clients.company ? ` · ${project.clients.company}` : '') : ''}
           />
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={statusVariant}>{PROJECT_STATUS_LABELS[project.status]}</Badge>
             {project.type && (
-              <ProjectTypeBadge type={project.type as ProjectType} />
+              <ProjectTypeBadge type={project.type as WorkflowTypeV2} />
             )}
             <span className={`text-xs font-semibold ${PRIORITY_COLOR[project.priority]}`}>
               ↑ {PRIORITY_LABELS[project.priority]}
