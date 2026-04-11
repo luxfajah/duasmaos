@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { TaskStatusV2, TaskPriorityV2, PRIORITY_LABELS, TASK_STATUS_V2_LABELS, DeliverableTypeV2 } from '@/types/database'
 import { updateV2Task, createV2Task, getAllProfiles, syncSocialPosts } from '@/app/dashboard/v2/task-actions'
@@ -17,6 +18,7 @@ interface TaskEditModalProps {
 }
 
 export function TaskEditModal({ task, open, onClose, projectId, projects }: TaskEditModalProps) {
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [profiles, setProfiles] = useState<any[]>([])
   
@@ -92,6 +94,8 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
           return
         }
         
+        
+        router.refresh()
         onClose()
       } catch (err: any) {
         alert('Erro ao salvar: ' + err.message)

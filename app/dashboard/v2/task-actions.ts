@@ -67,7 +67,8 @@ export async function createV2Task(
     await syncSocialPosts(task.id, data.social_post_count)
   }
 
-  revalidatePath('/dashboard')
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
   revalidatePath(`/dashboard/projects/${projectId}`)
   return { id: task?.id }
 }
@@ -82,6 +83,7 @@ export async function updateV2Task(
     priority?: TaskPriorityV2
     due_date?: string | null
     assignees?: string[] // array of profile IDs
+    deliverable_type?: DeliverableTypeV2
     social_post_count?: number
   }
 ) {
@@ -96,6 +98,7 @@ export async function updateV2Task(
       status: data.status,
       priority: data.priority,
       due_date: data.due_date,
+      deliverable_type: data.deliverable_type,
       social_post_count: data.social_post_count,
       updated_at: new Date().toISOString()
     })
@@ -121,8 +124,9 @@ export async function updateV2Task(
     }
   }
 
-  revalidatePath('/dashboard')
-  revalidatePath(`/dashboard/projects/${projectId}/deadlines`)
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
+  revalidatePath(`/dashboard/projects/${projectId}`)
   return { success: true }
 }
 
@@ -201,9 +205,8 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
       
       if (deleteError) throw deleteError
     }
-  }
-
-  revalidatePath('/dashboard')
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
   return { success: true }
 }
 
@@ -219,6 +222,7 @@ export async function updateSocialPost(postId: string, data: any) {
     .eq('id', postId)
 
   if (error) throw error
-  revalidatePath('/dashboard')
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
   return { success: true }
 }
