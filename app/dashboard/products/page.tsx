@@ -7,8 +7,13 @@ export const metadata = {
   description: 'Gerencie templates de produtos e pipelines de entrega.',
 }
 
-export default async function ProductsPage() {
-  const products = await getProductTemplates()
+export default async function ProductsPage({
+  searchParams
+}: {
+  searchParams: { showInactive?: string }
+}) {
+  const showInactive = searchParams.showInactive === 'true'
+  const products = await getProductTemplates(showInactive)
 
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">

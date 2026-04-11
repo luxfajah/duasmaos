@@ -219,13 +219,18 @@ export async function duplicateProductTemplate(id: string) {
   return copy
 }
 
-export async function getProductTemplates() {
+export async function getProductTemplates(includeInactive: boolean = false) {
   const supabase = createClient()
-  const { data, error } = await supabase
+  let query = supabase
     .from('product_templates')
     .select('*, product_template_stages(id, name, product_template_tasks(id))')
-    .eq('is_active', true)
     .order('created_at', { ascending: false })
+
+  if (!includeInactive) {
+    query = query.eq('is_active', true)
+  }
+
+  const { data, error } = await query
 
   if (error) throw error
   
@@ -266,10 +271,53 @@ export async function getProductTemplateById(id: string): Promise<ProductTemplat
 }
 
 export async function deleteProductTemplate(id: string) {
+  return toggleProductActivation(id, false)
+}
+
+export async function toggleProductActivation(id: string, active: boolean) {
   const supabase = createClient()
   const { error } = await supabase
     .from('product_templates')
-    .update({ is_active: false })
+    .update({ is_active: active })
+    .eq('id', id)
+  
+  if (error) throw error
+  revalidatePath('/dashboard/products')
+}
+
+export async function updateProductMetadata(id: string, data: Partial<ProductTemplateData>) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('product_templates')
+    .update({
+      name: data.name,
+      category: data.category,
+      type: data.type,
+      base_price: data.base_price
+    })
+    .eq('id', id)
+
+  if (error) throw error
+  revalidatePath('/dashboard/products')
+  revalidatePath(`/dashboard/products/${id}/builder`)
+}
+
+export async function hardDeleteProductTemplate(id: string) {
+  const supabase = createClient()
+  
+  // Safety check: is it used in any projects?
+  const { count } = await supabase
+    .from('v2_projects')
+    .select('*', { count: 'exact', head: true })
+    .eq('template_id', id)
+
+  if (count && count > 0) {
+    throw new Error('Não é possível excluir um produto que possui projetos vinculados. Desative-o em vez disso.')
+  }
+
+  const { error } = await supabase
+    .from('product_templates')
+    .delete()
     .eq('id', id)
   
   if (error) throw error

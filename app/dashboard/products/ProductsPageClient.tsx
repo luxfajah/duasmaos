@@ -3,7 +3,14 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { duplicateProductTemplate, deleteProductTemplate, createProductTemplate } from './actions'
+import { 
+  duplicateProductTemplate, 
+  deleteProductTemplate, 
+  createProductTemplate, 
+  updateProductMetadata, 
+  toggleProductActivation, 
+  hardDeleteProductTemplate 
+} from './actions'
 import { toast } from 'sonner'
 import { 
   Plus, 
@@ -19,7 +26,10 @@ import {
   Filter,
   CheckCircle2,
   Clock,
-  Briefcase
+  Briefcase,
+  Archive,
+  RotateCcw,
+  ShieldAlert
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -63,11 +73,13 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
   const [typeFilter, setTypeFilter] = useState('all')
   const [showNewModal, setShowNewModal] = useState(false)
   const [newProduct, setNewProduct] = useState({
-    name: '',
-    category: 'Design',
-    type: 'service',
     base_price: 0
   })
+
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editingProduct, setEditingProduct] = useState<ProductTemplate | null>(null)
+
+  const showInactive = useSearchParams().get('showInactive') === 'true'
 
   const filtered = initialProducts.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -90,14 +102,58 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
   }
 
   const handleDelete = (id: string) => {
-    if (!confirm('Tem certeza que deseja desativar este produto?')) return
+    if (!confirm('Tem certeza que deseja desativar este produto? Ele não aparecerá mais como opção para novos projetos.')) return
     startTransition(async () => {
       try {
-        await deleteProductTemplate(id)
+        await toggleProductActivation(id, false)
         toast.success('Produto desativado')
         router.refresh()
       } catch (err) {
         toast.error('Erro ao desativar produto')
+      }
+    })
+  }
+
+  const handleReactivate = (id: string) => {
+    startTransition(async () => {
+      try {
+        await toggleProductActivation(id, true)
+        toast.success('Produto reativado!')
+        router.refresh()
+      } catch (err) {
+        toast.error('Erro ao reativar produto')
+      }
+    })
+  }
+
+  const handleHardDelete = (id: string) => {
+    if (!confirm('AVISO: Esta ação é permanente e excluirá todos os dados do template. Prosseguir?')) return
+    startTransition(async () => {
+      try {
+        await hardDeleteProductTemplate(id)
+        toast.success('Produto excluído permanentemente')
+        router.refresh()
+      } catch (err: any) {
+        toast.error(err.message || 'Erro ao excluir produto')
+      }
+    })
+  }
+
+  const handleUpdateMetadata = async () => {
+    if (!editingProduct) return
+    startTransition(async () => {
+      try {
+        await updateProductMetadata(editingProduct.id, {
+          name: editingProduct.name,
+          category: editingProduct.category,
+          type: editingProduct.type,
+          base_price: editingProduct.base_price
+        })
+        toast.success('Informações atualizadas!')
+        setShowEditModal(false)
+        router.refresh()
+      } catch (err) {
+        toast.error('Erro ao atualizar produto')
       }
     })
   }
@@ -143,6 +199,21 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             <option value="service">Serviço/Único</option>
             <option value="recurring">Recorrente</option>
           </select>
+          <Button
+            variant="outline"
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search)
+              params.set('showInactive', (!showInactive).toString())
+              router.push(`?${params.toString()}`)
+            }}
+            className={cn(
+              "h-11 px-4 rounded-xl font-bold transition-all border-border/50",
+              showInactive ? "bg-surface-muted text-text-primary" : "text-text-muted hover:text-text-primary"
+            )}
+          >
+            {showInactive ? <RotateCcw size={16} className="mr-2" /> : <Archive size={16} className="mr-2" />}
+            {showInactive ? 'Ver Ativos' : 'Ver Inativos'}
+          </Button>
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 w-full lg:w-auto no-scrollbar">
@@ -202,10 +273,19 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
                       <Edit3 size={14} className="text-brand-primary" /> Editar Pipeline
                     </DropdownMenuItem>
                     <DropdownMenuItem 
+                      onClick={() => {
+                        setEditingProduct(product)
+                        setShowEditModal(true)
+                      }}
+                      className="rounded-lg gap-2 cursor-pointer font-bold py-2"
+                    >
+                      <Layout size={14} className="text-status-info" /> Editar Informações
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
                       onClick={() => handleDuplicate(product.id)}
                       className="rounded-lg gap-2 cursor-pointer font-bold py-2"
                     >
-                      <Copy size={14} className="text-status-info" /> Duplicar Produto
+                      <Copy size={14} className="text-brand-primary" /> Duplicar Produto
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => router.push(`/dashboard/projects?templateId=${product.id}`)}
@@ -214,12 +294,29 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
                       <Briefcase size={14} className="text-status-success" /> Criar Projeto
                     </DropdownMenuItem>
                     <div className="h-px bg-border/50 my-1" />
-                    <DropdownMenuItem 
-                      onClick={() => handleDelete(product.id)}
-                      className="rounded-lg gap-2 cursor-pointer font-bold text-status-danger py-2 hover:bg-status-danger/10"
-                    >
-                      <Trash2 size={14} /> Desativar
-                    </DropdownMenuItem>
+                    {product.is_active ? (
+                      <DropdownMenuItem 
+                        onClick={() => handleDelete(product.id)}
+                        className="rounded-lg gap-2 cursor-pointer font-bold text-status-danger py-2 hover:bg-status-danger/10"
+                      >
+                        <Trash2 size={14} /> Desativar
+                      </DropdownMenuItem>
+                    ) : (
+                      <>
+                        <DropdownMenuItem 
+                          onClick={() => handleReactivate(product.id)}
+                          className="rounded-lg gap-2 cursor-pointer font-bold text-status-success py-2 hover:bg-status-success/10"
+                        >
+                          <RotateCcw size={14} /> Reativar
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleHardDelete(product.id)}
+                          className="rounded-lg gap-2 cursor-pointer font-bold text-status-danger py-2 hover:bg-status-danger/20"
+                        >
+                          <ShieldAlert size={14} /> Excluir Permanente
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -332,6 +429,68 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               className="h-11 px-8 rounded-xl bg-brand-primary text-white font-black shadow-xl shadow-brand-primary/20"
             >
               {isPending ? 'Iniciando...' : 'Iniciar Configuração'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Edit Metadata Modal ── */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="sm:max-w-md rounded-2xl border-border bg-surface/90 backdrop-blur-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black font-heading text-text-primary">Editar Informações</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Nome do Produto</label>
+              <Input 
+                placeholder="Ex: Identidade Visual express" 
+                className="h-12 bg-surface/50 border-border/50 rounded-xl"
+                value={editingProduct?.name || ''}
+                onChange={(e) => editingProduct && setEditingProduct({ ...editingProduct, name: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Categoria</label>
+                <select 
+                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none"
+                  value={editingProduct?.category || 'Design'}
+                  onChange={(e) => editingProduct && setEditingProduct({ ...editingProduct, category: e.target.value })}
+                >
+                  {CATEGORIES.filter(c => c !== 'Todos').map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Tipo</label>
+                <select 
+                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none"
+                  value={editingProduct?.type || 'service'}
+                  onChange={(e) => editingProduct && setEditingProduct({ ...editingProduct, type: e.target.value })}
+                >
+                  <option value="service">Serviço / Único</option>
+                  <option value="recurring">Recorrente</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Investimento Base (R$)</label>
+              <Input 
+                type="number"
+                className="h-12 bg-surface/50 border-border/50 rounded-xl font-mono"
+                value={editingProduct?.base_price || 0}
+                onChange={(e) => editingProduct && setEditingProduct({ ...editingProduct, base_price: Number(e.target.value) })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowEditModal(false)} className="h-11 px-6 rounded-xl font-bold">Cancelar</Button>
+            <Button 
+              onClick={handleUpdateMetadata} 
+              disabled={isPending}
+              className="h-11 px-8 rounded-xl bg-brand-primary text-white font-black shadow-xl shadow-brand-primary/20"
+            >
+              {isPending ? 'Salvando...' : 'Salvar Alterações'}
             </Button>
           </DialogFooter>
         </DialogContent>
