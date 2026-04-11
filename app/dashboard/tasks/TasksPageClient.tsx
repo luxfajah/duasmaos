@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Task } from '@/types/database'
+import { V2Task, TaskStatusV2 } from '@/types/database'
 import { TasksTable } from '@/components/tasks/TasksTable'
 import { TaskModal } from '@/components/tasks/TaskModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 
-type TaskWithRelations = Task & {
+type TaskWithRelations = V2Task & {
   projects: { name: string; client_id: string; clients: { name: string } | null } | null
   profiles: { full_name: string } | null
 }
@@ -54,10 +54,12 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
           aria-label="Filtrar por status"
         >
           <option value="all">Todos os status</option>
-          <option value="todo">A fazer</option>
+          <option value="pending">Pendente</option>
           <option value="in_progress">Em progresso</option>
-          <option value="review">Revisão</option>
+          <option value="in_review">Revisão</option>
+          <option value="approved">Aprovado</option>
           <option value="done">Concluído</option>
+          <option value="blocked">Bloqueado</option>
         </select>
         <Button onClick={() => setShowModal(true)} className="flex items-center gap-2 flex-shrink-0">
           <Plus size={16} />

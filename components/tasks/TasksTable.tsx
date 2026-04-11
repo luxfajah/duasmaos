@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Task, TaskStatus } from '@/types/database'
+import { V2Task, TaskStatusV2 } from '@/types/database'
 import { updateTaskStatus, deleteTask } from '@/app/dashboard/tasks/actions'
 import {
   Table,
@@ -15,16 +15,17 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Pencil, Trash2, Clock, AlertCircle } from 'lucide-react'
 
-type TaskWithRelations = Task & {
+type TaskWithRelations = V2Task & {
   projects: { name: string; client_id: string; clients: { name: string } | null } | null
-  profiles: { full_name: string } | null
 }
 
-const statusConfig: Record<TaskStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  todo: { label: 'A fazer', variant: 'outline' },
+const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  pending: { label: 'Pendente', variant: 'outline' },
   in_progress: { label: 'Em progresso', variant: 'secondary' },
-  review: { label: 'Revisão', variant: 'secondary' },
+  in_review: { label: 'Revisão', variant: 'secondary' },
+  approved: { label: 'Aprovado', variant: 'default' },
   done: { label: 'Concluído', variant: 'default' },
+  blocked: { label: 'Bloqueado', variant: 'destructive' },
 }
 
 const priorityMap: Record<string, string> = {
@@ -54,7 +55,7 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
     }
   }
 
-  async function handleStatusChange(id: string, status: TaskStatus) {
+  async function handleStatusChange(id: string, status: TaskStatusV2) {
     try {
       await updateTaskStatus(id, status)
     } catch {
@@ -109,13 +110,15 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
               <TableCell>
                 <select
                   value={task.status}
-                  onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatus)}
+                  onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatusV2)}
                   className="text-xs border border-border rounded-md px-2 py-1 bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
                 >
-                  <option value="todo">A fazer</option>
+                  <option value="pending">Pendente</option>
                   <option value="in_progress">Em progresso</option>
-                  <option value="review">Revisão</option>
+                  <option value="in_review">Revisão</option>
+                  <option value="approved">Aprovado</option>
                   <option value="done">Concluído</option>
+                  <option value="blocked">Bloqueado</option>
                 </select>
               </TableCell>
               <TableCell>

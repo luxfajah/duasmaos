@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { ProjectsTable } from '@/components/projects/ProjectsTable'
 import { ProjectModal } from '@/components/projects/ProjectModal'

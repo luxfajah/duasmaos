@@ -19,7 +19,7 @@ import {
   FileText,
 } from 'lucide-react'
 import Link from 'next/link'
-import { ProjectType } from '@/types/database'
+import { WorkflowTypeV2 } from '@/types/database'
 
 interface Props {
   params: { id: string }
@@ -183,7 +183,7 @@ export default async function ClientDetailPage({ params }: Props) {
                         )}
                       </div>
                       {project.type && (
-                        <ProjectTypeBadge type={project.type as ProjectType} />
+                        <ProjectTypeBadge type={project.type as WorkflowTypeV2} />
                       )}
                     </div>
                     <Badge variant={cfg.variant}>{cfg.label}</Badge>
