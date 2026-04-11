@@ -133,7 +133,7 @@ function TaskCard({ task, onClick }: { task: V2Task; onClick: () => void }) {
         {/* Action Button */}
         <Button 
           size="sm" 
-          variant={isDone ? "ghost" : "brand"} 
+          variant={isDone ? "ghost" : "default"} 
           className="h-7 w-7 p-0 rounded-lg shadow-sm"
         >
           {isDone ? (
