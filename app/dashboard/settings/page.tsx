@@ -43,7 +43,7 @@ export default async function SettingsPage() {
     // Fetch all profiles
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, full_name, first_name, last_name, role, avatar_url, last_login, clients(name)')
+      .select('id, full_name, first_name, last_name, role, avatar_url, last_login')
       .order('role')
       .order('full_name')
     
@@ -52,7 +52,7 @@ export default async function SettingsPage() {
     // Fetch all invitations
     const { data: invitations } = await supabase
       .from('invitations')
-      .select('*, clients(name)')
+      .select('*')
       .order('created_at', { ascending: false })
     
     allInvitations = invitations ?? []

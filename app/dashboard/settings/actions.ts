@@ -42,8 +42,31 @@ const COMMON_PASSWORDS = ['123456', 'password', '12345678', 'qwerty']
 
 export async function changePassword(formData: FormData) {
   const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autorizado.')
+
+  const currentPassword = formData.get('current_password') as string
   const newPassword = formData.get('new_password') as string
   const confirmPassword = formData.get('confirm_password') as string
+
+  // Fetch profile to check if current password is required
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('requires_password_change')
+    .eq('id', user.id)
+    .single()
+
+  // Verify current password if NOT forced to change
+  if (profile && !profile.requires_password_change) {
+    if (!currentPassword) throw new Error('A senha atual é obrigatória.')
+    
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email: user.email!,
+      password: currentPassword
+    })
+    
+    if (verifyError) throw new Error('A senha atual está incorreta.')
+  }
 
   if (newPassword !== confirmPassword) {
     throw new Error('As senhas não coincidem.')

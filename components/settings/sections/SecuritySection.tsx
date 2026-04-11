@@ -8,8 +8,13 @@ import { changePassword } from '@/app/dashboard/settings/actions'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
-export function SecuritySection() {
+interface SecuritySectionProps {
+  requiresPasswordChange?: boolean
+}
+
+export function SecuritySection({ requiresPasswordChange }: SecuritySectionProps) {
   const [loading, setLoading] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
@@ -32,6 +37,7 @@ export function SecuritySection() {
     try {
       await changePassword(formData)
       toast.success('Senha alterada com sucesso!')
+      setCurrentPassword('')
       setPassword('')
       setConfirmPassword('')
     } catch (err: any) {
@@ -57,6 +63,21 @@ export function SecuritySection() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {!requiresPasswordChange && (
+            <div className="max-w-md">
+              <InputField
+                label="Senha Atual"
+                name="current_password"
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <InputField

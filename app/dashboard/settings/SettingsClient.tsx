@@ -72,7 +72,9 @@ export function SettingsClient({ profile, users, invitations, clients }: Setting
       <main className="flex-1">
         {activeSection === 'profile' && <ProfileSection profile={profile} />}
         {activeSection === 'users' && isAdmin && <UsersSection users={users} />}
-        {activeSection === 'security' && <SecuritySection />}
+        {activeSection === 'security' && (
+          <SecuritySection requiresPasswordChange={profile.requires_password_change} />
+        )}
         {activeSection === 'invitations' && isAdmin && (
           <InvitationsSection clients={clients} invitations={invitations} />
         )}
