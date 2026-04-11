@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { V2Project, ProjectStatusV2 } from '@/types/database'
-import { updateProjectStatus, deleteProject } from '@/app/dashboard/projects/actions'
+import { updateProjectStatus, deleteProject, ProjectDTO } from '@/app/dashboard/projects/actions'
 import { ProjectModal } from './ProjectModal'
 import {
   Table,
@@ -18,16 +18,7 @@ import { Progress } from '@/components/ui/progress'
 import { RefreshCw, User, DollarSign, CheckCircle2, AlertCircle, Clock, ExternalLink, Pencil, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 
-type ProjectWithRelations = V2Project & {
-  clients: { name: string } | null
-  profiles: { full_name: string } | null
-  deadline?: string | null
-  priority?: string | null
-  progress?: number
-  amount?: number
-  project_type?: 'one_time' | 'recurring'
-  revenues?: any[]
-}
+
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
   active: { label: 'Ativo', variant: 'default' },
@@ -44,7 +35,7 @@ const priorityMap: Record<string, string> = {
 }
 
 interface ProjectsTableProps {
-  projects: ProjectWithRelations[]
+  projects: ProjectDTO[]
   clients: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
 }
@@ -100,7 +91,7 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
             
             const progress = project.progress ?? 0
             const amount = project.amount || 0
-            const isRecurring = project.project_type === 'recurring'
+            const isRecurring = project.type === 'recurring'
             const paymentStatus = project.revenues?.some(r => r.status === 'paid') ? 'paid' : 'pending'
 
             return (

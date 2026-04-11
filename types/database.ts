@@ -231,6 +231,11 @@ export interface V2Project {
   name: string;
   workflow_type: WorkflowTypeV2;
   status: ProjectStatusV2;
+  owner_id: string | null;
+  type: 'one_time' | 'recurring';
+  amount: number | null;
+  billing_day: number | null;
+  auto_restart: boolean;
   created_at: string;
   updated_at: string;
 }

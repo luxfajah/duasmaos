@@ -8,18 +8,12 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 
+import { ProjectDTO } from './actions'
 import { DollarSign, Briefcase, RefreshCw, AlertTriangle } from 'lucide-react'
 import { MetricCard } from '@/components/dashboard/MetricCard'
 
-type ProjectWithRelations = V2Project & {
-  clients: { name: string } | null
-  profiles: { full_name: string } | null
-  project_type?: 'one_time' | 'recurring'
-  amount?: number
-}
-
 interface ProjectsPageClientProps {
-  initialProjects: ProjectWithRelations[]
+  initialProjects: ProjectDTO[]
   clients: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
 }
@@ -42,7 +36,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
   const totalProjects = initialProjects.length
   const activeProjects = initialProjects.filter(p => p.status === 'active').length
   const recurringRevenue = initialProjects
-    .filter(p => p.project_type === 'recurring' && p.status === 'active')
+    .filter(p => p.type === 'recurring' && p.status === 'active')
     .reduce((acc, p) => acc + (p.amount || 0), 0)
   const totalMonthlyValue = initialProjects
     .filter(p => p.status === 'active')
@@ -53,7 +47,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.clients?.name ?? '').toLowerCase().includes(search.toLowerCase())
     const matchesStatus = statusFilter === 'all' || p.status === statusFilter
-    const matchesType = typeFilter === 'all' || p.project_type === typeFilter
+    const matchesType = typeFilter === 'all' || p.type === typeFilter
     return matchesSearch && matchesStatus && matchesType
   })
 

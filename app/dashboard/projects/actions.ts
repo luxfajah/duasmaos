@@ -4,24 +4,22 @@ import { createClient } from '@/utils/supabase/server'
 import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority, V2Task, V2ProjectStage } from '@/types/database'
 import { revalidatePath } from 'next/cache'
 
-export type ExtendedProject = V2Project & { 
-  clients: { name: string; company?: string | null } | null; 
+export type ProjectDTO = V2Project & { 
+  clients: { name: string; company: string | null } | null; 
+  profiles: { full_name: string; avatar_url: string | null } | null;
   progress: number;
   health_score: number;
-  profiles?: { full_name: string; avatar_url?: string | null } | null;
-  deadline?: string | null;
-  stages?: V2ProjectStage[];
-  tasks?: V2Task[];
-  revenues?: any[];
-  project_type?: 'one_time' | 'recurring';
-  amount?: number;
+  deadline: string | null;
+  stages: V2ProjectStage[];
+  tasks: V2Task[];
+  revenues: any[];
 };
 
-export async function getProjects(clientId?: string): Promise<ExtendedProject[]> {
+export async function getProjects(clientId?: string): Promise<ProjectDTO[]> {
   const supabase = createClient()
   let query = supabase
     .from('v2_projects')
-    .select('*, clients(name, company), v2_project_stages(*), v2_tasks(*), revenues(*)')
+    .select('*, clients(name, company), profiles(full_name, avatar_url), v2_project_stages(*), v2_tasks(*), revenues(*)')
     .order('created_at', { ascending: false })
 
   if (clientId) {
@@ -40,15 +38,27 @@ export async function getProjects(clientId?: string): Promise<ExtendedProject[]>
       ...p,
       progress,
       health_score: progress,
-    } as ExtendedProject
+      deadline: p.deadline || null,
+      clients: p.clients ? {
+        name: p.clients.name,
+        company: p.clients.company || null
+      } : null,
+      profiles: p.profiles ? {
+        full_name: p.profiles.full_name,
+        avatar_url: p.profiles.avatar_url || null
+      } : null,
+      stages: p.v2_project_stages || [],
+      tasks: p.v2_tasks || [],
+      revenues: p.revenues || []
+    } as ProjectDTO
   })
 }
 
-export async function getProjectById(id: string): Promise<ExtendedProject> {
+export async function getProjectById(id: string): Promise<ProjectDTO> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('v2_projects')
-    .select('*, clients(name, company), v2_project_stages(*), v2_tasks(*)')
+    .select('*, clients(name, company), profiles(full_name, avatar_url), v2_project_stages(*), v2_tasks(*), revenues(*)')
     .eq('id', id)
     .single()
   if (error) throw error
@@ -62,7 +72,19 @@ export async function getProjectById(id: string): Promise<ExtendedProject> {
     ...p,
     progress,
     health_score: progress,
-  } as ExtendedProject;
+    deadline: p.deadline || null,
+    clients: p.clients ? {
+      name: p.clients.name,
+      company: p.clients.company || null
+    } : null,
+    profiles: p.profiles ? {
+      full_name: p.profiles.full_name,
+      avatar_url: p.profiles.avatar_url || null
+    } : null,
+    stages: p.v2_project_stages || [],
+    tasks: p.v2_tasks || [],
+    revenues: p.revenues || []
+  } as ProjectDTO;
 }
 
 export async function deleteProject(id: string) {
