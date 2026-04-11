@@ -41,7 +41,7 @@ interface ProjectsTableProps {
 }
 
 export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
-  const [editingProject, setEditingProject] = useState<ProjectWithRelations | null>(null)
+  const [editingProject, setEditingProject] = useState<ProjectDTO | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function handleDelete(id: string) {
