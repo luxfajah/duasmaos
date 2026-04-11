@@ -27,7 +27,7 @@ export function TopBar({ className, userName, userEmail }: TopBarProps) {
   return (
     <header
       className={cn(
-        'h-14 relative z-40',
+        'h-14 relative z-30',
         'flex items-center px-6 lg:px-8',
         'bg-transparent',
         className

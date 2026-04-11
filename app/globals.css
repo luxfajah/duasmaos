@@ -106,12 +106,12 @@
      DARK MODE
   ───────────────────────────────────────── */
   .dark {
-    --background: 222 28% 9%;
-    --foreground: 35 30% 92%;
-    --surface: 222 25% 13%;
-    --surface-muted: 222 22% 17%;
-    --surface-elevated: 222 25% 16%;
-    --surface-deep-blue: 222 30% 10%;
+    --background: 222 28% 7%;
+    --foreground: 35 30% 95%;
+    --surface: 222 30% 10%;
+    --surface-muted: 222 22% 14%;
+    --surface-elevated: 222 25% 12%;
+    --surface-deep-blue: 222 30% 8%;
     --border: 222 18% 22%;
     --border-strong: 222 18% 30%;
 

@@ -29,7 +29,7 @@ export function Header({
   return (
     <header
       className={cn(
-        'h-16 sticky top-0 z-40',
+        'h-16 sticky top-0 z-30',
         /* Sand-warm header background */
         'bg-background/92 backdrop-blur-md',
         'border-b border-sand-dark/50',
