@@ -21,7 +21,7 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
   const avgLeadTime = completedProjects.length > 0 ? (totalDays / completedProjects.length).toFixed(1) : '-'
 
   // 2. Delay Rate
-  const totalActiveAndCompleted = projects.filter(p => p.status !== 'draft' && p.status !== 'archived')
+  const totalActiveAndCompleted = projects.filter(p => p.status !== 'archived')
   const delayedProjects = projects.filter(p => {
     if (p.status === 'completed') {
       if (!p.deadline || !p.completed_at) return false
