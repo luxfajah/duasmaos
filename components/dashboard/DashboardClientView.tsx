@@ -21,6 +21,7 @@ import { Task } from '@/types/database'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
+import { TaskDetailModal } from '@/components/tasks/TaskDetailModal'
 
 function getGreeting(hour: number) {
   if (hour < 12) return 'Bom dia'
@@ -43,6 +44,8 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
 
   const [taskModalOpen, setTaskModalOpen] = useState(false)
   const [meetingModalOpen, setMeetingModalOpen] = useState(false)
+  const [taskDetailModalOpen, setTaskDetailModalOpen] = useState(false)
+  const [selectedTaskDetail, setSelectedTaskDetail] = useState<any>(null)
 
   useEffect(() => {
     // Populate context strictly bypassing tasks array from global state payload
@@ -227,7 +230,7 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
                   {task.title}
                 </h3>
                 <div className="flex items-center gap-2">
-                  {isHighPriority && <span className="px-3 py-1.5 bg-brand-terracotta text-white rounded-full text-[11px] font-bold font-body shadow-sm whitespace-nowrap">Alta Prioridade</span>}
+                  {isHighPriority && <span className="px-3 py-1.5 bg-terracotta text-white rounded-full text-[11px] font-bold font-body shadow-sm whitespace-nowrap">Alta Prioridade</span>}
                   <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold font-body tracking-wide whitespace-nowrap ${isMeeting ? 'bg-[#34A853]/15 text-[#21813A]' : 'bg-[#FFD166] text-[#4a3915]'}`}>
                     {isMeeting ? 'Reunião' : 'Tarefa'}
                   </span>
@@ -250,9 +253,15 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
                   </div>
                   <span className="text-[11px] text-text-muted font-bold whitespace-nowrap">Responsável ativo</span>
                 </div>
-                <button className={`px-5 py-2.5 rounded-full text-[11px] font-bold font-heading shrink-0 uppercase tracking-widest hover:scale-105 active:scale-95 duration-200 shadow-sm flex items-center gap-2 ${isHighPriority ? 'bg-[#111111] hover:bg-black text-white' : 'bg-sand hover:bg-sand-dark text-text-primary'}`}>
+                <button 
+                  onClick={() => {
+                    setSelectedTaskDetail(task)
+                    setTaskDetailModalOpen(true)
+                  }}
+                  className={`px-5 py-2.5 rounded-full text-[11px] font-bold font-heading shrink-0 uppercase tracking-widest hover:scale-105 active:scale-95 duration-200 shadow-sm flex items-center gap-2 ${isHighPriority ? 'bg-[#111111] hover:bg-black text-white' : 'bg-sand hover:bg-sand-dark text-text-primary'}`}
+                >
                   {isHighPriority && <span className="text-brand-primary group-hover:rotate-12 transition-transform">✦</span>}
-                  {isMeeting ? 'Juntar-se à Reunião' : 'Ação de IA'}
+                  {isMeeting ? 'Juntar-se à Reunião' : 'Ver Detalhes'}
                 </button>
               </div>
             </div>
@@ -363,6 +372,12 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      <TaskDetailModal 
+        open={taskDetailModalOpen} 
+        onClose={() => setTaskDetailModalOpen(false)} 
+        task={selectedTaskDetail} 
+      />
     </div>
   )
 }
