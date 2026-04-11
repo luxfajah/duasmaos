@@ -257,6 +257,7 @@ export interface V2Task {
   priority: TaskPriorityV2;
   order: number | null;
   due_date: string | null;
+  start_date: string | null;
   /** Populated via v2_task_assignees join or direct column if migrated */
   assigned_to?: string | null;
   created_at: string;
@@ -313,6 +314,7 @@ export type TaskWithRelations = V2Task & {
   profiles: { full_name: string } | null
   /** Alias kept for legacy fallback components that read task.deadline */
   deadline?: string | null
+  start_date?: string | null
 }
 
 /** V2Project enriched for Kanban display (includes client name, optional profile, and legacy fields used by KanbanCard). */
