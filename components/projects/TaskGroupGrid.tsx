@@ -4,7 +4,7 @@ import { V2Task, TaskTypeV2, TaskStatusV2, TaskPriorityV2 } from "@/types/databa
 import { cn } from "@/lib/utils"
 import { Calendar, Users, MessageSquare, Play, CheckCircle2, MoreHorizontal, Clock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 
 interface TaskGroupGridProps {
@@ -113,10 +113,13 @@ function TaskCard({ task, onClick }: { task: V2Task; onClick: () => void }) {
           {assignees.length > 0 && (
             <div className="avatar-stack">
               {assignees.slice(0, 3).map((a: any) => (
-                <Avatar key={a.id} className="w-5 h-5 border-[1.5px] border-surface">
-                  <AvatarImage src={a.profiles?.avatar_url} />
-                  <AvatarFallback className="text-[8px]">{a.profiles?.full_name?.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <Avatar 
+                  key={a.id} 
+                  src={a.profiles?.avatar_url} 
+                  name={a.profiles?.full_name}
+                  size="xs"
+                  className="border-[1.5px] border-surface" 
+                />
               ))}
               {assignees.length > 3 && (
                 <div className="w-5 h-5 rounded-full border-[1.5px] border-surface bg-surface-muted flex items-center justify-center text-[7px] font-bold text-text-muted">
