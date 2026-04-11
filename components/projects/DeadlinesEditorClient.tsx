@@ -134,46 +134,7 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
   return (
     <div className="flex flex-col gap-8 pb-32">
       
-      {/* 1. Anchoring Section */}
-      <div className="glass rounded-[32px] p-6 sm:p-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border border-border relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-5">
-           <CalendarClock size={120} />
-        </div>
 
-        <div className="z-10">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary mb-2 flex items-center gap-2">
-            <LayoutList size={14} /> Configurações do Projeto
-          </p>
-          <h3 className="text-xl font-black font-heading text-text-primary">Âncora do Cronograma</h3>
-          <p className="text-sm text-text-muted mt-1 font-body">Defina a data base que rege todas as entregas.</p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-end gap-4 z-10 w-full lg:w-auto">
-          <div className="w-full sm:w-[220px]">
-            <label className="text-[9px] font-black uppercase tracking-widest text-text-muted mb-2 block">Data de Início do Projeto</label>
-            <div className="relative">
-              <input 
-                type="date"
-                value={projStartDate}
-                onChange={(e) => handleProjectStartChange(e.target.value)}
-                disabled={!canEdit}
-                className="glass-input w-full rounded-xl py-3 px-4 font-bold text-sm focus:ring-brand-primary disabled:opacity-50"
-              />
-              <Calendar size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-primary pointer-events-none" />
-            </div>
-          </div>
-          {canEdit && (
-            <button
-               onClick={shiftAllTasks}
-               className="h-[46px] px-6 rounded-xl bg-surface border border-border text-[10px] font-black uppercase tracking-widest text-text-primary hover:bg-surface-muted transition-all flex items-center gap-2"
-               title="Move todas as tarefas baseado na nova data de início"
-            >
-               <RefreshCcw size={14} />
-               Reajustar Tudo
-            </button>
-          )}
-        </div>
-      </div>
 
       {/* 2. Horizontal Pipeline Timeline */}
       <div className="glass rounded-[32px] p-6 border border-border overflow-hidden">
