@@ -71,7 +71,7 @@ export async function syncProductTemplate(id: string, data: ProductTemplateData)
   const incomingStageIds = new Set(data.stages.map(s => s.id).filter(Boolean) as string[])
 
   // Stages to delete
-  const stagesToDelete = [...existingStageIds].filter(sid => !incomingStageIds.has(sid))
+  const stagesToDelete = Array.from(existingStageIds).filter(sid => !incomingStageIds.has(sid))
   if (stagesToDelete.length > 0) {
     await supabase.from('product_template_stages').delete().in('id', stagesToDelete)
   }
@@ -119,7 +119,7 @@ export async function syncProductTemplate(id: string, data: ProductTemplateData)
     const incomingTaskIds = new Set(stage.tasks.map(t => t.id).filter(Boolean) as string[])
 
     // Tasks to delete
-    const tasksToDelete = [...existingTaskIds].filter(tid => !incomingTaskIds.has(tid))
+    const tasksToDelete = Array.from(existingTaskIds).filter(tid => !incomingTaskIds.has(tid))
     if (tasksToDelete.length > 0) {
       await supabase.from('product_template_tasks').delete().in('id', tasksToDelete)
     }
