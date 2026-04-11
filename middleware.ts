@@ -50,6 +50,25 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Forced password change logic
+  if (user && request.nextUrl.pathname.startsWith('/dashboard')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('requires_password_change')
+      .eq('id', user.id)
+      .single()
+
+    const isSettingsPage = request.nextUrl.pathname === '/dashboard/settings'
+    const isSecuritySection = request.nextUrl.searchParams.get('section') === 'security'
+
+    if (profile?.requires_password_change && (!isSettingsPage || !isSecuritySection)) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard/settings'
+      url.searchParams.set('section', 'security')
+      return NextResponse.redirect(url)
+    }
+  }
+
   return supabaseResponse
 }
 

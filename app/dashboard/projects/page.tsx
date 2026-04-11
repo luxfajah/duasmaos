@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { getV2AllProjects } from '@/app/dashboard/v2/actions'
+import { getProjects } from '@/app/dashboard/projects/actions'
 import { getClients } from '@/app/dashboard/clients/actions'
 import { ProjectsPageClient } from './ProjectsPageClient'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
@@ -18,7 +18,7 @@ export default async function ProjectsPage() {
     .order('full_name')
 
   const [projects, clients] = await Promise.all([
-    getV2AllProjects(),
+    getProjects(),
     getClients(),
   ])
 

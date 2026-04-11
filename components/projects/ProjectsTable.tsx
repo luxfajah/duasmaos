@@ -14,20 +14,24 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Pencil, Trash2, ExternalLink, Clock } from 'lucide-react'
-import Link from 'next/link'
+import { Progress } from '@/components/ui/progress'
+import { RefreshCw, User, DollarSign, CheckCircle2, AlertCircle } from 'lucide-react'
 
 type ProjectWithRelations = V2Project & {
   clients: { name: string } | null
   profiles: { full_name: string } | null
   deadline?: string | null
   priority?: string | null
+  progress?: number
+  amount?: number
+  project_type?: 'one_time' | 'recurring'
+  revenues?: any[]
 }
 
-const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
   active: { label: 'Ativo', variant: 'default' },
   paused: { label: 'Pausado', variant: 'destructive' },
-  completed: { label: 'Concluído', variant: 'default' },
+  completed: { label: 'Concluído', variant: 'success' as const },
   archived: { label: 'Arquivado', variant: 'outline' },
 }
 
@@ -76,12 +80,13 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
     <>
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Projeto</TableHead>
+          <TableRow className="hover:bg-transparent border-b border-border">
+            <TableHead className="w-[200px]">Projeto</TableHead>
             <TableHead>Cliente</TableHead>
+            <TableHead>Status / Progresso</TableHead>
             <TableHead>Responsável</TableHead>
-            <TableHead>Prioridade</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Tipo</TableHead>
+            <TableHead>Valor / Financeiro</TableHead>
             <TableHead>Prazo</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -91,21 +96,60 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
             const cfg = statusConfig[project.status] ?? { label: project.status, variant: 'outline' as const }
             const isOverdue =
               project.deadline && new Date(project.deadline) < new Date() && project.status !== ('completed' as any)
+            
+            const progress = project.progress ?? 0
+            const amount = project.amount || 0
+            const isRecurring = project.project_type === 'recurring'
+            const paymentStatus = project.revenues?.some(r => r.status === 'paid') ? 'paid' : 'pending'
+
             return (
-              <TableRow key={project.id} className="group">
-                <TableCell className="font-medium text-text-primary max-w-[200px] truncate">
-                  {project.name}
-                </TableCell>
-                <TableCell className="text-text-secondary">{project.clients?.name ?? '—'}</TableCell>
-                <TableCell className="text-text-secondary">{project.profiles?.full_name ?? '—'}</TableCell>
-                <TableCell className="text-text-secondary text-sm">{priorityMap[project.priority ?? ''] ?? project.priority ?? '—'}</TableCell>
+              <TableRow key={project.id} className="group hover:bg-surface-muted/50 transition-colors">
                 <TableCell>
-                  <Badge variant={cfg.variant}>{cfg.label}</Badge>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-text-primary text-sm truncate">{project.name}</span>
+                    <span className="text-[10px] text-text-muted font-mono uppercase tracking-wider">{priorityMap[project.priority ?? ''] ?? project.priority ?? '—'}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-text-secondary text-sm">{project.clients?.name ?? '—'}</TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1.5 min-w-[120px]">
+                    <div className="flex items-center justify-between">
+                      <Badge variant={cfg.variant as any} className="text-[10px] h-5">{cfg.label}</Badge>
+                      <span className="text-[10px] font-bold text-text-primary">{progress}%</span>
+                    </div>
+                    <Progress value={progress} className="h-1" />
+                  </div>
+                </TableCell>
+                <TableCell className="text-text-secondary text-sm">{project.profiles?.full_name ?? '—'}</TableCell>
+                <TableCell>
+                  {isRecurring ? (
+                    <Badge variant="outline" className="gap-1 text-deep-blue border-deep-blue/20 bg-deep-blue/5">
+                      <RefreshCw size={10} /> Recorrente
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="gap-1 text-text-muted">
+                      <User size={10} /> Único
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-text-primary tabular-nums">R$ {amount.toLocaleString('pt-BR')}</span>
+                    {paymentStatus === 'paid' ? (
+                      <span className="text-[10px] text-olive font-bold flex items-center gap-0.5">
+                        <CheckCircle2 size={10} /> Pago
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-terracotta font-bold flex items-center gap-0.5">
+                        <AlertCircle size={10} /> Pendente
+                      </span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   {project.deadline ? (
                     <span className={`flex items-center gap-1 text-sm ${isOverdue ? 'text-status-danger font-medium' : 'text-text-secondary'}`}>
-                      {isOverdue && <Clock size={12} />}
+                      <Clock size={12} className={isOverdue ? 'text-status-danger' : 'text-text-muted'} />
                       {new Date(project.deadline).toLocaleDateString('pt-BR')}
                     </span>
                   ) : (

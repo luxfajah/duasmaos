@@ -12,13 +12,16 @@ export type ExtendedProject = V2Project & {
   deadline?: string | null;
   stages?: V2ProjectStage[];
   tasks?: V2Task[];
+  revenues?: any[];
+  project_type?: 'one_time' | 'recurring';
+  amount?: number;
 };
 
 export async function getProjects(clientId?: string): Promise<ExtendedProject[]> {
   const supabase = createClient()
   let query = supabase
     .from('v2_projects')
-    .select('*, clients(name, company), v2_project_stages(*), v2_tasks(*)')
+    .select('*, clients(name, company), v2_project_stages(*), v2_tasks(*), revenues(*)')
     .order('created_at', { ascending: false })
 
   if (clientId) {
@@ -91,4 +94,90 @@ export async function updateProject(
   revalidatePath('/dashboard/projects')
   revalidatePath(`/dashboard/projects/${id}`)
   revalidatePath('/dashboard/kanban')
+}
+
+export async function createProjectV3(data: {
+  name: string
+  client_id: string
+  template_id: string
+  project_type: 'one_time' | 'recurring'
+  amount: number
+  payment_type: 'one_time' | 'installment' | 'recurring'
+  billing_day?: number
+  auto_restart?: boolean
+  start_date: string
+  owner_id?: string
+}) {
+  const supabase = createClient()
+  
+  // 1. Create Project
+  const { data: project, error: pError } = await supabase
+    .from('v2_projects')
+    .insert({
+      name: data.name,
+      client_id: data.client_id,
+      template_id: data.template_id,
+      type: data.project_type,
+      amount: data.amount,
+      payment_type: data.payment_type,
+      billing_day: data.billing_day,
+      auto_restart: data.auto_restart || false,
+      status: 'active',
+      owner_id: data.owner_id,
+      workspace_id: 'default'
+    })
+    .select()
+    .single()
+
+  if (pError) throw pError
+
+  // 2. Clone Template Stages & Tasks
+  const { data: stages } = await supabase
+    .from('product_template_stages')
+    .select('*, product_template_tasks(*)')
+    .eq('template_id', data.template_id)
+    .order('order_index', { ascending: true })
+
+  if (stages) {
+    for (const stage of stages) {
+      const { data: projectStage, error: psError } = await supabase
+        .from('v2_project_stages')
+        .insert({
+          project_id: project.id,
+          name: stage.name,
+          order: stage.order_index,
+          status: 'pending',
+          requires_approval: true
+        })
+        .select()
+        .single()
+
+      if (psError) throw psError
+
+      if (stage.product_template_tasks) {
+        await supabase.from('v2_tasks').insert(
+          stage.product_template_tasks.map((t: any) => ({
+            project_id: project.id,
+            stage_id: projectStage.id,
+            title: t.title,
+            type: t.task_type || 'task',
+            status: 'locked',
+            priority: 'medium'
+          }))
+        )
+      }
+    }
+  }
+
+  // 3. Create Initial Revenue entry
+  await supabase.from('revenues').insert({
+    project_id: project.id,
+    amount: data.amount,
+    due_date: data.start_date,
+    status: 'pending',
+    type: data.payment_type
+  })
+
+  revalidatePath('/dashboard/projects')
+  return project
 }

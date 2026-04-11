@@ -351,3 +351,80 @@ export type KanbanProject = V2Project & {
 }
 
 
+
+// ── Product Templates & Finance (V3 Expansion) ──────────────────────────────
+
+export interface ProductTemplate {
+  id: string;
+  name: string;
+  category: string | null;
+  base_price: number | null;
+  type: string;
+  is_active: boolean;
+  created_at: string;
+  stages_count?: number;
+  tasks_count?: number;
+}
+
+export interface ProductTemplateStage {
+  id: string;
+  template_id: string;
+  name: string;
+  order_index: number;
+  duration_days: number;
+  auto_start: boolean;
+  created_at: string;
+}
+
+export interface ProductTemplateTask {
+  id: string;
+  stage_id: string;
+  title: string;
+  role: string | null;
+  deadline_offset: number;
+  task_type: string;
+  is_required: boolean;
+  created_at: string;
+}
+
+export type RevenueStatus = 'pending' | 'paid' | 'overdue';
+export type PaymentType = 'one_time' | 'installment' | 'recurring';
+export type RecurrenceFrequency = 'monthly' | 'weekly' | 'custom';
+
+export interface Revenue {
+  id: string;
+  project_id: string;
+  amount: number;
+  due_date: string;
+  status: RevenueStatus;
+  type: PaymentType;
+  created_at: string;
+}
+
+export interface RevenueRecurrence {
+  id: string;
+  project_id: string;
+  amount: number;
+  frequency: RecurrenceFrequency;
+  billing_day: number | null;
+  next_due_date: string | null;
+  created_at: string;
+}
+
+export interface Payment {
+  id: string;
+  revenue_id: string;
+  paid_at: string;
+  amount: number;
+  method: string;
+  created_at: string;
+}
+
+export interface ProjectDocument {
+  id: string;
+  project_id: string;
+  name: string;
+  type: 'contract' | 'briefing' | 'other';
+  file_url: string;
+  uploaded_at: string;
+}

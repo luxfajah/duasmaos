@@ -2,6 +2,9 @@
 
 import React, { useState, useCallback, useMemo } from 'react'
 import { cn } from '@/lib/utils'
+import { saveProductTemplate } from '@/app/dashboard/templates/actions'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -416,9 +419,53 @@ export function ProductTemplateBuilder() {
     })
   }, [])
 
-  const handleSave = () => {
-    setIsSaved(true)
-    setTimeout(() => setIsSaved(false), 2000)
+  const [isSaving, setIsSaving] = useState(false)
+  const router = useRouter()
+
+  const handleSave = async () => {
+    if (!productName) {
+      toast.error('Informe o nome do produto')
+      return
+    }
+
+    try {
+      setIsSaving(true)
+      
+      const payload = {
+        name: productName,
+        category,
+        type: productType,
+        base_price: Number(basePrice),
+        stages: stages.map((s, sIdx) => ({
+          name: s.name,
+          duration_days: s.duration,
+          auto_start: s.autoStart,
+          order_index: sIdx,
+          tasks: s.tasks.map(t => ({
+            title: t.name,
+            role: t.role,
+            deadline_offset: parseInt(t.deadline.replace('D+', '')) || 1,
+            task_type: t.type,
+            is_required: t.required
+          }))
+        }))
+      }
+
+      await saveProductTemplate(payload)
+      
+      setIsSaved(true)
+      toast.success('Template salvo com sucesso!')
+      
+      setTimeout(() => {
+        setIsSaved(false)
+        router.push('/dashboard/templates')
+      }, 1500)
+    } catch (error) {
+      console.error('Error saving template:', error)
+      toast.error('Erro ao salvar template')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   // ─── Stat Computations ──────────────────────────────────────────────────────
@@ -453,14 +500,18 @@ export function ProductTemplateBuilder() {
           <button className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-text-primary transition-colors">Cancelar</button>
           <button
             onClick={handleSave}
+            disabled={isSaving}
             className={cn(
               "px-6 h-10 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-2",
+              isSaving && "opacity-70 cursor-not-allowed",
               isSaved
                 ? "bg-status-success text-white shadow-status-success/30"
                 : "bg-brand-primary text-white shadow-brand/30 hover:shadow-brand/40 hover:-translate-y-0.5"
             )}
           >
-            {isSaved ? (
+            {isSaving ? (
+              <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : isSaved ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
             ) : "Salvar Template"}
           </button>
