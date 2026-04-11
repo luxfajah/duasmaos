@@ -182,11 +182,11 @@ export function SocialPostModal({
               <p className="text-[10px] text-white/20 mt-1 uppercase tracking-widest">JPG, PNG, MP4 até 50MB</p>
             </div>
 
-            {formData.design_urls.length > 0 && (
+            {formData.media.length > 0 && (
               <div className="grid grid-cols-4 gap-3">
-                {formData.design_urls.map((url, i) => (
+                {formData.media.map((file: any, i: number) => (
                   <div key={i} className="group relative aspect-square rounded-lg overflow-hidden bg-white/5 border border-white/10">
-                    <img src={url} alt={`Asset ${i}`} className="w-full h-full object-cover" />
+                    <img src={file.url} alt={`Asset ${i}`} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-white/20"><Replace className="w-4 h-4" /></Button>
                       <Button variant="ghost" size="icon" className="w-8 h-8 hover:bg-danger/20 text-danger"><Trash2 className="w-4 h-4" /></Button>
@@ -224,13 +224,13 @@ export function SocialPostModal({
             variant="ghost" 
             className={cn(
               "rounded-full px-6 gap-2 border border-white/10",
-              formData.is_approved ? "bg-success/20 text-success border-success/30 hover:bg-success/30" : "bg-white/5 text-white/40 hover:bg-white/10"
+              formData.approval_status === 'approved' ? "bg-success/20 text-success border-success/30 hover:bg-success/30" : "bg-white/5 text-white/40 hover:bg-white/10"
             )}
-            onClick={() => handleUpdate({ is_approved: !formData.is_approved })}
+            onClick={() => handleUpdate({ approval_status: formData.approval_status === 'approved' ? 'pending' : 'approved' })}
             disabled={isReadOnly}
           >
             <CheckCircle2 className="w-4 h-4" />
-            {formData.is_approved ? 'Aprovado' : 'Aprovar Post'}
+            {formData.approval_status === 'approved' ? 'Aprovado' : 'Aprovar Post'}
           </Button>
         </div>
       </DialogContent>

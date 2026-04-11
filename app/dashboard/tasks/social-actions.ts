@@ -18,7 +18,7 @@ export async function getSocialPosts(taskId: string) {
 
 export async function updateSocialPost(
   postId: string,
-  data: Partial<Pick<V2SocialPost, 'type' | 'status' | 'carousel_slides' | 'caption' | 'hashtags' | 'optional_text' | 'is_approved'>>
+  data: Partial<Pick<V2SocialPost, 'type' | 'status' | 'carousel_slides' | 'caption' | 'hashtags' | 'optional_text' | 'approval_status'>>
 ) {
   const supabase = createClient()
   
@@ -40,16 +40,16 @@ export async function addPostAsset(postId: string, url: string) {
   // Get current assets
   const { data: post } = await supabase
     .from('v2_social_posts')
-    .select('design_urls')
+    .select('media')
     .eq('id', postId)
     .single()
 
-  const currentUrls = (post?.design_urls as string[]) || []
+  const currentMedia = (post?.media as any[]) || []
   
   const { error } = await supabase
     .from('v2_social_posts')
     .update({
-      design_urls: [...currentUrls, url],
+      media: [...currentMedia, { url, type: 'image', created_at: new Date().toISOString() }],
       updated_at: new Date().toISOString()
     })
     .eq('id', postId)
@@ -62,17 +62,17 @@ export async function removePostAsset(postId: string, url: string) {
   
   const { data: post } = await supabase
     .from('v2_social_posts')
-    .select('design_urls')
+    .select('media')
     .eq('id', postId)
     .single()
 
-  const currentUrls = (post?.design_urls as string[]) || []
-  const newUrls = currentUrls.filter(u => u !== url)
+  const currentMedia = (post?.media as any[]) || []
+  const newMedia = currentMedia.filter(m => m.url !== url)
   
   const { error } = await supabase
     .from('v2_social_posts')
     .update({
-      design_urls: newUrls,
+      media: newMedia,
       updated_at: new Date().toISOString()
     })
     .eq('id', postId)
