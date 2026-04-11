@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { V2SocialPost, PostTypeV2, ApprovalStatusV2, PostStatusV2 } from '@/types/database'
-import { getSocialPosts } from '@/app/dashboard/v2/task-actions'
+import { getSocialPosts, createDesignTaskFromCopy } from '@/app/dashboard/v2/task-actions'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { FileText, Image as ImageIcon, CheckCircle2, AlertCircle, Clock, ChevronRight } from 'lucide-react'
+import { FileText, Image as ImageIcon, CheckCircle2, AlertCircle, Clock, ChevronRight, Wand2, Loader2 } from 'lucide-react'
 import { SocialPostModal } from './SocialPostModal'
 
 interface SocialPostGridProps {
@@ -16,7 +17,9 @@ interface SocialPostGridProps {
 export function SocialPostGrid({ taskId, taskType, isEditable = true }: SocialPostGridProps) {
   const [posts, setPosts] = useState<V2SocialPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const [selectedPostIndex, setSelectedPostIndex] = useState<number | null>(null)
+  const router = useRouter()
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -107,6 +110,30 @@ export function SocialPostGrid({ taskId, taskType, isEditable = true }: SocialPo
           </button>
         ))}
       </div>
+
+      {taskType === 'social_copy' && posts.length > 0 && posts.every(p => p.approval_status === 'approved') && (
+        <div className="pt-6 mt-6 border-t border-sand-dark/10 animate-in fade-in slide-in-from-bottom-2 flex justify-end">
+          <button
+            onClick={async () => {
+              try {
+                setIsGeneratingDesign(true)
+                await createDesignTaskFromCopy(taskId)
+                router.refresh()
+                alert('Tarefa de Design gerada com sucesso!')
+              } catch (err: any) {
+                alert('Erro: ' + err.message)
+              } finally {
+                setIsGeneratingDesign(false)
+              }
+            }}
+            disabled={isGeneratingDesign}
+            className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-brand-primary to-[#ff6b3d] text-white rounded-[20px] text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_8px_24px_rgba(var(--brand-primary-rgb),0.3)] hover:-translate-y-1 active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+          >
+            {isGeneratingDesign ? <Loader2 size={18} className="animate-spin" /> : <Wand2 size={18} />}
+            Gerar Produção de Design
+          </button>
+        </div>
+      )}
 
       {selectedPostIndex !== null && (
         <SocialPostModal

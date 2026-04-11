@@ -8,7 +8,7 @@ import { createClient } from '@/utils/supabase/client'
 import { 
   X, ChevronLeft, ChevronRight, Save, Loader2, 
   Type, Hash, AlignLeft, Image as ImageIcon, 
-  Upload, Trash2, CheckCircle2, AlertCircle, Play
+  Upload, Trash2, CheckCircle2, AlertCircle, Play, FileText
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { HashtagInput } from '@/components/ui/HashtagInput'
@@ -201,6 +201,45 @@ export function SocialPostModal({ posts, initialIndex, taskId, taskType, onClose
                 </div>
               ) : (
                 <div className="space-y-8">
+                  {/* Copy Reference */}
+                  <div className="space-y-4 mb-2 p-6 rounded-2xl bg-sand/30 dark:bg-slate-900/40 border border-sand-dark/10">
+                    <div className="flex items-center gap-2 mb-4">
+                      <FileText size={16} className="text-brand-primary" />
+                      <h4 className="text-xs font-black uppercase tracking-widest text-text-primary">Conteúdo Base (Aprovado)</h4>
+                    </div>
+                    
+                    <div className="space-y-5">
+                      {formData.caption && (
+                        <div>
+                          <span className="text-[10px] font-bold uppercase text-text-muted mb-1 block">Legenda Base</span>
+                          <p className="text-sm text-text-secondary whitespace-pre-wrap leading-relaxed">{formData.caption}</p>
+                        </div>
+                      )}
+                      
+                      {formData.hashtags && formData.hashtags.length > 0 && (
+                        <div>
+                          <span className="text-[10px] font-bold uppercase text-text-muted mb-2 block">Hashtags Estratégicas</span>
+                          <div className="flex flex-wrap gap-2">
+                             {formData.hashtags.map((tag, i) => (
+                               <span key={i} className="text-xs px-2.5 py-1 bg-white/50 dark:bg-black/20 border border-sand-dark/10 rounded-md text-text-secondary">#{tag}</span>
+                             ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {formData.optional_text && (
+                        <div>
+                          <span className="text-[10px] font-bold uppercase text-text-muted mb-1 block">Observações do Redator</span>
+                          <p className="text-sm text-text-secondary whitespace-pre-wrap italic">{formData.optional_text}</p>
+                        </div>
+                      )}
+                      
+                      {!formData.caption && (!formData.hashtags || formData.hashtags.length === 0) && !formData.optional_text && (
+                        <p className="text-xs text-text-muted italic">Nenhuma diretriz de copy fornecida para este post.</p>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="space-y-4">
                     <label className="text-[10px] font-black uppercase tracking-widest text-text-muted flex items-center gap-2">
                        <ImageIcon size={12} className="text-brand-primary" /> Ativos de Design

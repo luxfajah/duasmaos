@@ -260,6 +260,7 @@ export interface V2Task {
   order: number | null;
   due_date: string | null;
   social_post_count?: number;
+  parent_task_id?: string | null;
   /** Populated via v2_task_assignees join or direct column if migrated */
   assigned_to?: string | null;
   created_at: string;
@@ -280,6 +281,7 @@ export interface V2SocialPost {
   order: number;
   started_at: string | null;
   completed_at: string | null;
+  inherits_from_post_id?: string | null;
   created_at: string;
   updated_at: string;
 }

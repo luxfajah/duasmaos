@@ -228,3 +228,83 @@ export async function updateSocialPost(postId: string, data: any) {
   revalidatePath('/dashboard/tasks')
   return { success: true }
 }
+
+export async function createDesignTaskFromCopy(copyTaskId: string) {
+  const supabase = createClient()
+
+  // 1. Fetch copy task
+  const { data: copyTask, error: copyError } = await supabase
+    .from('v2_tasks')
+    .select('*')
+    .eq('id', copyTaskId)
+    .single()
+
+  if (copyError || !copyTask) throw new Error('Task de copy não encontrada.')
+
+  if (copyTask.deliverable_type !== 'social_copy') {
+    throw new Error('Apenas tarefas de social_copy podem gerar social_design.')
+  }
+
+  // 2. Fetch copy posts
+  const { data: copyPosts, error: postsError } = await supabase
+    .from('v2_social_posts')
+    .select('*')
+    .eq('task_id', copyTaskId)
+    .order('order', { ascending: true })
+
+  if (postsError) throw postsError
+
+  // Check if all approved
+  const allApproved = copyPosts?.every(p => p.approval_status === 'approved')
+  if (!allApproved) {
+    throw new Error('Todos os posts precisam estar aprovados para gerar o design.')
+  }
+
+  // 3. Create design task
+  const { data: designTask, error: designTaskError } = await supabase
+    .from('v2_tasks')
+    .insert({
+      project_id: copyTask.project_id,
+      stage_id: copyTask.stage_id,
+      parent_task_id: copyTaskId,
+      title: `${copyTask.title} (Design)`,
+      description: `Tarefa de design gerada a partir da copy: ${copyTask.title}`,
+      type: 'task',
+      deliverable_type: 'social_design',
+      status: 'pending',
+      priority: copyTask.priority,
+      social_post_count: copyTask.social_post_count
+    })
+    .select('id')
+    .single()
+
+  if (designTaskError) throw designTaskError
+
+  // 4. Clone posts
+  if (copyPosts && copyPosts.length > 0) {
+    const designPostsToInsert = copyPosts.map(p => ({
+      task_id: designTask.id,
+      inherits_from_post_id: p.id,
+      type: p.type,
+      carousel_slides: p.carousel_slides,
+      caption: p.caption,
+      hashtags: p.hashtags,
+      optional_text: p.optional_text,
+      status: 'pending',
+      approval_status: 'pending',
+      order: p.order
+    }))
+
+    const { error: insertPostsError } = await supabase
+      .from('v2_social_posts')
+      .insert(designPostsToInsert)
+
+    if (insertPostsError) throw insertPostsError
+  }
+
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
+  revalidatePath(`/dashboard/projects/${copyTask.project_id}`)
+
+  return { id: designTask.id }
+}
