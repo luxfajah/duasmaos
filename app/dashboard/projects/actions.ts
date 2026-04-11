@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { Project, ProjectStatus, ProjectType, Priority, Task, ProjectStage } from '@/types/database'
+import { Project, ProjectStatus, ProjectStatusV2, ProjectType, Priority, Task, ProjectStage } from '@/types/database'
 import { revalidatePath } from 'next/cache'
 import { PROJECT_TEMPLATES } from '@/utils/project-templates'
 import { calculateHealthScore, calculateProjectProgress } from '@/utils/project-health'
@@ -122,9 +122,9 @@ export async function updateProject(
   revalidatePath('/dashboard/kanban')
 }
 
-export async function updateProjectStatus(id: string, status: ProjectStatus) {
+export async function updateProjectStatus(id: string, status: ProjectStatusV2) {
   const supabase = createClient()
-  const { error } = await supabase.from('projects').update({ status }).eq('id', id)
+  const { error } = await supabase.from('v2_projects').update({ status }).eq('id', id)
   if (error) throw error
   revalidatePath('/dashboard/projects')
   revalidatePath('/dashboard/kanban')

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
-import { Project, ProjectStatus } from '@/types/database'
+import { Project, ProjectStatusV2 } from '@/types/database'
 import { KanbanCard } from './KanbanCard'
 import { updateProjectStatus } from '@/app/dashboard/projects/actions'
 
@@ -11,7 +11,7 @@ type KanbanProject = Project & {
   profiles: { full_name: string } | null
 }
 
-const COLUMNS: { id: string; label: string; color: string }[] = [
+const COLUMNS: { id: ProjectStatusV2; label: string; color: string }[] = [
   { id: 'active', label: 'Ativos', color: 'bg-status-info/10 text-status-info' },
   { id: 'paused', label: 'Pausados', color: 'bg-status-warning/10 text-status-warning' },
   { id: 'completed', label: 'Finalizados', color: 'bg-status-success/10 text-status-success' },
@@ -25,8 +25,8 @@ interface KanbanBoardProps {
 export function KanbanBoard({ initialProjects }: KanbanBoardProps) {
   const [projects, setProjects] = useState<KanbanProject[]>(initialProjects)
 
-  function getColumnProjects(status: ProjectStatus) {
-    return projects.filter((p) => p.status === status)
+  function getColumnProjects(status: ProjectStatusV2) {
+    return projects.filter((p) => p.status as unknown as ProjectStatusV2 === status)
   }
 
   async function onDragEnd(result: DropResult) {
@@ -38,17 +38,17 @@ export function KanbanBoard({ initialProjects }: KanbanBoardProps) {
       destination.index === source.index
     ) return
 
-    const newStatus = destination.droppableId as ProjectStatus
+    const newStatus = destination.droppableId as ProjectStatusV2
 
     // Optimistic update
     setProjects((prev) =>
       prev.map((p) =>
-        p.id === draggableId ? { ...p, status: newStatus } : p
+        p.id === draggableId ? { ...p, status: newStatus as any } : p
       )
     )
 
     try {
-      await updateProjectStatus(draggableId, newStatus)
+      await updateProjectStatus(draggableId, newStatus as any)
     } catch {
       // Revert on error
       setProjects(initialProjects)

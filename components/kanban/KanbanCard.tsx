@@ -1,11 +1,9 @@
-'use client'
-
-import { Project, ProjectStatus } from '@/types/database'
+import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { Clock, User, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
-type KanbanProject = Project & {
-  clients: { name: string }
+type KanbanProject = V2Project & {
+  clients: { name: string } | null
   profiles: { full_name: string } | null
 }
 
