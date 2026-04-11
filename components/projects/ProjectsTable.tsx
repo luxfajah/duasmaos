@@ -20,6 +20,8 @@ import Link from 'next/link'
 type ProjectWithRelations = V2Project & {
   clients: { name: string } | null
   profiles: { full_name: string } | null
+  deadline?: string | null
+  priority?: string | null
 }
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -96,7 +98,7 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
                 </TableCell>
                 <TableCell className="text-text-secondary">{project.clients?.name ?? '—'}</TableCell>
                 <TableCell className="text-text-secondary">{project.profiles?.full_name ?? '—'}</TableCell>
-                <TableCell className="text-text-secondary text-sm">{priorityMap[project.priority] ?? project.priority}</TableCell>
+                <TableCell className="text-text-secondary text-sm">{priorityMap[project.priority ?? ''] ?? project.priority ?? '—'}</TableCell>
                 <TableCell>
                   <Badge variant={cfg.variant}>{cfg.label}</Badge>
                 </TableCell>
