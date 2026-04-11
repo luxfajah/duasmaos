@@ -24,10 +24,15 @@ const navGroups = [
     ],
   },
   {
+    label: 'Produtos',
+    items: [
+      { href: '/dashboard/templates', label: 'Template Builder', icon: 'projects' },
+    ],
+  },
+  {
     label: 'Produção',
     items: [
       { href: '/dashboard/tasks', label: 'Tarefas', icon: 'tasks' },
-      { href: '/dashboard/templates', label: 'Templates', icon: 'projects' },
       { href: '/dashboard/calendar', label: 'Calendário', icon: 'calendar' },
       { href: '/dashboard/files', label: 'Arquivos', icon: 'files' },
     ],
