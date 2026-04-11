@@ -26,7 +26,7 @@ const navGroups = [
   {
     label: 'Produtos',
     items: [
-      { href: '/dashboard/templates', label: 'Template Builder', icon: 'projects' },
+      { href: '/dashboard/products', label: 'Produtos', icon: 'projects' },
     ],
   },
   {

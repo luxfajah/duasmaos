@@ -4,6 +4,7 @@ import { getProjects } from '@/app/dashboard/projects/actions'
 import { getClients } from '@/app/dashboard/clients/actions'
 import { ProjectsPageClient } from './ProjectsPageClient'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
+import { Suspense } from 'react'
 
 export default async function ProjectsPage() {
   const supabase = createClient()
@@ -30,11 +31,13 @@ export default async function ProjectsPage() {
         title="Projetos"
         subtitle={`${projects.length} projeto${projects.length !== 1 ? 's' : ''} no total`}
       />
-      <ProjectsPageClient
-        initialProjects={projects}
-        clients={clients.map((c) => ({ id: c.id, name: c.name }))}
-        team={team}
-      />
+      <Suspense fallback={<div className="h-64 flex items-center justify-center text-text-muted">Carregando projetos...</div>}>
+        <ProjectsPageClient
+          initialProjects={projects}
+          clients={clients.map((c) => ({ id: c.id, name: c.name }))}
+          team={team}
+        />
+      </Suspense>
     </div>
   )
 }

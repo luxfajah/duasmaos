@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority, ProductTemplate } from '@/types/database'
 import { createProjectV3, updateProject } from '@/app/dashboard/projects/actions'
-import { getProductTemplates } from '@/app/dashboard/templates/actions'
+import { getProductTemplates } from '@/app/dashboard/products/actions'
 import { useEffect } from 'react'
 import { Calendar, DollarSign, Layers, Users, Info, Settings, RefreshCw, FileText, AlertCircle } from 'lucide-react'
 import {
@@ -22,9 +22,10 @@ interface ProjectModalProps {
   clients: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
   onClose: () => void
+  templateId?: string
 }
 
-export function ProjectModal({ project, clients, team, onClose }: ProjectModalProps) {
+export function ProjectModal({ project, clients, team, onClose, templateId }: ProjectModalProps) {
   const isEdit = !!project
   const [isPending, startTransition] = useTransition()
   const [templates, setTemplates] = useState<ProductTemplate[]>([])
@@ -33,7 +34,7 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
   const [form, setForm] = useState({
     name: project?.name ?? '',
     client_id: project?.client_id ?? '',
-    template_id: '',
+    template_id: templateId ?? '',
     project_type: 'one_time' as 'one_time' | 'recurring',
     amount: 0,
     payment_type: 'one_time' as 'one_time' | 'recurring',

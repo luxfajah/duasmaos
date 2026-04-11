@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { ProjectsTable } from '@/components/projects/ProjectsTable'
 import { ProjectModal } from '@/components/projects/ProjectModal'
@@ -27,10 +28,19 @@ const STATUS_FILTER_OPTIONS: { value: string; label: string }[] = [
 ]
 
 export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsPageClientProps) {
+  const searchParams = useSearchParams()
+  const templateIdParam = searchParams.get('templateId')
+
   const [showModal, setShowModal] = useState(false)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
+
+  useEffect(() => {
+    if (templateIdParam) {
+      setShowModal(true)
+    }
+  }, [templateIdParam])
 
   // Metrics calculation
   const totalProjects = initialProjects.length
@@ -133,6 +143,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
           clients={clients}
           team={team}
           onClose={() => setShowModal(false)}
+          templateId={templateIdParam || undefined}
         />
       )}
     </>
