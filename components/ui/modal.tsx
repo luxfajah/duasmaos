@@ -55,12 +55,12 @@ function Modal({ open, onClose, children }: ModalProps) {
     <ModalContext.Provider value={{ open, onClose }}>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
         aria-modal="true"
         role="dialog"
       >
         <div
-          className="absolute inset-0 bg-foreground/30 backdrop-blur-md animate-fade-in"
+          className="absolute inset-0 bg-slate-950/60 backdrop-blur-xl animate-fade-in"
           onClick={onClose}
           aria-hidden
         />

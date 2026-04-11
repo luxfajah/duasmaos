@@ -33,12 +33,14 @@ interface DashboardClientViewProps {
   user: {
     firstName: string
     displayName: string
+    avatarUrl?: string | null
   }
+  team: Array<{ id: string; full_name: string; avatar_url: string | null }>
   initialProjects: any[] // BaseProject / ExtendedProject
   initialTasks: any[] // Extended Task
 }
 
-export function DashboardClientView({ user, initialProjects, initialTasks }: DashboardClientViewProps) {
+export function DashboardClientView({ user, team, initialProjects, initialTasks }: DashboardClientViewProps) {
   const { projects, selectedProject, setProjects, setSelectedProject } = useProjectContext()
   const greeting = getGreeting(new Date().getHours())
 
@@ -101,6 +103,7 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
         <div className="flex items-center gap-5 w-full xl:w-[40%]">
           <Avatar
             name={user.displayName}
+            src={user.avatarUrl || undefined}
             size="lg"
             variant="brand"
             className="ring-4 ring-brand-primary/10 shadow-sm w-16 h-16 shrink-0"
@@ -124,12 +127,25 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
         <div className="flex items-center gap-3 self-start xl:self-center shrink-0 w-full xl:w-[300px] xl:justify-end">
           <span className="text-sm font-bold text-text-muted font-body">Equipe:</span>
           <div className="flex -space-x-2">
-            <Avatar name="A" size="sm" className="border-2 border-background/50 ring-0 shadow-sm bg-sand-dark" />
-            <Avatar name="B" size="sm" className="border-2 border-background/50 ring-0 shadow-sm bg-brand-primary text-white" />
-            <Avatar name="C" size="sm" className="border-2 border-background/50 ring-0 shadow-sm bg-sand-dark" />
-            <div className="w-8 h-8 rounded-full border-2 border-background/50 bg-sand-dark flex items-center justify-center text-[10px] font-bold text-text-secondary z-10 transition-transform hover:scale-105 cursor-pointer shadow-sm">
-              +9
-            </div>
+            {team.slice(0, 3).map((member, i) => (
+              <Avatar 
+                key={member.id} 
+                name={member.full_name} 
+                src={member.avatar_url || undefined}
+                size="sm" 
+                className={`border-2 border-background/50 ring-0 shadow-sm ${i % 2 === 0 ? 'bg-sand-dark' : 'bg-brand-primary text-white'}`} 
+              />
+            ))}
+            {team.length > 3 && (
+              <div className="w-8 h-8 rounded-full border-2 border-background/50 bg-sand-dark flex items-center justify-center text-[10px] font-bold text-text-secondary z-10 transition-transform hover:scale-105 cursor-pointer shadow-sm">
+                +{team.length - 3}
+              </div>
+            )}
+            {team.length === 0 && (
+               <div className="w-8 h-8 rounded-full border-2 border-background/50 bg-sand-dark flex items-center justify-center text-[10px] font-bold text-text-secondary z-10 shadow-sm">
+                 +0
+               </div>
+            )}
           </div>
         </div>
       </div>

@@ -125,11 +125,11 @@
     --brand-deep-blue-light: 222 45% 45%;
     --brand-highlight: 13 52% 56%;
 
-    --text-primary: 35 30% 92%;
-    --text-secondary: 222 15% 72%;
-    --text-muted: 222 10% 55%;
-    --text-inverse: 35 30% 92%;
-    --text-on-dark: 35 30% 92%;
+    --text-primary: 35 30% 95%;
+    --text-secondary: 222 10% 75%;
+    --text-muted: 222 8% 65%;
+    --text-inverse: 35 30% 95%;
+    --text-on-dark: 35 30% 95%;
 
     --success: 68 35% 50%;
     --warning: 43 80% 58%;
