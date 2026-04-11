@@ -1,15 +1,12 @@
-'use client'
-
-import { useState } from 'react'
-import { Project, ProjectStatus } from '@/types/database'
+import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { ProjectsTable } from '@/components/projects/ProjectsTable'
 import { ProjectModal } from '@/components/projects/ProjectModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 
-type ProjectWithRelations = Project & {
-  clients: { name: string }
+type ProjectWithRelations = V2Project & {
+  clients: { name: string } | null
   profiles: { full_name: string } | null
 }
 
@@ -21,12 +18,10 @@ interface ProjectsPageClientProps {
 
 const STATUS_FILTER_OPTIONS: { value: string; label: string }[] = [
   { value: 'all', label: 'Todos' },
-  { value: 'draft', label: 'Rascunho' },
-  { value: 'copy', label: 'Copy' },
-  { value: 'review', label: 'Revisão' },
-  { value: 'approved', label: 'Aprovado' },
-  { value: 'delayed', label: 'Atrasado' },
-  { value: 'completed', label: 'Concluído' },
+  { value: 'active', label: 'Ativos' },
+  { value: 'paused', label: 'Pausados' },
+  { value: 'completed', label: 'Finalizados' },
+  { value: 'archived', label: 'Arquivados' },
 ]
 
 export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsPageClientProps) {

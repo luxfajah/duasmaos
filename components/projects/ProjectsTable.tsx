@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Project, ProjectStatus } from '@/types/database'
+import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { updateProjectStatus, deleteProject } from '@/app/dashboard/projects/actions'
 import { ProjectModal } from './ProjectModal'
 import {
@@ -17,18 +17,16 @@ import { Badge } from '@/components/ui/badge'
 import { Pencil, Trash2, ExternalLink, Clock } from 'lucide-react'
 import Link from 'next/link'
 
-type ProjectWithRelations = Project & {
-  clients: { name: string }
+type ProjectWithRelations = V2Project & {
+  clients: { name: string } | null
   profiles: { full_name: string } | null
 }
 
-const statusConfig: Record<ProjectStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-  draft: { label: 'Rascunho', variant: 'outline' },
-  copy: { label: 'Copy', variant: 'secondary' },
-  review: { label: 'Revisão', variant: 'secondary' },
-  approved: { label: 'Aprovado', variant: 'default' },
-  delayed: { label: 'Atrasado', variant: 'destructive' },
+const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+  active: { label: 'Ativo', variant: 'default' },
+  paused: { label: 'Pausado', variant: 'destructive' },
   completed: { label: 'Concluído', variant: 'default' },
+  archived: { label: 'Arquivado', variant: 'outline' },
 }
 
 const priorityMap: Record<string, string> = {
@@ -90,7 +88,7 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
           {projects.map((project) => {
             const cfg = statusConfig[project.status] ?? { label: project.status, variant: 'outline' as const }
             const isOverdue =
-              project.deadline && new Date(project.deadline) < new Date() && project.status !== 'completed'
+              project.deadline && new Date(project.deadline) < new Date() && project.status !== ('completed' as any)
             return (
               <TableRow key={project.id} className="group">
                 <TableCell className="font-medium text-text-primary max-w-[200px] truncate">

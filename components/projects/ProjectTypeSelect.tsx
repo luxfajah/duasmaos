@@ -1,29 +1,35 @@
 'use client'
 
-import { ProjectType, PROJECT_TYPE_LABELS } from '@/types/database'
+import { WorkflowTypeV2 } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { Rss, Palette, Globe } from 'lucide-react'
 
-const TYPE_ICONS: Record<ProjectType, React.ElementType> = {
-  redes_sociais: Rss,
+const TYPE_ICONS: Record<WorkflowTypeV2, React.ElementType> = {
+  social_media: Rss,
   branding: Palette,
-  site: Globe,
+  website: Globe,
 }
 
-const TYPE_COLORS: Record<ProjectType, string> = {
-  redes_sociais: 'text-status-info bg-status-info/10 border-status-info/20',
+const TYPE_LABELS: Record<WorkflowTypeV2, string> = {
+  social_media: 'Social Media',
+  branding: 'Branding',
+  website: 'Website',
+}
+
+const TYPE_COLORS: Record<WorkflowTypeV2, string> = {
+  social_media: 'text-status-info bg-status-info/10 border-status-info/20',
   branding: 'text-brand-accent bg-brand-accent/10 border-brand-accent/20',
-  site: 'text-status-success bg-status-success/10 border-status-success/20',
+  website: 'text-status-success bg-status-success/10 border-status-success/20',
 }
 
 interface ProjectTypeSelectProps {
-  value?: ProjectType | null
-  onChange: (type: ProjectType | null) => void
+  value?: WorkflowTypeV2 | null
+  onChange: (type: WorkflowTypeV2 | null) => void
   className?: string
 }
 
 export function ProjectTypeSelect({ value, onChange, className }: ProjectTypeSelectProps) {
-  const types: ProjectType[] = ['redes_sociais', 'branding', 'site']
+  const types: WorkflowTypeV2[] = ['branding', 'social_media', 'website']
 
   return (
     <div className={cn('grid grid-cols-3 gap-2', className)}>
@@ -43,7 +49,7 @@ export function ProjectTypeSelect({ value, onChange, className }: ProjectTypeSel
             )}
           >
             <Icon size={18} strokeWidth={1.75} />
-            {PROJECT_TYPE_LABELS[type]}
+            {TYPE_LABELS[type]}
           </button>
         )
       })}
@@ -52,7 +58,7 @@ export function ProjectTypeSelect({ value, onChange, className }: ProjectTypeSel
 }
 
 interface ProjectTypeBadgeProps {
-  type: ProjectType
+  type: WorkflowTypeV2
   className?: string
 }
 
@@ -67,7 +73,7 @@ export function ProjectTypeBadge({ type, className }: ProjectTypeBadgeProps) {
       )}
     >
       <Icon size={11} />
-      {PROJECT_TYPE_LABELS[type]}
+      {TYPE_LABELS[type]}
     </span>
   )
 }

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Project, ProjectStatus, ProjectType, Priority } from '@/types/database'
-import { createProject, updateProject } from '@/app/dashboard/projects/actions'
+import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority } from '@/types/database'
+import { createV2Project, getV2ProjectById } from '@/app/dashboard/v2/actions'
+import { updateProject } from '@/app/dashboard/projects/actions'
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { ProjectTypeSelect } from '@/components/projects/ProjectTypeSelect'
 
 interface ProjectModalProps {
-  project?: Project | null
+  project?: V2Project | null
   clients: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
   onClose: () => void
@@ -28,13 +29,13 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
 
   const [form, setForm] = useState({
     name: project?.name ?? '',
-    description: project?.description ?? '',
+    description: '', // V2 projects don't have description in the insert yet, can add if needed
     client_id: project?.client_id ?? '',
-    type: (project?.type ?? null) as ProjectType | null,
-    status: (project?.status ?? 'draft') as ProjectStatus,
-    priority: (project?.priority ?? 'medium') as Priority,
-    deadline: project?.deadline ? project.deadline.split('T')[0] : '',
-    owner_id: project?.owner_id ?? '',
+    workflow_type: (project?.workflow_type ?? 'branding') as WorkflowTypeV2,
+    status: (project?.status ?? 'active') as ProjectStatusV2,
+    priority: 'medium' as Priority,
+    deadline: '',
+    owner_id: '',
   })
 
   function handleChange(field: keyof typeof form, value: string) {
@@ -54,17 +55,19 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
     }
     startTransition(async () => {
       try {
-        const payload = {
-          ...form,
-          type: form.type ?? undefined,
-          deadline: form.deadline ? new Date(form.deadline).toISOString() : undefined,
-          owner_id: form.owner_id || undefined,
-          description: form.description || undefined,
-        }
         if (isEdit && project) {
-          await updateProject(project.id, payload)
+          // For now, only update status/name if needed, but routing to legacy update for fields
+          await updateProject(project.id, {
+            name: form.name,
+            status: form.status as any,
+          } as any)
         } else {
-          await createProject(payload)
+          await createV2Project({
+            name: form.name,
+            client_id: form.client_id,
+            workflow_type: form.workflow_type,
+            workspace_id: 'default' // This should come from a context ideally
+          })
         }
         onClose()
       } catch (err: unknown) {
@@ -90,11 +93,17 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text-primary">Tipo de projeto</label>
-            <ProjectTypeSelect
-              value={form.type}
-              onChange={(type) => setForm((prev) => ({ ...prev, type }))}
-            />
+            <label className="text-sm font-medium text-text-primary">Pipeline de Processo (Workflow)</label>
+            <select
+              value={form.workflow_type}
+              onChange={(e) => handleChange('workflow_type', e.target.value)}
+              disabled={isPending || isEdit}
+              className="w-full h-10 px-3 py-2 text-sm rounded-md border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 disabled:opacity-50"
+            >
+              <option value="branding">Branding (8 etapas)</option>
+              <option value="social_media">Social Media (4 etapas)</option>
+              <option value="website">Website (6 etapas)</option>
+            </select>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-text-primary">Descrição</label>
@@ -146,12 +155,10 @@ export function ProjectModal({ project, clients, team, onClose }: ProjectModalPr
                 disabled={isPending}
                 className="w-full h-10 px-3 py-2 text-sm rounded-md border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 disabled:opacity-50"
               >
-                <option value="draft">Rascunho</option>
-                <option value="copy">Copy</option>
-                <option value="review">Revisão</option>
-                <option value="approved">Aprovado</option>
-                <option value="delayed">Atrasado</option>
+                <option value="active">Ativo</option>
+                <option value="paused">Pausado</option>
                 <option value="completed">Concluído</option>
+                <option value="archived">Arquivado</option>
               </select>
             </div>
             <div className="space-y-2">
