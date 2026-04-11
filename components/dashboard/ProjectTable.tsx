@@ -1,8 +1,18 @@
-import React from 'react'
 import { ExtendedProject } from '@/app/dashboard/projects/actions'
 import { StatusBadge, BadgeVariant } from '@/components/ui/StatusBadge'
 import { Avatar } from '@/components/ui/avatar'
-import { PROJECT_STATUS_LABELS } from '@/types/database'
+
+const PROJECT_STATUS_LABELS: Record<string, string> = {
+  active: 'Ativo',
+  paused: 'Pausado',
+  completed: 'Concluído',
+  archived: 'Arquivado',
+  draft: 'Rascunho',
+  copy: 'Copy',
+  review: 'Revisão',
+  approved: 'Aprovado',
+  delayed: 'Atrasado',
+}
 
 function getHealthVariant(score: number): BadgeVariant {
   if (score >= 80) return 'success';
@@ -90,9 +100,9 @@ export function ProjectTable({ projects }: { projects: ExtendedProject[] }) {
                   <StatusBadge
                     label={PROJECT_STATUS_LABELS[project.status] || project.status}
                     variant={
-                      project.status === 'completed' || project.status === 'approved'
+                      project.status === 'completed' || project.status === 'active'
                         ? 'success'
-                        : project.status === 'delayed'
+                        : project.status === 'paused' || project.status === 'archived'
                           ? 'danger'
                           : 'info'
                     }

@@ -7,6 +7,9 @@ import { revalidatePath } from 'next/cache'
 export type ExtendedProject = V2Project & { 
   clients: { name: string; company?: string | null } | null; 
   progress: number;
+  health_score: number;
+  profiles?: { full_name: string; avatar_url?: string | null } | null;
+  deadline?: string | null;
   stages?: V2ProjectStage[];
   tasks?: V2Task[];
 };
@@ -33,6 +36,7 @@ export async function getProjects(clientId?: string): Promise<ExtendedProject[]>
     return {
       ...p,
       progress,
+      health_score: progress,
     } as ExtendedProject
   })
 }
@@ -54,6 +58,7 @@ export async function getProjectById(id: string): Promise<ExtendedProject> {
   return {
     ...p,
     progress,
+    health_score: progress,
   } as ExtendedProject;
 }
 
