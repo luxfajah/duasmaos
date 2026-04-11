@@ -49,7 +49,7 @@ const prettyDate = (dStr: string | null | undefined) => {
   return `${parts[2]}/${parts[1]}`
 }
 
-export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, projectData }: DeadlinesEditorProps) {
+export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, projectData, allProjects }: DeadlinesEditorProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   
@@ -150,7 +150,9 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
            </div>
            <div className="w-1.5 h-10 bg-brand-primary/20 rounded-full ml-2" />
         </div>
-      </div>      {/* 2. Horizontal Pipeline Timeline */}
+      </div>
+
+      {/* 2. Horizontal Pipeline Timeline */}
       <div className="glass rounded-[32px] p-6 border border-border overflow-hidden">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary mb-6 flex items-center gap-2">
            <LayoutList size={14} /> Pipeline Cronograma
@@ -322,6 +324,7 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
             </div>
           </div>
         </div>
+      )}
       {/* Task Edit Modal */}
       <TaskEditModal 
         open={!!editingTask} 
