@@ -142,7 +142,7 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
            <LayoutList size={14} /> Pipeline Cronograma
         </h3>
         
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex gap-4 overflow-x-auto pb-4">
           {sortedStages.map((stage, idx) => {
             const stageTasks = tasks.filter(t => t.stage_id === stage.id)
             

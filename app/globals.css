@@ -186,17 +186,24 @@
     color: hsl(35 35% 95%);
   }
 
-  /* Scrollbar sutil */
+  /* Scrollbar - Premium & Usable */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--border-strong));
+    background: hsl(var(--border-strong) / 0.5);
     border-radius: var(--radius-full);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--brand-primary) / 0.5);
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--text-muted));
