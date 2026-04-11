@@ -2,10 +2,12 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import { getProjectById } from '../actions'
 import { getProjectStages } from '../stage-actions'
+import { getV2ProjectById } from '@/app/dashboard/v2/actions'
 import { getTasks } from '@/app/dashboard/tasks/actions'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 import { Badge } from '@/components/ui/badge'
 import { ProjectPipeline } from '@/components/projects/ProjectPipeline'
+import { V2ProjectWorkspace } from '@/components/projects/V2ProjectWorkspace'
 import { ProjectTypeBadge } from '@/components/projects/ProjectTypeSelect'
 import { TaskKanban } from '@/components/tasks/TaskKanban'
 import { PROJECT_STATUS_LABELS, PRIORITY_LABELS, ProjectType } from '@/types/database'
@@ -54,6 +56,16 @@ export default async function ProjectDetailPage({ params }: Props) {
     ? ['admin', 'gestor'].includes(profile.role)
     : false
 
+  // 1. Try V2 Project Fetch
+  const v2Project = await getV2ProjectById(params.id)
+
+  if (v2Project) {
+    return (
+      <V2ProjectWorkspace project={v2Project} profile={profile} />
+    )
+  }
+
+  // 2. Legacy Fallback
   let project, stages, tasks
   try {
     ;[project, stages, tasks] = await Promise.all([

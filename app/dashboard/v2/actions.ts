@@ -299,3 +299,49 @@ async function activateNextStage(projectId: string, currentOrder: number) {
       .eq('id', projectId)
   }
 }
+
+/**
+ * 5. Get V2 Project Detail
+ * Fetches project, stages, and tasks with full relations.
+ */
+export async function getV2ProjectById(projectId: string) {
+  const supabase = createClient()
+
+  // 1. Fetch Project with Client
+  const { data: project, error: projectError } = await supabase
+    .from('v2_projects')
+    .select('*, clients(*)')
+    .eq('id', projectId)
+    .single()
+
+  if (projectError) return null
+
+  // 2. Fetch Stages
+  const { data: stages, error: stagesError } = await supabase
+    .from('v2_project_stages')
+    .select('*, v2_stage_approvals(*)')
+    .eq('project_id', projectId)
+    .order('order', { ascending: true })
+
+  if (stagesError) throw stagesError
+
+  // 3. Fetch Tasks with Assignees and Profiles
+  const { data: tasks, error: tasksError } = await supabase
+    .from('v2_tasks')
+    .select('*, v2_task_assignees(*, profiles(*))')
+    .eq('project_id', projectId)
+    .order('order', { ascending: true })
+
+  if (tasksError) throw tasksError
+
+  // Calculate Progress
+  const completedStages = stages.filter(s => s.status === 'done' || s.status === 'approved').length
+  const progress = stages.length > 0 ? Math.round((completedStages / stages.length) * 100) : 0
+
+  return {
+    ...project,
+    stages,
+    tasks,
+    progress
+  }
+}
