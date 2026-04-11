@@ -2,6 +2,7 @@ import React from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { Sidebar } from '@/components/layouts/Sidebar'
 import { TopBar, ContentWrapper } from '@/components/layouts/TopBar'
+import { ProjectProvider } from '@/components/providers/project-provider'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
@@ -78,9 +79,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
           {/* Page content */}
           <div style={{ position: 'relative', zIndex: 3 }}>
-            <ContentWrapper>
-              {children}
-            </ContentWrapper>
+            <ProjectProvider>
+              <ContentWrapper>
+                {children}
+              </ContentWrapper>
+            </ProjectProvider>
           </div>
         </div>
 
