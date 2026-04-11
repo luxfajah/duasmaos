@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 
 import { ProjectDTO } from './actions'
-import { DollarSign, Briefcase, RefreshCw, AlertTriangle } from 'lucide-react'
+import { DollarSign, Briefcase, CheckCircle, AlertTriangle, TrendingUp, Timer } from 'lucide-react'
 import { MetricCard } from '@/components/dashboard/MetricCard'
+import { DashboardAlerts } from '@/components/dashboard/DashboardAlerts'
+import { OperationalStats } from '@/components/dashboard/OperationalStats'
 
 interface ProjectsPageClientProps {
   initialProjects: ProjectDTO[]
@@ -42,15 +44,36 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
     }
   }, [templateIdParam])
 
-  // Metrics calculation
-  const totalProjects = initialProjects.length
-  const activeProjects = initialProjects.filter(p => p.status === 'active').length
-  const recurringRevenue = initialProjects
-    .filter(p => p.type === 'recurring' && p.status === 'active')
-    .reduce((acc, p) => acc + (p.amount || 0), 0)
-  const totalMonthlyValue = initialProjects
-    .filter(p => p.status === 'active')
-    .reduce((acc, p) => acc + (p.amount || 0), 0)
+  // Operational Metrics calculation
+  const totalActive = initialProjects.filter(p => p.status === 'active' || p.status === 'paused').length
+  const inProgress = initialProjects.filter(p => p.status === 'active').length
+  
+  const completedThisMonth = initialProjects.filter(p => {
+    if (p.status !== 'completed' || !p.completed_at) return false
+    const completedDate = new Date(p.completed_at)
+    const now = new Date()
+    return completedDate.getMonth() === now.getMonth() && completedDate.getFullYear() === now.getFullYear()
+  }).length
+
+  const completedLastMonth = initialProjects.filter(p => {
+    if (p.status !== 'completed' || !p.completed_at) return false
+    const completedDate = new Date(p.completed_at)
+    const lastMonth = new Date()
+    lastMonth.setMonth(lastMonth.getMonth() - 1)
+    return completedDate.getMonth() === lastMonth.getMonth() && completedDate.getFullYear() === lastMonth.getFullYear()
+  }).length
+
+  const completedTrend = completedLastMonth > 0 
+    ? (completedThisMonth >= completedLastMonth ? 'up' : 'down') 
+    : 'neutral'
+  const completedTrendValue = completedLastMonth > 0
+    ? `${Math.abs(Math.round(((completedThisMonth - completedLastMonth) / completedLastMonth) * 100))}% vs mês ant.`
+    : null
+
+  const delayedProjectsCount = initialProjects.filter(p => {
+    if (p.status === 'completed' || !p.deadline) return false
+    return new Date() > new Date(p.deadline)
+  }).length
 
   const filtered = initialProjects.filter((p) => {
     const matchesSearch =
@@ -63,29 +86,36 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
 
   return (
     <>
+      <DashboardAlerts projects={initialProjects} />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <MetricCard 
-          label="Total de Projetos" 
-          value={totalProjects} 
+          label="Projetos Ativos" 
+          value={totalActive} 
           icon={Briefcase} 
-          description={`${activeProjects} ativos agora`}
+          description={`${inProgress} em andamento`}
           accent="info"
         />
         <MetricCard 
-          label="Receita Mensal (Estimada)" 
-          value={`R$ ${totalMonthlyValue.toLocaleString('pt-BR')}`} 
-          icon={DollarSign} 
-          description="Total de projetos ativos"
+          label="Concluídos (Mês)" 
+          value={completedThisMonth} 
+          icon={CheckCircle} 
+          description="Total finalizado este mês"
           accent="success"
+          trend={completedTrend}
+          trendValue={completedTrendValue || undefined}
         />
         <MetricCard 
-          label="MRR (Recorrente)" 
-          value={`R$ ${recurringRevenue.toLocaleString('pt-BR')}`} 
-          icon={RefreshCw} 
-          description="Apenas contratos recorrentes"
-          featured
+          label="Projetos Atrasados" 
+          value={delayedProjectsCount} 
+          icon={AlertTriangle} 
+          description="Ação imediata necessária"
+          accent={delayedProjectsCount > 0 ? "danger" : "default"}
+          featured={delayedProjectsCount > 0}
         />
       </div>
+
+      <OperationalStats projects={initialProjects} team={team} />
 
       <div className="flex flex-col lg:flex-row gap-3 mb-6">
         <div className="relative flex-1">

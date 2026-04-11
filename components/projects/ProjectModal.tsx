@@ -44,6 +44,7 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
     owner_id: '',
     status: (project?.status ?? 'active') as ProjectStatusV2,
     priority: 'medium' as Priority,
+    deadline: project?.deadline ? new Date(project.deadline).toISOString().split('T')[0] : '',
   })
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
           await updateProject(project.id, {
             name: form.name,
             status: form.status as any,
+            deadline: form.deadline || null,
           } as any)
         } else {
           await createProjectV3({
@@ -225,6 +227,17 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                     className="h-11"
                   />
                 </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-text-muted uppercase text-terracotta">Prazo Final (Deadline)</label>
+                  <Input
+                    type="date"
+                    value={form.deadline}
+                    onChange={(e) => handleChange('deadline', e.target.value)}
+                    className="h-11 border-terracotta/20 focus:ring-terracotta/50"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-text-muted uppercase">Gestor do Projeto</label>
                   <select

@@ -237,6 +237,8 @@ export interface V2Project {
   amount: number | null;
   billing_day: number | null;
   auto_restart: boolean;
+  deadline: string | null;
+  completed_at: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -9,9 +9,8 @@ export type ProjectDTO = V2Project & {
   profiles: { full_name: string; avatar_url: string | null } | null;
   progress: number;
   health_score: number;
-  deadline: string | null;
   stages: V2ProjectStage[];
-  tasks: V2Task[];
+  tasks: (V2Task & { v2_task_assignees: { user_id: string }[] })[];
   revenues: any[];
 };
 
@@ -19,7 +18,7 @@ export async function getProjects(clientId?: string): Promise<ProjectDTO[]> {
   const supabase = createClient()
   let query = supabase
     .from('v2_projects')
-    .select('*, clients(name, company), profiles(full_name, avatar_url), v2_project_stages(*), v2_tasks(*), revenues(*)')
+    .select('*, clients(name, company), profiles(full_name, avatar_url), v2_project_stages(*), v2_tasks(*, v2_task_assignees(*)), revenues(*)')
     .order('created_at', { ascending: false })
 
   if (clientId) {
@@ -39,6 +38,7 @@ export async function getProjects(clientId?: string): Promise<ProjectDTO[]> {
       progress,
       health_score: progress,
       deadline: p.deadline || null,
+      completed_at: p.completed_at || null,
       priority: p.priority || 'medium',
       clients: p.clients ? {
         name: p.clients.name,
@@ -59,7 +59,7 @@ export async function getProjectById(id: string): Promise<ProjectDTO> {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('v2_projects')
-    .select('*, clients(name, company), profiles(full_name, avatar_url), v2_project_stages(*), v2_tasks(*), revenues(*)')
+    .select('*, clients(name, company), profiles(full_name, avatar_url), v2_project_stages(*), v2_tasks(*, v2_task_assignees(*)), revenues(*)')
     .eq('id', id)
     .single()
   if (error) throw error
@@ -74,6 +74,7 @@ export async function getProjectById(id: string): Promise<ProjectDTO> {
     progress,
     health_score: progress,
     deadline: p.deadline || null,
+    completed_at: p.completed_at || null,
     priority: p.priority || 'medium',
     clients: p.clients ? {
       name: p.clients.name,
@@ -110,6 +111,7 @@ export async function updateProject(
   formData: Partial<{
     name: string
     status: ProjectStatusV2
+    deadline: string | null
   }>
 ) {
   const supabase = createClient()
@@ -130,6 +132,7 @@ export async function createProjectV3(data: {
   billing_day?: number
   auto_restart?: boolean
   start_date: string
+  deadline?: string
   owner_id?: string
 }) {
   const supabase = createClient()
@@ -148,6 +151,7 @@ export async function createProjectV3(data: {
       auto_restart: data.auto_restart || false,
       status: 'active',
       owner_id: data.owner_id,
+      deadline: data.deadline,
       workspace_id: 'e777e7e7-e7e7-e7e7-e7e7-e7e7e7e7e7e7'
     })
     .select()
