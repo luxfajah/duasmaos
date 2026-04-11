@@ -172,7 +172,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                 <ChevronDown size={18} className="text-text-muted ml-4 shrink-0" />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[300px] p-2 bg-surface backdrop-blur-md rounded-2xl border border-border shadow-xl">
+            <DropdownMenuContent align="start" className="w-[300px] p-2 bg-surface rounded-2xl border border-border shadow-xl">
               {projects.map(p => (
                 <DropdownMenuItem key={p.id} asChild>
                   <button
