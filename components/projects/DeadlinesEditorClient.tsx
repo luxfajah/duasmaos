@@ -6,7 +6,7 @@ import { bulkUpdateTaskDeadlines, updateProjectStartDate } from '@/app/dashboard
 import { 
   Calendar, Save, AlertCircle, Loader2, Lock, Unlock, 
   RefreshCcw, AlertTriangle, Link2, Unlink, CalendarClock, 
-  ChevronRight, LayoutList, History, Info
+  ChevronRight, LayoutList, History, Info, ArrowRight
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -175,7 +175,54 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
         </div>
       </div>
 
-      {/* 2. Simplified Task List Grouped by Stage */}
+      {/* 2. Horizontal Pipeline Timeline */}
+      <div className="glass rounded-[32px] p-6 border border-border overflow-hidden">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary mb-6 flex items-center gap-2">
+           <LayoutList size={14} /> Pipeline Cronograma
+        </h3>
+        
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          {sortedStages.map((stage, idx) => {
+            const stageTasks = tasks.filter(t => t.stage_id === stage.id)
+            
+            // Calculate stage bounds from tasks in taskState
+            let minStart = ''
+            let maxEnd = ''
+            
+            stageTasks.forEach(t => {
+              const state = taskState[t.id]
+              if (state?.start && (!minStart || state.start < minStart)) minStart = state.start
+              if (state?.end && (!maxEnd || state.end > maxEnd)) maxEnd = state.end
+            })
+
+            return (
+              <div key={stage.id} className="flex items-center shrink-0">
+                <div className="flex flex-col gap-2 min-w-[180px] p-4 rounded-2xl bg-surface-muted/50 border border-border/50">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-text-primary truncate">
+                    {stage.name}
+                  </span>
+                  <div className="flex justify-between items-center gap-2 text-[10px] font-bold text-text-muted">
+                    <span className="flex items-center gap-1">
+                      <Calendar size={10} className="text-brand-primary" /> {prettyDate(minStart)}
+                    </span>
+                    <ArrowRight size={10} className="opacity-30" />
+                    <span className="flex items-center gap-1">
+                      <Calendar size={10} className="text-orange-400" /> {prettyDate(maxEnd)}
+                    </span>
+                  </div>
+                </div>
+                {idx < sortedStages.length - 1 && (
+                  <div className="px-2 opacity-20">
+                    <ChevronRight size={20} />
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* 3. Simplified Task List Grouped by Stage */}
       <div className="flex flex-col gap-6">
         {sortedStages.map((stage) => {
           const stageTasks = tasks.filter(t => t.stage_id === stage.id)
