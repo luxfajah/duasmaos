@@ -104,7 +104,7 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
                   <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] block mb-4">Etapa</label>
                   <div className="flex items-center gap-3 bg-white dark:bg-slate-900 px-5 py-3.5 rounded-2xl border border-sand-dark/10 dark:border-white/5 shadow-sm">
                     <div className="w-3 h-3 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary-rgb),0.4)]" />
-                    <span className="text-sm font-bold text-text-primary font-body">{TASK_STATUS_V2_LABELS[task.status as any] || task.status}</span>
+                    <span className="text-sm font-bold text-text-primary font-body">{TASK_STATUS_V2_LABELS[task.status as import('@/types/database').TaskStatusV2] || task.status}</span>
                   </div>
                 </div>
 

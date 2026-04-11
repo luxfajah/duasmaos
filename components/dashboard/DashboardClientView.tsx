@@ -172,12 +172,12 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                 <ChevronDown size={18} className="text-text-muted ml-4 shrink-0" />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[300px] p-2 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl">
+            <DropdownMenuContent align="start" className="w-[300px] p-2 bg-surface backdrop-blur-md rounded-2xl border border-border shadow-xl">
               {projects.map(p => (
                 <DropdownMenuItem key={p.id} asChild>
                   <button
                     onClick={() => setSelectedProject(p)}
-                    className="w-full flex items-center p-3 rounded-xl hover:bg-sand-warm cursor-pointer transition-colors"
+                    className="w-full flex items-center p-3 rounded-xl hover:bg-brand-primary/10 cursor-pointer transition-colors text-text-primary"
                   >
                      <span className="font-medium font-body truncate">{p.name}</span>
                   </button>
@@ -274,9 +274,13 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                     setSelectedTaskDetail(task)
                     setTaskDetailModalOpen(true)
                   }}
-                  className={`px-5 py-2.5 rounded-full text-[11px] font-bold font-heading shrink-0 uppercase tracking-widest hover:scale-105 active:scale-95 duration-200 shadow-sm flex items-center gap-2 ${isHighPriority ? 'bg-[#111111] hover:bg-black text-white' : 'bg-sand hover:bg-sand-dark text-text-primary'}`}
+                  className={`px-5 py-2.5 rounded-full text-[11px] font-bold font-heading shrink-0 uppercase tracking-widest hover:scale-105 active:scale-95 duration-200 shadow-sm flex items-center gap-2 ${
+                    isHighPriority 
+                      ? 'bg-status-danger/90 hover:bg-status-danger text-white border border-status-danger/20' 
+                      : 'bg-brand-primary/15 hover:bg-brand-primary/25 text-brand-primary dark:text-brand-primary-light border border-brand-primary/20 backdrop-blur-md'
+                  }`}
                 >
-                  {isHighPriority && <span className="text-brand-primary group-hover:rotate-12 transition-transform">✦</span>}
+                  {isHighPriority && <span className="text-white/80 group-hover:rotate-12 transition-transform">✦</span>}
                   {isMeeting ? 'Juntar-se à Reunião' : 'Ver Detalhes'}
                 </button>
               </div>
