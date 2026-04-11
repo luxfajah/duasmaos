@@ -14,6 +14,7 @@ export async function updateV2Task(
     priority?: TaskPriorityV2
     due_date?: string | null
     assignees?: string[] // array of profile IDs
+    social_post_count?: number
   }
 ) {
   const supabase = createClient()
@@ -27,6 +28,7 @@ export async function updateV2Task(
       status: data.status,
       priority: data.priority,
       due_date: data.due_date,
+      social_post_count: data.social_post_count,
       updated_at: new Date().toISOString()
     })
     .eq('id', taskId)
@@ -65,4 +67,90 @@ export async function getAllProfiles() {
 
   if (error) throw error
   return data || []
+}
+
+export async function getSocialPosts(taskId: string) {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('v2_social_posts')
+    .select('*')
+    .eq('task_id', taskId)
+    .order('order', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function syncSocialPosts(taskId: string, targetCount: number) {
+  const supabase = createClient()
+
+  // 1. Get current posts
+  const { data: currentPosts, error: getError } = await supabase
+    .from('v2_social_posts')
+    .select('*')
+    .eq('task_id', taskId)
+    .order('order', { ascending: true })
+
+  if (getError) throw getError
+
+  const currentCount = currentPosts?.length || 0
+
+  if (targetCount > currentCount) {
+    // Add new posts
+    const newPosts = []
+    for (let i = currentCount; i < targetCount; i++) {
+      newPosts.push({
+        task_id: taskId,
+        order: i,
+        type: 'feed',
+        status: 'pending',
+        approval_status: 'pending',
+        hashtags: []
+      })
+    }
+
+    if (newPosts.length > 0) {
+      const { error: insertError } = await supabase.from('v2_social_posts').insert(newPosts)
+      if (insertError) throw insertError
+    }
+  } else if (targetCount < currentCount) {
+    // Identify empty posts to delete that are above the target count
+    const postsToDelete = currentPosts.filter(post => {
+      if (post.order < targetCount) return false
+      
+      const isEmpty = !post.caption && 
+                      (!post.hashtags || post.hashtags.length === 0) && 
+                      (!post.media || (Array.isArray(post.media) && post.media.length === 0))
+      
+      return isEmpty
+    })
+
+    if (postsToDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('v2_social_posts')
+        .delete()
+        .in('id', postsToDelete.map(p => p.id))
+      
+      if (deleteError) throw deleteError
+    }
+  }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}
+
+export async function updateSocialPost(postId: string, data: any) {
+  const supabase = createClient()
+  
+  const { error } = await supabase
+    .from('v2_social_posts')
+    .update({
+      ...data,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', postId)
+
+  if (error) throw error
+  revalidatePath('/dashboard')
+  return { success: true }
 }

@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useTransition } from 'react'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
-import { TaskStatusV2, TaskPriorityV2, PRIORITY_LABELS, TASK_STATUS_V2_LABELS } from '@/types/database'
-import { updateV2Task, getAllProfiles } from '@/app/dashboard/v2/task-actions'
+import { TaskStatusV2, TaskPriorityV2, PRIORITY_LABELS, TASK_STATUS_V2_LABELS, DeliverableTypeV2 } from '@/types/database'
+import { updateV2Task, getAllProfiles, syncSocialPosts } from '@/app/dashboard/v2/task-actions'
 import { X, Save, Loader2, Users, Calendar, AlertCircle, Type, AlignLeft } from 'lucide-react'
 import { Avatar } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
@@ -26,7 +26,9 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
     status: 'pending' as TaskStatusV2,
     priority: 'medium' as TaskPriorityV2,
     due_date: '',
-    assignees: [] as string[]
+    assignees: [] as string[],
+    deliverable_type: 'default' as DeliverableTypeV2,
+    social_post_count: 0
   })
 
   useEffect(() => {
@@ -37,7 +39,9 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
         status: task.status || 'pending',
         priority: task.priority || 'medium',
         due_date: task.due_date ? task.due_date.split('T')[0] : '',
-        assignees: task.v2_task_assignees?.map((a: any) => a.user_id) || []
+        assignees: task.v2_task_assignees?.map((a: any) => a.user_id) || [],
+        deliverable_type: task.deliverable_type || 'default',
+        social_post_count: task.social_post_count || 0
       })
 
       getAllProfiles().then(setProfiles).catch(console.error)
@@ -52,6 +56,12 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
           ...formData,
           due_date: formData.due_date ? new Date(formData.due_date + 'T12:00:00Z').toISOString() : null
         })
+        
+        // Sync social posts if count changed and type is social
+        if (formData.deliverable_type === 'social_copy' || formData.deliverable_type === 'social_design') {
+          await syncSocialPosts(task.id, formData.social_post_count)
+        }
+
         onClose()
       } catch (err: any) {
         alert('Erro ao salvar: ' + err.message)
@@ -162,16 +172,39 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                     
                     <div className="space-y-3">
                       <label className="text-[10px] font-black uppercase tracking-widest text-text-muted block px-1">Estado Atual</label>
-                      <select 
-                        value={formData.status}
-                        onChange={e => setFormData(p => ({ ...p, status: e.target.value as any }))}
-                        className="glass-input w-full p-4 rounded-xl text-sm font-black uppercase tracking-widest appearance-none cursor-pointer"
-                      >
-                        {Object.entries(TASK_STATUS_V2_LABELS).map(([val, label]) => (
-                          <option key={val} value={val} className="bg-surface text-text-primary">{label}</option>
-                        ))}
                       </select>
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-text-muted block px-1">Tipo de Entrega</label>
+                      <select 
+                        value={formData.deliverable_type}
+                        onChange={e => setFormData(p => ({ ...p, deliverable_type: e.target.value as any }))}
+                        className="glass-input w-full p-4 rounded-xl text-sm font-black uppercase tracking-widest appearance-none cursor-pointer"
+                      >
+                        <option value="default" className="bg-surface">Padrão</option>
+                        <option value="social_copy" className="bg-surface">Social Copy</option>
+                        <option value="social_design" className="bg-surface">Social Design</option>
+                        <option value="copy" className="bg-surface">Copywriting</option>
+                        <option value="design" className="bg-surface">Design Geral</option>
+                      </select>
+                    </div>
+
+                    {(formData.deliverable_type === 'social_copy' || formData.deliverable_type === 'social_design') && (
+                      <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted block px-1">Qtd. de Posts</label>
+                        <input 
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={formData.social_post_count}
+                          onChange={e => setFormData(p => ({ ...p, social_post_count: parseInt(e.target.value) || 0 }))}
+                          className="glass-input w-full p-4 rounded-xl text-sm font-black tracking-widest"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="pt-4">

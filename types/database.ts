@@ -210,11 +210,9 @@ export type TaskStatusV2 = 'pending' | 'in_progress' | 'in_review' | 'approved' 
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
 export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval';
-export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website' | 'social_copy' | 'social_design';
-export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
-
 export type PostTypeV2 = 'feed' | 'story' | 'carousel' | 'video_story' | 'reels';
 export type PostStatusV2 = 'pending' | 'in_progress' | 'done';
+export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website' | 'social_copy' | 'social_design' | 'default';
 
 export interface V2Workspace {
   id: string;
@@ -272,13 +270,15 @@ export interface V2SocialPost {
   task_id: string;
   type: PostTypeV2;
   status: PostStatusV2;
+  approval_status: ApprovalStatusV2;
   carousel_slides: number;
   caption: string | null;
   hashtags: string[];
   optional_text: string | null;
-  design_urls: string[];
-  is_approved: boolean;
+  media: any[]; // Array of media objects
   order: number;
+  started_at: string | null;
+  completed_at: string | null;
   created_at: string;
   updated_at: string;
 }

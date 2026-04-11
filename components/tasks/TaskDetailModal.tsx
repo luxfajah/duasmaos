@@ -2,14 +2,15 @@
 
 import React, { useEffect, useState } from 'react'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
-import { Task, PRIORITY_LABELS, TASK_STATUS_V2_LABELS } from '@/types/database'
+import { V2Task, PRIORITY_LABELS, TASK_STATUS_V2_LABELS } from '@/types/database'
 import { Avatar } from '@/components/ui/avatar'
 import { Calendar, Clock, ClipboardList, AlertCircle, ChevronLeft, X } from 'lucide-react'
 import { TaskComments } from './TaskComments'
 import { getTaskComments } from '@/app/dashboard/tasks/comment-actions'
+import { SocialPostGrid } from './SocialPostGrid'
 
 interface TaskDetailModalProps {
-  task: (Task & { profiles?: { full_name: string; avatar_url: string | null } | null }) | null
+  task: (V2Task & { profiles?: { full_name: string; avatar_url: string | null } | null }) | null
   open: boolean
   onClose: () => void
 }
@@ -96,6 +97,28 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
                 </div>
               </section>
 
+              {/* Social Media Production Grid */}
+              {(task.deliverable_type === 'social_copy' || task.deliverable_type === 'social_design') && (
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-10 h-10 rounded-xl bg-brand-primary shadow-brand flex items-center justify-center text-white">
+                      <ClipboardList size={20} strokeWidth={2.5} />
+                    </div>
+                    <div className="flex flex-col">
+                      <h4 className="text-sm font-black text-text-primary uppercase tracking-widest">
+                        Grade de Produção
+                      </h4>
+                      <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Fila de execução por post</p>
+                    </div>
+                  </div>
+                  
+                  <SocialPostGrid 
+                    taskId={task.id} 
+                    taskType={task.deliverable_type} 
+                  />
+                </section>
+              )}
+
               <section className="pt-4">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-10 h-10 rounded-xl bg-brand-primary/5 dark:bg-brand-primary/10 flex items-center justify-center text-brand-primary shadow-sm border border-brand-primary/10">
@@ -140,7 +163,7 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-sm font-bold text-text-primary font-body">
-                         {task.deadline ? new Date(task.deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Fluxo Contínuo'}
+                         {task.due_date ? new Date(task.due_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Fluxo Contínuo'}
                       </span>
                       <span className="text-[10px] text-text-muted font-black uppercase tracking-wider mt-0.5 mt-1">Estimativa de Finalização</span>
                     </div>
