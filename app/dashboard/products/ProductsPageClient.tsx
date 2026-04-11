@@ -250,7 +250,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
         {filtered.map(product => (
           <div 
             key={product.id}
-            className="group relative bg-surface border border-border/50 rounded-2xl overflow-hidden hover:border-brand-primary/40 hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-300 flex flex-col h-[280px]"
+            className="group relative bg-surface border border-border/50 rounded-2xl hover:border-brand-primary/40 hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-300 flex flex-col h-[280px]"
           >
             {/* Header / Type Badge */}
             <div className="p-5 flex-1">
@@ -264,7 +264,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-text-muted hover:text-text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-text-muted hover:text-text-primary opacity-40 group-hover:opacity-100 transition-opacity">
                       <MoreHorizontal size={16} />
                     </Button>
                   </DropdownMenuTrigger>
