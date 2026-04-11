@@ -8,7 +8,7 @@ export interface ProductTemplateData {
   name: string
   category: string
   type: string
-  base_price: number
+  base_price: number | null
   stages: {
     id?: string
     name: string
@@ -34,7 +34,7 @@ export async function createProductTemplate(data: Partial<ProductTemplateData>) 
       name: data.name || 'Novo Produto',
       category: data.category || 'Geral',
       type: data.type || 'service',
-      base_price: data.base_price || 0,
+      base_price: data.base_price ?? 0,
       is_active: true
     })
     .select()
