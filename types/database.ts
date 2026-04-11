@@ -212,6 +212,7 @@ export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval';
 export type PostTypeV2 = 'feed' | 'story' | 'carousel' | 'video_story' | 'reels';
 export type PostStatusV2 = 'pending' | 'in_progress' | 'done';
+export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
 export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website' | 'social_copy' | 'social_design' | 'default';
 
 export interface V2Workspace {
