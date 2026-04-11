@@ -157,7 +157,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 // ─── Memoized Sub-components ──────────────────────────────────────────────────
 
-const TaskRow = React.memo(({
+const TaskRow = React.memo(function TaskRow({
   task,
   onChange,
   onRemove,
@@ -165,7 +165,7 @@ const TaskRow = React.memo(({
   task: TaskTemplate
   onChange: (t: TaskTemplate) => void
   onRemove: () => void
-}) => {
+}) {
   return (
     <div className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-surface-muted transition-colors duration-150 border border-transparent hover:border-border/50">
       {/* drag handle */}
@@ -234,7 +234,7 @@ const TaskRow = React.memo(({
   )
 })
 
-const StageCard = React.memo(({
+const StageCard = React.memo(function StageCard({
   stage,
   index,
   total,
@@ -252,7 +252,7 @@ const StageCard = React.memo(({
   onUpdate: (s: Stage) => void
   onRemove: () => void
   onMove: (dir: number) => void
-}) => {
+}) {
   const addTask = useCallback(() => {
     const newTask: TaskTemplate = {
       id: uid(),
