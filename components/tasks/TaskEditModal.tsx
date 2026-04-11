@@ -93,8 +93,8 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
               {/* Left Column: Core Data */}
               <div className="flex flex-col gap-6">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block flex items-center gap-2">
-                    <Type size={12} /> Título da Tarefa
+                  <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3 block flex items-center gap-2">
+                    <Type size={12} className="text-brand-primary" /> Título da Tarefa
                   </label>
                   <input 
                     type="text"
@@ -107,8 +107,8 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block flex items-center gap-2">
-                    <AlignLeft size={12} /> Descrição
+                  <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3 block flex items-center gap-2">
+                    <AlignLeft size={12} className="text-brand-primary" /> Descrição
                   </label>
                   <textarea 
                     value={formData.description}
@@ -120,7 +120,7 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
 
                 <div className="grid grid-cols-2 gap-4">
                    <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Prioridade</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3 block">Prioridade</label>
                     <select 
                       value={formData.priority}
                       onChange={e => setFormData(p => ({ ...p, priority: e.target.value as any }))}
@@ -132,7 +132,7 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                     </select>
                    </div>
                    <div>
-                    <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block">Status</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3 block">Status</label>
                     <select 
                       value={formData.status}
                       onChange={e => setFormData(p => ({ ...p, status: e.target.value as any }))}
@@ -146,8 +146,8 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block flex items-center gap-2">
-                    <Calendar size={12} /> Prazo Final
+                  <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3 block flex items-center gap-2">
+                    <Calendar size={12} className="text-brand-primary" /> Prazo Final
                   </label>
                   <input 
                     type="date"
@@ -160,8 +160,8 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
 
               {/* Right Column: Team Management */}
               <div className="flex flex-col gap-4">
-                <label className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 block flex items-center gap-2">
-                  <Users size={12} /> Equipe Designada
+                <label className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3 block flex items-center gap-2">
+                  <Users size={12} className="text-brand-primary" /> Equipe Designada
                 </label>
                 
                 <div className="glass-input rounded-2xl p-4 min-h-[400px] flex flex-col gap-2 overflow-y-auto max-h-[500px]">
@@ -185,10 +185,10 @@ export function TaskEditModal({ task, open, onClose, projectId }: TaskEditModalP
                           size="sm" 
                          />
                          <div className="flex flex-col items-start truncate">
-                            <span className="text-xs font-bold text-text-primary text-left">{profile.full_name}</span>
-                            <span className="text-[9px] text-text-muted uppercase tracking-wider">{profile.role}</span>
-                         </div>
-                         {isSelected && <div className="ml-auto w-2 h-2 rounded-full bg-brand-primary" />}
+                             <span className="text-xs font-black text-text-primary text-left">{profile.full_name}</span>
+                             <span className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">{profile.role}</span>
+                          </div>
+                          {isSelected && <div className="ml-auto w-2.5 h-2.5 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(var(--brand-primary),0.4)]" />}
                       </button>
                     )
                   })}
