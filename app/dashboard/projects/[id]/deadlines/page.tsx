@@ -47,11 +47,9 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
           </Link>
         </div>
 
-        {/* Header */}
         <EditorialHeader 
           title="Gestão de Prazos" 
           subtitle="Ajuste os prazos das entregas deste projeto" 
-          accentColor="var(--brand-primary)"
         />
 
         {/* Project Name Context */}
