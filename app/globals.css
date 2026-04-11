@@ -5,16 +5,16 @@
 @layer base {
   :root {
     /* ─────────────────────────────────────────
-       SUPERFÍCIES — Sand & Warm Layers
+       SUPERFÍCIES — Neutral & Clean Layers
     ───────────────────────────────────────── */
-    --background: 35 22% 93%;         /* Sand — Level 0 */
+    --background: 240 14% 97%;         /* #F7F7F9 — Level 0 */
     --foreground: 220 25% 14%;        /* Deep Blue dark — primary text */
-    --surface: 35 18% 97%;            /* Warm near-white — Level 1 cards */
-    --surface-muted: 35 20% 90%;      /* Slightly deeper sand */
-    --surface-elevated: 35 15% 98%;   /* Highest surface (modals) */
+    --surface: 0 0% 100%;             /* Pure White — Level 1 cards */
+    --surface-muted: 240 10% 94%;     /* Subtle grey */
+    --surface-elevated: 0 0% 100%;    /* Highest surface (modals) */
     --surface-deep-blue: 222 45% 14%; /* Deep Blue — sidebar, immersive cards */
-    --border: 35 18% 84%;             /* Sand border */
-    --border-strong: 35 15% 74%;      /* Stronger sand border */
+    --border: 220 13% 91%;             /* #E6E8EC — Standard border */
+    --border-strong: 220 10% 84%;      /* Stronger neutral border */
 
     /* ─────────────────────────────────────────
        MARCA — Duas Mãos Palette

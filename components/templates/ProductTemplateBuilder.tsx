@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ interface Rules {
   clientParticipation: boolean
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Constants & Helpers ───────────────────────────────────────────────────────
 
 function uid() {
   return Math.random().toString(36).slice(2, 9)
@@ -44,10 +44,11 @@ const TASK_TYPE_LABELS: Record<TaskType, string> = {
   approval: 'Aprovação',
 }
 
-const TASK_TYPE_COLORS: Record<TaskType, string> = {
-  task: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  checklist: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  approval: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
+// Design tokens mapping for task types (supporting both themes)
+const TASK_TYPE_STYLES: Record<TaskType, string> = {
+  task: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+  checklist: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+  approval: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
 }
 
 const PRODUCT_TYPE_LABELS: Record<ProductType, string> = {
@@ -100,14 +101,18 @@ const DEFAULT_STAGES: Stage[] = [
   },
 ]
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── UI Components (Strict Token Usage) ───────────────────────────────────────
 
-function GlassCard({ children, className }: { children: React.ReactNode; className?: string }) {
+/**
+ * SurfaceCard component using Level 1 design tokens.
+ * Adapts to #FFFFFF (Light) and surface-elevated (Dark).
+ */
+function SurfaceCard({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div
       className={cn(
-        'rounded-2xl border border-white/[0.07] bg-white/[0.04] backdrop-blur-xl',
-        'shadow-[0_4px_24px_-4px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)]',
+        'rounded-lg border border-border bg-surface shadow-sm overflow-hidden flex flex-col',
+        'transition-shadow duration-200 hover:shadow-md',
         className
       )}
     >
@@ -116,18 +121,7 @@ function GlassCard({ children, className }: { children: React.ReactNode; classNa
   )
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-2 mb-4">
-      <span className="w-1 h-4 rounded-full bg-gradient-to-b from-[hsl(13_55%_56%)] to-[hsl(43_85%_65%)] shrink-0" />
-      <span className="text-[10px] font-bold tracking-[0.12em] uppercase text-white/40 font-body">
-        {children}
-      </span>
-    </div>
-  )
-}
-
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+function CompactToggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
       type="button"
@@ -135,55 +129,35 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
-        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent',
-        'transition-all duration-200 focus-visible:outline-none',
-        checked
-          ? 'bg-[hsl(13_52%_56%)] shadow-[0_0_10px_hsl(13_52%_56%/0.5)]'
-          : 'bg-white/10'
+        'relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full transition-all duration-200 outline-none',
+        checked ? 'bg-brand-primary' : 'bg-border'
       )}
     >
       <span
         className={cn(
-          'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-lg',
-          'transition-transform duration-200',
-          checked ? 'translate-x-4' : 'translate-x-0'
+          'pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow-sm ring-0 transition-transform duration-200',
+          checked ? 'translate-x-3.5' : 'translate-x-0.5',
+          'mt-0.5'
         )}
       />
     </button>
   )
 }
 
-function IconButton({
-  onClick,
-  title,
-  children,
-  variant = 'ghost',
-}: {
-  onClick: () => void
-  title?: string
-  children: React.ReactNode
-  variant?: 'ghost' | 'danger' | 'brand'
-}) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <button
-      type="button"
-      title={title}
-      onClick={onClick}
-      className={cn(
-        'flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-150',
-        variant === 'ghost' && 'text-white/30 hover:text-white/80 hover:bg-white/08',
-        variant === 'danger' && 'text-red-400/50 hover:text-red-400 hover:bg-red-500/10',
-        variant === 'brand' && 'text-[hsl(13_52%_56%)] hover:bg-[hsl(13_52%_56%/0.1)]'
-      )}
-    >
-      {children}
-    </button>
+    <div className="flex items-center gap-2 mb-3">
+      <span className="w-1 h-3 rounded-full bg-brand-primary shrink-0" />
+      <span className="text-[10px] font-bold tracking-[0.1em] uppercase text-text-muted font-body">
+        {children}
+      </span>
+    </div>
   )
 }
 
-// ─── TaskRow ──────────────────────────────────────────────────────────────────
+// ─── Memoized Sub-components ──────────────────────────────────────────────────
 
-function TaskRow({
+const TaskRow = React.memo(({
   task,
   onChange,
   onRemove,
@@ -191,12 +165,12 @@ function TaskRow({
   task: TaskTemplate
   onChange: (t: TaskTemplate) => void
   onRemove: () => void
-}) {
+}) => {
   return (
-    <div className="group flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-white/[0.1] transition-colors duration-150">
+    <div className="group flex items-center gap-2 py-1.5 px-2 rounded-md hover:bg-surface-muted transition-colors duration-150 border border-transparent hover:border-border/50">
       {/* drag handle */}
-      <span className="text-white/20 cursor-grab active:cursor-grabbing shrink-0">
-        <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+      <span className="text-text-muted/40 cursor-grab active:cursor-grabbing shrink-0">
+        <svg width="10" height="14" viewBox="0 0 12 16" fill="currentColor">
           <circle cx="4" cy="4" r="1.5" /><circle cx="8" cy="4" r="1.5" />
           <circle cx="4" cy="8" r="1.5" /><circle cx="8" cy="8" r="1.5" />
           <circle cx="4" cy="12" r="1.5" /><circle cx="8" cy="12" r="1.5" />
@@ -207,18 +181,18 @@ function TaskRow({
       <input
         value={task.name}
         onChange={(e) => onChange({ ...task, name: e.target.value })}
-        placeholder="Nome da tarefa…"
-        className="flex-1 min-w-0 bg-transparent text-sm text-white/90 placeholder:text-white/25 outline-none"
+        placeholder="Tarefa…"
+        className="flex-1 min-w-0 bg-transparent text-xs text-text-primary placeholder:text-text-muted outline-none h-7"
       />
 
       {/* Role */}
       <select
         value={task.role}
         onChange={(e) => onChange({ ...task, role: e.target.value })}
-        className="bg-white/[0.05] border border-white/[0.07] rounded-lg text-xs text-white/70 px-2 py-1 outline-none cursor-pointer hover:border-white/20 transition-colors w-28"
+        className="bg-transparent text-[10px] text-text-secondary outline-none cursor-pointer hover:bg-surface/50 rounded-sm transition-colors w-24 h-7 border-none p-0"
       >
         {ROLES.map((r) => (
-          <option key={r} value={r} className="bg-[#0f1629] text-white">{r}</option>
+          <option key={r} value={r} className="bg-surface text-text-primary">{r}</option>
         ))}
       </select>
 
@@ -227,64 +201,59 @@ function TaskRow({
         value={task.deadline}
         onChange={(e) => onChange({ ...task, deadline: e.target.value })}
         placeholder="D+1"
-        className="w-14 bg-white/[0.05] border border-white/[0.07] rounded-lg text-xs text-amber-400 placeholder:text-white/25 px-2 py-1 text-center outline-none font-mono hover:border-white/20 transition-colors"
+        className="w-10 bg-transparent text-[10px] text-brand-primary font-mono text-center outline-none hover:bg-surface/50 rounded-sm h-7"
       />
 
-      {/* Type */}
+      {/* Type Badge / Select */}
       <select
         value={task.type}
         onChange={(e) => onChange({ ...task, type: e.target.value as TaskType })}
         className={cn(
-          'rounded-lg border text-xs px-2 py-1 outline-none cursor-pointer transition-colors w-24',
-          TASK_TYPE_COLORS[task.type],
-          'bg-transparent'
+          'rounded px-1.5 h-6 text-[9px] font-bold uppercase transition-colors outline-none cursor-pointer border',
+          TASK_TYPE_STYLES[task.type]
         )}
       >
         {(Object.keys(TASK_TYPE_LABELS) as TaskType[]).map((t) => (
-          <option key={t} value={t} className="bg-[#0f1629] text-white">{TASK_TYPE_LABELS[t]}</option>
+          <option key={t} value={t} className="bg-surface text-text-primary">{TASK_TYPE_LABELS[t]}</option>
         ))}
       </select>
 
       {/* Required toggle */}
-      <div className="flex items-center gap-1.5 shrink-0">
-        <span className="text-[10px] text-white/30 hidden sm:block">Req.</span>
-        <Toggle checked={task.required} onChange={(v) => onChange({ ...task, required: v })} />
-      </div>
+      <CompactToggle checked={task.required} onChange={(v) => onChange({ ...task, required: v })} />
 
       {/* Remove */}
-      <IconButton onClick={onRemove} title="Remover tarefa" variant="danger">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+      <button
+        onClick={onRemove}
+        className="text-text-muted/40 hover:text-danger p-1 transition-colors opacity-0 group-hover:opacity-100"
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
-      </IconButton>
+      </button>
     </div>
   )
-}
+})
 
-// ─── StageCard ────────────────────────────────────────────────────────────────
-
-function StageCard({
+const StageCard = React.memo(({
   stage,
   index,
   total,
-  isSelected,
+  isActive,
   onSelect,
   onUpdate,
   onRemove,
-  onMoveLeft,
-  onMoveRight,
+  onMove,
 }: {
   stage: Stage
   index: number
   total: number
-  isSelected: boolean
+  isActive: boolean
   onSelect: () => void
   onUpdate: (s: Stage) => void
   onRemove: () => void
-  onMoveLeft: () => void
-  onMoveRight: () => void
-}) {
-  const addTask = () => {
+  onMove: (dir: number) => void
+}) => {
+  const addTask = useCallback(() => {
     const newTask: TaskTemplate = {
       id: uid(),
       name: '',
@@ -294,97 +263,73 @@ function StageCard({
       required: false,
     }
     onUpdate({ ...stage, tasks: [...stage.tasks, newTask] })
-  }
+  }, [stage, onUpdate])
 
-  const updateTask = (taskId: string, updated: TaskTemplate) => {
+  const updateTask = useCallback((taskId: string, updated: TaskTemplate) => {
     onUpdate({ ...stage, tasks: stage.tasks.map((t) => (t.id === taskId ? updated : t)) })
-  }
+  }, [stage, onUpdate])
 
-  const removeTask = (taskId: string) => {
+  const removeTask = useCallback((taskId: string) => {
     onUpdate({ ...stage, tasks: stage.tasks.filter((t) => t.id !== taskId) })
-  }
+  }, [stage, onUpdate])
 
   return (
     <div
-      className={cn(
-        'relative flex-shrink-0 w-[340px] rounded-2xl border transition-all duration-200 cursor-pointer',
-        isSelected
-          ? 'border-[hsl(13_52%_56%/0.5)] bg-white/[0.06] shadow-[0_0_0_1px_hsl(13_52%_56%/0.2),0_8px_32px_-4px_rgba(0,0,0,0.4)]'
-          : 'border-white/[0.06] bg-white/[0.03] hover:border-white/[0.12] hover:bg-white/[0.05]'
-      )}
       onClick={onSelect}
-    >
-      {/* Stage number indicator */}
-      <div className={cn(
-        'absolute -top-3 left-4 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold',
-        isSelected
-          ? 'bg-[hsl(13_52%_56%)] text-white shadow-[0_0_12px_hsl(13_52%_56%/0.6)]'
-          : 'bg-white/[0.1] text-white/50'
-      )}>
-        {index + 1}
-      </div>
-
-      {/* Connector line to next stage */}
-      {index < total - 1 && (
-        <div className="absolute top-1/2 -right-5 w-5 h-px bg-gradient-to-r from-white/20 to-transparent z-10 pointer-events-none" />
+      className={cn(
+        'group flex flex-col min-h-[420px] max-h-[580px] rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden',
+        isActive
+          ? 'bg-surface shadow-lg border-brand-primary ring-1 ring-brand-primary/20'
+          : 'bg-surface/50 hover:bg-surface border-border hover:border-border-strong shadow-sm'
       )}
-
-      <div className="p-4 pt-5">
-        {/* Stage header */}
-        <div className="flex items-start justify-between mb-3 gap-2">
-          <input
-            value={stage.name}
-            onChange={(e) => onUpdate({ ...stage, name: e.target.value })}
-            onClick={(e) => e.stopPropagation()}
-            placeholder="Nome da etapa…"
-            className="flex-1 bg-transparent font-heading font-bold text-base text-white placeholder:text-white/25 outline-none border-b border-transparent focus:border-white/20 transition-colors pb-0.5"
-          />
-          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-            <IconButton onClick={onMoveLeft} title="Mover para esquerda" variant="ghost" >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </IconButton>
-            <IconButton onClick={onMoveRight} title="Mover para direita" variant="ghost">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </IconButton>
-            <IconButton onClick={onRemove} title="Remover etapa" variant="danger">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </IconButton>
+    >
+      {/* Stage Header */}
+      <div className="p-3 border-b border-border bg-surface-muted/30">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <span className={cn(
+              "flex items-center justify-center w-5 h-5 rounded text-[10px] font-bold transition-colors",
+              isActive ? "bg-brand-primary text-white" : "bg-border text-text-muted"
+            )}>
+              {index + 1}
+            </span>
+            <input
+              value={stage.name}
+              onChange={(e) => onUpdate({ ...stage, name: e.target.value })}
+              className="bg-transparent font-heading font-bold text-sm text-text-primary placeholder:text-text-muted outline-none w-32 focus:bg-surface rounded px-1 -ml-1 transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+          <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => onMove(-1)} className="p-1 text-text-muted hover:text-text-primary transition-colors"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+            <button onClick={() => onMove(1)} className="p-1 text-text-muted hover:text-text-primary transition-colors"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+            <button onClick={onRemove} className="p-1 text-text-muted hover:text-danger transition-colors"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </div>
         </div>
 
-        {/* Duration & Auto-start */}
-        <div className="flex items-center gap-3 mb-4" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] border border-white/[0.07]">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/40 shrink-0">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface border border-border">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-muted"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <input
               type="number"
               min={1}
               value={stage.duration}
               onChange={(e) => onUpdate({ ...stage, duration: Number(e.target.value) })}
-              className="w-8 bg-transparent text-xs text-white/80 outline-none text-center"
+              className="w-6 bg-transparent text-[11px] text-text-primary outline-none font-bold"
             />
-            <span className="text-[10px] text-white/30">dias</span>
+            <span className="text-[10px] text-text-muted">dias</span>
           </div>
-
-          <div className="flex items-center gap-2 flex-1">
-            <Toggle
-              checked={stage.autoStart}
-              onChange={(v) => onUpdate({ ...stage, autoStart: v })}
-            />
-            <span className="text-[11px] text-white/50">
-              {stage.autoStart ? 'Início automático' : 'Início manual'}
-            </span>
+          <div className="flex items-center gap-1.5">
+            <CompactToggle checked={stage.autoStart} onChange={(v) => onUpdate({ ...stage, autoStart: v })} />
+            <span className="text-[10px] text-text-muted font-medium">{stage.autoStart ? 'Auto' : 'Manual'}</span>
           </div>
         </div>
+      </div>
 
-        {/* Divider */}
-        <div className="h-px bg-white/[0.05] mb-3" />
-
-        {/* Tasks */}
-        <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
-          {stage.tasks.map((task) => (
+      {/* Task List (Internal Scroll) */}
+      <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
+        <div className="space-y-1">
+          {stage.tasks.map((task, tidx) => (
             <TaskRow
               key={task.id}
               task={task}
@@ -392,205 +337,31 @@ function StageCard({
               onRemove={() => removeTask(task.id)}
             />
           ))}
-          <button
-            type="button"
-            onClick={addTask}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-white/[0.1] text-white/30 hover:text-white/60 hover:border-white/25 transition-all duration-150 text-xs"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Adicionar tarefa
-          </button>
         </div>
 
-        {/* Task count badge */}
-        <div className="mt-3 flex items-center gap-1.5">
-          <div className="px-2 py-0.5 rounded-full bg-white/[0.05] text-[10px] text-white/40 border border-white/[0.05]">
-            {stage.tasks.length} {stage.tasks.length === 1 ? 'tarefa' : 'tarefas'}
-          </div>
-          {stage.tasks.some((t) => t.type === 'approval') && (
-            <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-[10px] text-emerald-400 border border-emerald-500/20">
-              aprovação
-            </div>
-          )}
-        </div>
+        <button
+          onClick={addTask}
+          className="w-full mt-2 py-2 flex items-center justify-center gap-2 rounded-md border border-dashed border-border text-text-muted hover:text-brand-primary hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all text-[11px] font-medium"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar tarefa
+        </button>
+      </div>
+
+      {/* Footer Info */}
+      <div className="p-2 border-t border-border bg-surface-muted/20 flex items-center justify-between">
+         <span className="text-[9px] text-text-muted opacity-60 font-bold uppercase tracking-wider">
+           {stage.tasks.length} {stage.tasks.length === 1 ? 'Job' : 'Jobs'}
+         </span>
+         {stage.tasks.some(t => t.required) && (
+           <span className="text-[9px] text-brand-primary/60 font-bold uppercase">* Requerido</span>
+         )}
       </div>
     </div>
   )
-}
+})
 
-// ─── Preview Panel ─────────────────────────────────────────────────────────────
-
-function PreviewPanel({ stages, rules }: { stages: Stage[]; rules: Rules }) {
-  let dayOffset = 0
-  const stageTimeline = stages.map((stage, i) => {
-    const start = dayOffset + (i > 0 ? rules.bufferDays : 0)
-    dayOffset = start + stage.duration
-    return { stage, start, end: start + stage.duration }
-  })
-
-  const totalDays = stageTimeline[stageTimeline.length - 1]?.end ?? 0
-  const totalTasks = stages.reduce((acc, s) => acc + s.tasks.length, 0)
-  const requiredTasks = stages.reduce((acc, s) => acc + s.tasks.filter((t) => t.required).length, 0)
-
-  return (
-    <div className="space-y-4">
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { label: 'Etapas', value: stages.length, color: 'text-[hsl(13_52%_56%)]' },
-          { label: 'Tarefas', value: totalTasks, color: 'text-amber-400' },
-          { label: 'Duração', value: `${totalDays}d`, color: 'text-blue-400' },
-        ].map(({ label, value, color }) => (
-          <div key={label} className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-3 text-center">
-            <div className={cn('text-xl font-bold font-heading', color)}>{value}</div>
-            <div className="text-[10px] text-white/40 mt-0.5">{label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Timeline */}
-      <div className="space-y-2">
-        {stageTimeline.map(({ stage, start, end }, i) => {
-          const pct = totalDays > 0 ? (stage.duration / totalDays) * 100 : 100
-          const offset = totalDays > 0 ? (start / totalDays) * 100 : 0
-
-          return (
-            <div key={stage.id}>
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: `hsl(${(i * 37 + 200) % 360} 60% 60%)` }} />
-                  <span className="text-xs text-white/70 font-medium">{stage.name || `Etapa ${i + 1}`}</span>
-                </div>
-                <span className="text-[10px] text-white/35 font-mono">D{start}–D{end}</span>
-              </div>
-              <div className="relative h-5 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.05]">
-                <div
-                  className="absolute top-0 h-full rounded-full flex items-center px-2 transition-all duration-500"
-                  style={{
-                    left: `${offset}%`,
-                    width: `${pct}%`,
-                    background: `linear-gradient(90deg, hsl(${(i * 37 + 200) % 360} 55% 40%) 0%, hsl(${(i * 37 + 220) % 360} 50% 50%) 100%)`,
-                    minWidth: '32px',
-                  }}
-                >
-                  <span className="text-[9px] text-white/90 font-bold whitespace-nowrap overflow-hidden">
-                    {stage.duration}d
-                  </span>
-                </div>
-                {/* Buffer indicator */}
-                {rules.bufferDays > 0 && i > 0 && (
-                  <div
-                    className="absolute top-0 h-full bg-white/[0.05] border-l border-r border-white/[0.1] transition-all duration-500"
-                    style={{
-                      left: `${(start - rules.bufferDays) / totalDays * 100}%`,
-                      width: `${rules.bufferDays / totalDays * 100}%`,
-                    }}
-                  />
-                )}
-              </div>
-              {/* Tasks under each stage */}
-              <div className="flex flex-wrap gap-1 mt-1.5">
-                {stage.tasks.map((task) => (
-                  <span
-                    key={task.id}
-                    className={cn('text-[9px] px-1.5 py-0.5 rounded border', TASK_TYPE_COLORS[task.type])}
-                  >
-                    {task.name || 'Tarefa'}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Summary */}
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Resumo</p>
-        <div className="space-y-1.5 text-xs text-white/60">
-          <div className="flex justify-between">
-            <span>Tarefas obrigatórias</span>
-            <span className="text-white/90 font-medium">{requiredTasks} / {totalTasks}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Início automático</span>
-            <span className="text-white/90 font-medium">{stages.filter(s => s.autoStart).length} etapas</span>
-          </div>
-          {rules.bufferDays > 0 && (
-            <div className="flex justify-between">
-              <span>Buffer entre etapas</span>
-              <span className="text-amber-400 font-medium">+{rules.bufferDays}d por etapa</span>
-            </div>
-          )}
-          {rules.clientParticipation && (
-            <div className="flex justify-between">
-              <span>Participação do cliente</span>
-              <span className="text-emerald-400 font-medium">Ativo</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Rules Panel ──────────────────────────────────────────────────────────────
-
-function RulesPanel({ rules, onChange }: { rules: Rules; onChange: (r: Rules) => void }) {
-  return (
-    <div className="space-y-3">
-      {/* Auto-start next */}
-      <div className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-        <div>
-          <p className="text-sm text-white/80 font-medium">Auto-iniciar próxima etapa</p>
-          <p className="text-[11px] text-white/35 mt-0.5">Avança automaticamente ao completar</p>
-        </div>
-        <Toggle checked={rules.autoStartNext} onChange={(v) => onChange({ ...rules, autoStartNext: v })} />
-      </div>
-
-      {/* Buffer time */}
-      <div className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-        <div>
-          <p className="text-sm text-white/80 font-medium">Buffer entre etapas</p>
-          <p className="text-[11px] text-white/35 mt-0.5">Dias de folga entre transições</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onChange({ ...rules, bufferDays: Math.max(0, rules.bufferDays - 1) })}
-            className="w-6 h-6 rounded-lg bg-white/[0.08] text-white/60 hover:bg-white/[0.15] transition-colors text-sm font-bold flex items-center justify-center"
-          >−</button>
-          <span className="w-8 text-center text-sm text-white/90 font-mono font-bold">{rules.bufferDays}</span>
-          <button
-            type="button"
-            onClick={() => onChange({ ...rules, bufferDays: rules.bufferDays + 1 })}
-            className="w-6 h-6 rounded-lg bg-white/[0.08] text-white/60 hover:bg-white/[0.15] transition-colors text-sm font-bold flex items-center justify-center"
-          >+</button>
-        </div>
-      </div>
-
-      {/* Repeat on revision */}
-      <div className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-        <div>
-          <p className="text-sm text-white/80 font-medium">Repetir tarefas em revisão</p>
-          <p className="text-[11px] text-white/35 mt-0.5">Reativa tarefas quando há revisão</p>
-        </div>
-        <Toggle checked={rules.repeatOnRevision} onChange={(v) => onChange({ ...rules, repeatOnRevision: v })} />
-      </div>
-
-      {/* Client participation */}
-      <div className="flex items-center justify-between p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
-        <div>
-          <p className="text-sm text-white/80 font-medium">Participação do cliente</p>
-          <p className="text-[11px] text-white/35 mt-0.5">Cliente acessa e aprova diretamente</p>
-        </div>
-        <Toggle checked={rules.clientParticipation} onChange={(v) => onChange({ ...rules, clientParticipation: v })} />
-      </div>
-    </div>
-  )
-}
-
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Main Builder Component ───────────────────────────────────────────────────
 
 export function ProductTemplateBuilder() {
   const [productName, setProductName] = useState('Social Media Mensal')
@@ -598,42 +369,44 @@ export function ProductTemplateBuilder() {
   const [productType, setProductType] = useState<ProductType>('recurring')
   const [basePrice, setBasePrice] = useState('2500')
   const [stages, setStages] = useState<Stage[]>(DEFAULT_STAGES)
-  const [selectedStageId, setSelectedStageId] = useState<string>(DEFAULT_STAGES[0].id)
+  const [activeStageId, setActiveStageId] = useState<string>(DEFAULT_STAGES[0].id)
   const [rules, setRules] = useState<Rules>({
     autoStartNext: true,
     bufferDays: 1,
     repeatOnRevision: false,
     clientParticipation: true,
   })
-  const [saved, setSaved] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
 
-  const addStage = useCallback(() => {
+  // ─── Handlers ───────────────────────────────────────────────────────────────
+
+  const handleUpdateStage = useCallback((updated: Stage) => {
+    setStages(prev => prev.map(s => s.id === updated.id ? updated : s))
+  }, [])
+
+  const handleAddStage = useCallback(() => {
     const newStage: Stage = {
       id: uid(),
-      name: `Etapa ${stages.length + 1}`,
+      name: `Nova Etapa`,
       duration: 3,
       autoStart: false,
       tasks: [],
     }
-    setStages((prev) => [...prev, newStage])
-    setSelectedStageId(newStage.id)
-  }, [stages.length])
-
-  const updateStage = useCallback((updated: Stage) => {
-    setStages((prev) => prev.map((s) => (s.id === updated.id ? updated : s)))
+    setStages(prev => [...prev, newStage])
+    setActiveStageId(newStage.id)
   }, [])
 
-  const removeStage = useCallback((id: string) => {
-    setStages((prev) => {
-      const next = prev.filter((s) => s.id !== id)
-      if (selectedStageId === id && next.length > 0) setSelectedStageId(next[0].id)
+  const handleRemoveStage = useCallback((id: string) => {
+    setStages(prev => {
+      const next = prev.filter(s => s.id !== id)
+      if (activeStageId === id && next.length > 0) setActiveStageId(next[0].id)
       return next
     })
-  }, [selectedStageId])
+  }, [activeStageId])
 
-  const moveStage = useCallback((id: string, dir: number) => {
-    setStages((prev) => {
-      const idx = prev.findIndex((s) => s.id === id)
+  const handleMoveStage = useCallback((id: string, dir: number) => {
+    setStages(prev => {
+      const idx = prev.findIndex(s => s.id === id)
       if (idx < 0) return prev
       const newIdx = idx + dir
       if (newIdx < 0 || newIdx >= prev.length) return prev
@@ -644,262 +417,252 @@ export function ProductTemplateBuilder() {
   }, [])
 
   const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+    setIsSaved(true)
+    setTimeout(() => setIsSaved(false), 2000)
   }
 
+  // ─── Stat Computations ──────────────────────────────────────────────────────
+
+  const timelineStats = useMemo(() => {
+    let dayOffset = 0
+    const timeline = stages.map((s, i) => {
+      const start = dayOffset + (i > 0 ? rules.bufferDays : 0)
+      dayOffset = start + s.duration
+      return { stage: s, start, end: dayOffset }
+    })
+    const totalDays = timeline[timeline.length - 1]?.end ?? 0
+    const totalTasks = stages.reduce((acc, s) => acc + s.tasks.length, 0)
+    return { timeline, totalDays, totalTasks }
+  }, [stages, rules.bufferDays])
+
   return (
-    <div className="min-h-screen bg-[#080d18] text-white">
-      {/* Ambient background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full bg-[hsl(13_52%_56%/0.04)] blur-[120px]" />
-        <div className="absolute -bottom-60 -right-40 w-[700px] h-[700px] rounded-full bg-[hsl(222_55%_35%/0.06)] blur-[140px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-[hsl(43_85%_65%/0.02)] blur-[100px]" />
+    <div className="max-w-[1440px] mx-auto px-6 py-8">
+      
+      {/* ── HEADER ── */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <h1 className="heading-editorial flex items-center gap-3 mb-1">
+            <span className="text-text-primary">{productName || 'Novo Template'}</span>
+            <span className="text-brand-primary text-sm font-body px-2 py-0.5 rounded-full bg-brand-primary/10 border border-brand-primary/20">
+              Builder
+            </span>
+          </h1>
+          <p className="text-text-muted font-body text-sm">Configure o fluxo padrão de trabalho para este serviço.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-text-primary transition-colors">Cancelar</button>
+          <button
+            onClick={handleSave}
+            className={cn(
+              "px-6 h-10 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-2",
+              isSaved
+                ? "bg-status-success text-white shadow-status-success/30"
+                : "bg-brand-primary text-white shadow-brand/30 hover:shadow-brand/40 hover:-translate-y-0.5"
+            )}
+          >
+            {isSaved ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+            ) : "Salvar Template"}
+          </button>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="relative z-10">
-
-        {/* ── PAGE HEADER ── */}
-        <div className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#080d18]/80 backdrop-blur-xl">
-          <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[hsl(13_52%_56%)] to-[hsl(43_85%_65%)] flex items-center justify-center shadow-[0_0_20px_hsl(13_52%_56%/0.4)]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
-                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                  <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                </svg>
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-8 items-start">
+        
+        {/* ── LEFT: MAIN BUILDER ── */}
+        <div className="space-y-8">
+          
+          {/* 1. Basic Info */}
+          <section>
+            <SectionLabel>1. Informações Básicas</SectionLabel>
+            <SurfaceCard className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-text-muted uppercase">Nome do Produto</label>
+                <input
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  className="w-full bg-background border border-border rounded p-2 text-sm text-text-primary outline-none focus:ring-1 focus:ring-brand-primary/30 h-9"
+                />
               </div>
-              <div>
-                <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-white/35 font-body">Template Builder</p>
-                <h1 className="text-base font-bold font-heading text-white leading-tight -mt-0.5">
-                  {productName || 'Novo Template'}
-                </h1>
+              <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-text-muted uppercase">Categoria</label>
+                 <input
+                   value={category}
+                   onChange={(e) => setCategory(e.target.value)}
+                   className="w-full bg-background border border-border rounded p-2 text-sm text-text-primary outline-none focus:ring-1 focus:ring-brand-primary/30 h-9"
+                 />
               </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-white/[0.1] text-white/60 text-sm hover:text-white hover:border-white/25 hover:bg-white/[0.04] transition-all duration-150"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Duplicar
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-blue-500/30 text-blue-400 text-sm hover:bg-blue-500/10 transition-all duration-150"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                Criar Projeto
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className={cn(
-                  'flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold font-heading transition-all duration-200',
-                  saved
-                    ? 'bg-emerald-500 text-white shadow-[0_0_20px_hsl(142_71%_45%/0.4)]'
-                    : 'bg-gradient-to-r from-[hsl(13_52%_56%)] to-[hsl(43_85%_65%)] text-white shadow-[0_4px_20px_hsl(13_52%_56%/0.4)] hover:shadow-[0_6px_28px_hsl(13_52%_56%/0.55)] hover:-translate-y-0.5'
-                )}
-              >
-                {saved ? (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    Salvo!
-                  </>
-                ) : (
-                  <>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                    Salvar Template
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* ── MAIN LAYOUT ── */}
-        <div className="max-w-[1600px] mx-auto px-6 py-6 grid grid-cols-[1fr_320px] gap-6">
-
-          {/* LEFT COLUMN */}
-          <div className="min-w-0 space-y-6">
-
-            {/* ── SECTION 1: Product Info ── */}
-            <GlassCard className="p-5">
-              <SectionLabel>1. Informações do Produto</SectionLabel>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {/* Name */}
-                <div className="col-span-2 space-y-1.5">
-                  <label className="text-[11px] text-white/40 font-medium">Nome do produto</label>
+              <div className="space-y-1">
+                 <label className="text-[10px] font-bold text-text-muted uppercase">Tipo</label>
+                 <select
+                    value={productType}
+                    onChange={(e) => setProductType(e.target.value as ProductType)}
+                    className="w-full bg-background border border-border rounded p-2 text-sm text-text-primary outline-none focus:ring-1 focus:ring-brand-primary/30 h-9"
+                 >
+                   {Object.entries(PRODUCT_TYPE_LABELS).map(([k,v]) => (<option key={k} value={k}>{v}</option>))}
+                 </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-text-muted uppercase">Preço Base</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">R$</span>
                   <input
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    placeholder="Ex: Social Media Mensal"
-                    className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[hsl(13_52%_56%/0.5)] focus:bg-white/[0.07] transition-all"
+                    type="number"
+                    value={basePrice}
+                    onChange={(e) => setBasePrice(e.target.value)}
+                    className="w-full bg-background border border-border rounded pl-8 pr-3 py-2 text-sm text-text-primary outline-none focus:ring-1 focus:ring-brand-primary/30 h-9 font-mono"
                   />
                 </div>
-
-                {/* Category */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] text-white/40 font-medium">Categoria</label>
-                  <input
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    placeholder="Ex: Marketing"
-                    className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[hsl(13_52%_56%/0.5)] focus:bg-white/[0.07] transition-all"
-                  />
-                </div>
-
-                {/* Base Price */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] text-white/40 font-medium">Preço base (R$)</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-white/30">R$</span>
-                    <input
-                      type="number"
-                      value={basePrice}
-                      onChange={(e) => setBasePrice(e.target.value)}
-                      placeholder="0,00"
-                      className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl pl-8 pr-3 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[hsl(13_52%_56%/0.5)] focus:bg-white/[0.07] transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Product Type */}
-                <div className="col-span-2 md:col-span-4 space-y-1.5">
-                  <label className="text-[11px] text-white/40 font-medium">Tipo de produto</label>
-                  <div className="flex gap-2">
-                    {(Object.keys(PRODUCT_TYPE_LABELS) as ProductType[]).map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setProductType(t)}
-                        className={cn(
-                          'flex-1 py-2 rounded-xl border text-sm font-medium font-heading transition-all duration-150',
-                          productType === t
-                            ? 'bg-[hsl(13_52%_56%/0.15)] border-[hsl(13_52%_56%/0.5)] text-[hsl(13_52%_70%)] shadow-[0_0_16px_hsl(13_52%_56%/0.2)]'
-                            : 'border-white/[0.07] text-white/40 hover:border-white/[0.15] hover:text-white/70'
-                        )}
-                      >
-                        {PRODUCT_TYPE_LABELS[t]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
-            </GlassCard>
+            </SurfaceCard>
+          </section>
 
-            {/* ── SECTION 2 & 3: Pipeline + Tasks ── */}
-            <GlassCard className="p-5">
-              <div className="flex items-center justify-between mb-4">
-                <SectionLabel>2. Pipeline & Tarefas por Etapa</SectionLabel>
-                <button
-                  type="button"
-                  onClick={addStage}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[hsl(13_52%_56%/0.12)] border border-[hsl(13_52%_56%/0.25)] text-[hsl(13_52%_70%)] text-xs font-semibold hover:bg-[hsl(13_52%_56%/0.2)] transition-all"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Nova Etapa
-                </button>
-              </div>
-
-              {/* Horizontal scrollable stage builder */}
-              <div className="overflow-x-auto pb-4 -mx-1 px-1">
-                <div className="flex gap-5 min-w-max">
-                  {stages.map((stage, i) => (
-                    <StageCard
-                      key={stage.id}
-                      stage={stage}
-                      index={i}
-                      total={stages.length}
-                      isSelected={selectedStageId === stage.id}
-                      onSelect={() => setSelectedStageId(stage.id)}
-                      onUpdate={updateStage}
-                      onRemove={() => removeStage(stage.id)}
-                      onMoveLeft={() => moveStage(stage.id, -1)}
-                      onMoveRight={() => moveStage(stage.id, 1)}
-                    />
-                  ))}
-
-                  {/* Add stage CTA */}
-                  <div className="flex-shrink-0 w-[160px] flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={addStage}
-                      className="w-full h-32 rounded-2xl border-2 border-dashed border-white/[0.08] text-white/25 hover:border-white/25 hover:text-white/50 hover:bg-white/[0.02] transition-all duration-200 flex flex-col items-center justify-center gap-2"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                      <span className="text-xs">Etapa</span>
-                    </button>
-                  </div>
+          {/* 2. Pipeline Grid */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <SectionLabel>2. Pipeline de Trabalho</SectionLabel>
+              <button
+                onClick={handleAddStage}
+                className="text-[11px] font-bold text-brand-primary px-3 py-1 rounded bg-brand-primary/5 border border-brand-primary/20 hover:bg-brand-primary hover:text-white transition-all shadow-sm"
+              >
+                + Nova Etapa
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-5">
+              {stages.map((stage, i) => (
+                <StageCard
+                  key={stage.id}
+                  stage={stage}
+                  index={i}
+                  total={stages.length}
+                  isActive={activeStageId === stage.id}
+                  onSelect={() => setActiveStageId(stage.id)}
+                  onUpdate={handleUpdateStage}
+                  onRemove={() => handleRemoveStage(stage.id)}
+                  onMove={(dir) => handleMoveStage(stage.id, dir)}
+                />
+              ))}
+              
+              {/* Optional Placeholder for Add */}
+              <button
+                onClick={handleAddStage}
+                className="flex flex-col items-center justify-center min-h-[420px] rounded-xl border-2 border-dashed border-border text-text-muted hover:border-brand-primary hover:bg-brand-primary/5 transition-all gap-3"
+              >
+                <div className="w-10 h-10 rounded-full bg-border/20 flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </div>
-              </div>
+                <span className="text-sm font-bold font-heading">Nova Etapa</span>
+              </button>
+            </div>
+          </section>
 
-              {/* Stage count footer */}
-              <div className="flex items-center gap-2 pt-2 border-t border-white/[0.04] mt-2">
-                <div className="flex -space-x-1">
-                  {stages.map((_, i) => (
-                    <div
-                      key={i}
-                      className={cn(
-                        'w-2 h-2 rounded-full border border-[#080d18] cursor-pointer transition-all',
-                        stages[i].id === selectedStageId ? 'bg-[hsl(13_52%_56%)] scale-125' : 'bg-white/20'
-                      )}
-                      onClick={() => setSelectedStageId(stages[i].id)}
-                    />
-                  ))}
-                </div>
-                <span className="text-[11px] text-white/30">
-                  {stages.length} etapas · {stages.reduce((a, s) => a + s.tasks.length, 0)} tarefas no total
-                </span>
-              </div>
-            </GlassCard>
-
-            {/* ── SECTION 4: Rules ── */}
-            <GlassCard className="p-5">
-              <SectionLabel>4. Regras de Automação</SectionLabel>
-              <RulesPanel rules={rules} onChange={setRules} />
-            </GlassCard>
-
-          </div>
-
-          {/* RIGHT COLUMN — Preview Panel */}
-          <div className="space-y-4">
-            <GlassCard className="p-5 sticky top-[84px]">
-              <SectionLabel>5. Preview do Timeline</SectionLabel>
-              <PreviewPanel stages={stages} rules={rules} />
-
-              {/* CTA actions */}
-              <div className="mt-5 pt-4 border-t border-white/[0.05] space-y-2">
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(13_52%_56%)] to-[hsl(43_85%_65%)] text-white text-sm font-bold font-heading shadow-[0_4px_20px_hsl(13_52%_56%/0.35)] hover:shadow-[0_6px_28px_hsl(13_52%_56%/0.5)] hover:-translate-y-0.5 transition-all duration-200"
-                  onClick={handleSave}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                  Salvar Template
-                </button>
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/[0.1] text-white/50 text-sm hover:text-white hover:border-white/25 hover:bg-white/[0.04] transition-all duration-150"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  Duplicar Template
-                </button>
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-blue-500/25 text-blue-400 text-sm hover:bg-blue-500/10 transition-all duration-150"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-                  Criar Projeto a partir deste
-                </button>
-              </div>
-            </GlassCard>
-          </div>
+          {/* 3. Automation Rules */}
+          <section>
+            <SectionLabel>3. Regras de Automação</SectionLabel>
+            <SurfaceCard className="p-0 overflow-hidden">
+               <div className="divide-y divide-border">
+                 {[
+                   { id: 'autoStartNext', label: 'Auto-iniciar próxima etapa', hint: 'Ativa etapa seguinte após conclusão dos jobs.', val: rules.autoStartNext },
+                   { id: 'repeatOnRevision', label: 'Repetir Jobs em Revisão', hint: 'Jobs voltam para "A fazer" se recusados.', val: rules.repeatOnRevision },
+                   { id: 'clientParticipation', label: 'Participação do Cliente', hint: 'Cliente pode visualizar e aprovar jobs.', val: rules.clientParticipation }
+                 ].map(rule => (
+                   <div key={rule.id} className="flex items-center justify-between p-4 hover:bg-surface-muted/30 transition-colors">
+                     <div>
+                        <p className="text-sm font-bold text-text-primary">{rule.label}</p>
+                        <p className="text-xs text-text-muted">{rule.hint}</p>
+                     </div>
+                     <CompactToggle
+                        checked={rule.val}
+                        onChange={(v) => setRules({...rules, [rule.id]: v})}
+                     />
+                   </div>
+                 ))}
+                 
+                 <div className="flex items-center justify-between p-4">
+                    <div>
+                        <p className="text-sm font-bold text-text-primary">Buffer entre etapas</p>
+                        <p className="text-xs text-text-muted">Tempo de intervalo entre fluxos.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                       <input
+                         type="number"
+                         value={rules.bufferDays}
+                         onChange={(e) => setRules({...rules, bufferDays: Number(e.target.value)})}
+                         className="w-14 bg-background border border-border rounded text-center text-sm font-bold text-text-primary h-9 outline-none focus:ring-1 focus:ring-brand-primary/30"
+                       />
+                       <span className="text-xs text-text-muted font-bold">dias</span>
+                    </div>
+                 </div>
+               </div>
+            </SurfaceCard>
+          </section>
 
         </div>
+
+        {/* ── RIGHT: STICKY PREVIEW ── */}
+        <aside className="sticky top-[84px] max-h-[calc(100vh-120px)] flex flex-col gap-4">
+          <SectionLabel>Resumo do Fluxo</SectionLabel>
+          
+          <SurfaceCard className="flex-1 p-4 overflow-y-auto scrollbar-thin">
+            <div className="space-y-6">
+              
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-surface-muted/50 p-2 rounded-md text-center">
+                  <p className="text-[9px] font-bold text-text-muted uppercase">Etapas</p>
+                  <p className="text-lg font-bold text-text-primary leading-none mt-1">{stages.length}</p>
+                </div>
+                <div className="bg-surface-muted/50 p-2 rounded-md text-center">
+                  <p className="text-[9px] font-bold text-text-muted uppercase">Jobs</p>
+                  <p className="text-lg font-bold text-text-primary leading-none mt-1">{timelineStats.totalTasks}</p>
+                </div>
+                <div className="bg-surface-muted/50 p-2 rounded-md text-center">
+                  <p className="text-[9px] font-bold text-text-muted uppercase">Duração</p>
+                  <p className="text-lg font-bold text-brand-primary leading-none mt-1">{timelineStats.totalDays}d</p>
+                </div>
+              </div>
+
+              {/* Timeline Visualization */}
+              <div className="space-y-4">
+                <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Cronograma Simulado</p>
+                <div className="space-y-3 relative before:absolute before:left-[3px] before:top-2 before:bottom-2 before:w-[1px] before:bg-border">
+                   {timelineStats.timeline.map((item, idx) => (
+                     <div key={item.stage.id} className="relative pl-4">
+                       <div className={cn(
+                         "absolute left-0 top-1 w-[7px] h-[7px] rounded-full ring-4 ring-surface",
+                         idx === 0 ? "bg-brand-primary" : "bg-border-strong"
+                       )} />
+                       <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-text-primary truncate w-32">{item.stage.name}</span>
+                          <span className="text-[10px] text-text-muted font-mono whitespace-nowrap">D{item.start} → D{item.end}</span>
+                       </div>
+                       <div className="h-1.5 w-full bg-border/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-brand-primary/60 rounded-full transition-all duration-500"
+                            style={{ width: `${(item.stage.duration / timelineStats.totalDays) * 100}%` }}
+                          />
+                       </div>
+                     </div>
+                   ))}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-border mt-auto">
+                 <button
+                    onClick={handleSave}
+                    className="w-full h-11 bg-brand-primary text-white text-xs font-bold font-heading rounded-lg shadow-sm hover:shadow-brand/20 transition-all active:scale-[0.98]"
+                 >
+                   Confirmar & Salvar
+                 </button>
+                 <p className="text-[10px] text-center text-text-muted italic mt-3">Baseado na configuração de {rules.bufferDays} dia(s) de buffer.</p>
+              </div>
+
+            </div>
+          </SurfaceCard>
+
+        </aside>
+
       </div>
     </div>
   )
