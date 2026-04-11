@@ -126,6 +126,11 @@ export async function updateTask(
 ) {
   const supabase = createClient()
   const { assigned_to, social_post_count, ...taskData } = formData
+
+  const { data: currentTask } = await supabase.from('v2_tasks').select('status').eq('id', id).single()
+  if (currentTask?.status === 'locked') {
+    throw new Error('Não é possível modificar as propriedades de uma tarefa bloqueada.')
+  }
   
   const { error } = await supabase.from('v2_tasks').update({
     ...taskData,
@@ -151,16 +156,18 @@ export async function updateTask(
 }
 
 export async function updateTaskStatus(id: string, status: TaskStatusV2) {
-  const supabase = createClient()
-  const { error } = await supabase.from('v2_tasks').update({ status }).eq('id', id)
-  if (error) throw error
+  const { updateV2TaskStatus } = await import('@/app/dashboard/v2/actions')
+  await updateV2TaskStatus(id, status)
   revalidatePath('/dashboard/tasks')
 }
 
 export async function deleteTask(id: string) {
   const supabase = createClient()
   const { error } = await supabase.from('v2_tasks').delete().eq('id', id)
-  if (error) throw error
+  if (error) {
+    if (error.code === '23503') throw new Error('Não é possível excluir esta tarefa pois existem outras que dependem dela.');
+    throw error;
+  }
   revalidatePath('/dashboard/tasks')
 }
 

@@ -8,15 +8,17 @@ import { Calendar, User, AlertCircle, GripVertical } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 const TASK_STATUS_LABELS_V2: Record<TaskStatusV2, string> = {
+  locked:      'Aguardando',
   pending:     'Pendente',
   in_progress: 'Em andamento',
   in_review:   'Em revisão',
   approved:    'Aprovado',
   done:        'Concluído',
-  blocked:     'Bloqueado',
+  blocked:     'Pausado/Impedido',
 }
 
 const COLUMNS: { id: TaskStatusV2; label: string; color: string }[] = [
+  { id: 'locked',      label: TASK_STATUS_LABELS_V2.locked,      color: 'border-dashed border-sand' },
   { id: 'pending',     label: TASK_STATUS_LABELS_V2.pending,     color: 'border-border' },
   { id: 'in_progress', label: TASK_STATUS_LABELS_V2.in_progress, color: 'border-status-info' },
   { id: 'in_review',   label: TASK_STATUS_LABELS_V2.in_review,   color: 'border-status-warning' },
@@ -47,9 +49,14 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
 
   function handleDrop(e: React.DragEvent, newStatus: TaskStatusV2) {
     e.preventDefault()
+    if (newStatus === 'locked') {
+      alert('Não é possível mover tarefas manualmente para bloqueado. Siga o fluxo do pipeline.')
+      return
+    }
+
     const taskId = e.dataTransfer.getData('taskId')
     const task = optimisticTasks.find((t) => t.id === taskId)
-    if (!task || task.status === newStatus) return
+    if (!task || task.status === newStatus || task.status === 'locked') return
 
     // Optimistic update
     setOptimisticTasks((prev) =>
@@ -57,7 +64,12 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
     )
 
     startTransition(async () => {
-      await updateTaskStatus(taskId, newStatus)
+      try {
+        await updateTaskStatus(taskId, newStatus)
+      } catch (err: any) {
+        alert(err.message)
+        // Refresh component state somehow or rely on revalidation
+      }
     })
   }
 
@@ -67,7 +79,7 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 min-h-[400px]">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4 min-h-[400px]">
       {COLUMNS.map((col) => {
         const colTasks = optimisticTasks.filter((t) => t.status === col.id)
         return (
@@ -119,23 +131,24 @@ function TaskCard({
   onDragStart: (e: React.DragEvent) => void
   onClick?: () => void
 }) {
-  const isOverdue =
-    task.due_date && task.status !== 'done' && new Date(task.due_date) < new Date()
+  const isLocked = task.status === 'locked'
+  const isOverdue = task.due_date && task.status !== 'done' && new Date(task.due_date) < new Date()
 
   return (
     <div
-      draggable
-      onDragStart={onDragStart}
-      onClick={onClick}
+      draggable={!isLocked}
+      onDragStart={!isLocked ? onDragStart : undefined}
+      onClick={isLocked ? () => alert('Aguardando conclusão da etapa anterior da qual esta tarefa depende.') : onClick}
       className={cn(
-        'bg-background border border-border rounded-lg p-3 space-y-2 cursor-grab active:cursor-grabbing',
-        'hover:border-border-strong hover:shadow-sm transition-all duration-150',
-        onClick && 'hover:bg-surface-muted/40',
-        isOverdue && 'border-status-danger/40 bg-status-danger/5',
+        'bg-background border border-border rounded-lg p-3 space-y-2 transition-all duration-150 relative overflow-hidden',
+        !isLocked && 'cursor-grab active:cursor-grabbing hover:border-brand-primary/40 hover:shadow-sm',
+        !isLocked && onClick && 'hover:bg-sand-light/10',
+        isLocked && 'cursor-not-allowed opacity-60 border-dashed bg-surface-muted/30 grayscale-[50%]',
+        isOverdue && !isLocked && 'border-status-danger/40 bg-status-danger/5',
       )}
     >
       {/* Priority + grip */}
-      <div className="flex items-start justify-between gap-2">
+      <div className="flex items-start justify-between gap-2 relative z-10">
         <Badge
           className={cn('text-[10px] font-bold border', PRIORITY_COLOR[task.priority])}
         >
@@ -143,24 +156,25 @@ function TaskCard({
            task.priority === 'high'   ? '🟠 Alta' :
            task.priority === 'medium' ? '🟡 Média' : '🔵 Baixa'}
         </Badge>
-        <GripVertical size={14} className="text-text-muted shrink-0 mt-0.5" />
+        {!isLocked && <GripVertical size={14} className="text-text-muted shrink-0 mt-0.5" />}
       </div>
 
       {/* Title */}
-      <p className="text-sm font-semibold text-text-primary leading-snug">
+      <p className="text-sm font-semibold text-text-primary leading-snug relative z-10 flex flex-col gap-1">
+        {isLocked && <span className="text-[9px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1"><AlertCircle size={10} /> Dependência Ativa</span>}
         {task.title}
       </p>
 
       {/* Project */}
       {task.projects && (
-        <p className="text-[10px] text-text-muted truncate">
+        <p className="text-[10px] text-text-muted truncate relative z-10">
           {task.projects.name}
           {task.projects.clients && ` · ${task.projects.clients.name}`}
         </p>
       )}
 
       {/* Footer */}
-      <div className="flex items-center gap-3 pt-1">
+      <div className="flex items-center gap-3 pt-1 relative z-10">
         {task.due_date && (
           <span className={cn('flex items-center gap-1 text-[10px] font-medium', isOverdue ? 'text-status-danger' : 'text-text-muted')}>
             {isOverdue && <AlertCircle size={10} />}
@@ -175,6 +189,12 @@ function TaskCard({
           </span>
         )}
       </div>
+
+      {isLocked && (
+        <div className="absolute -right-4 -bottom-4 opacity-5 pointer-events-none">
+           <AlertCircle size={80} />
+        </div>
+      )}
     </div>
   )
 }

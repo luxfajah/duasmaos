@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { V2Task, TaskStatusV2, TaskWithRelations } from '@/types/database'
 import { updateTaskStatus, deleteTask } from '@/app/dashboard/tasks/actions'
+import { cn } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -13,7 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Pencil, Trash2, Clock, AlertCircle } from 'lucide-react'
+import { Pencil, Trash2, Clock, AlertCircle, Lock } from 'lucide-react'
 
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -91,8 +92,9 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
           const isOverdue =
             task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
           return (
-            <TableRow key={task.id} className="group">
-              <TableCell className="font-medium text-text-primary max-w-[200px] truncate">
+            <TableRow key={task.id} className={cn("group", task.status === 'locked' && "opacity-50 pointer-events-none")}>
+              <TableCell className="font-medium text-text-primary max-w-[200px] truncate flex items-center gap-2">
+                {task.status === 'locked' && <Lock size={14} className="text-text-muted" />}
                 {task.title}
               </TableCell>
               <TableCell className="text-text-secondary text-sm">
@@ -105,18 +107,22 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                 {priorityMap[task.priority] ?? task.priority}
               </TableCell>
               <TableCell>
-                <select
-                  value={task.status}
-                  onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatusV2)}
-                  className="text-xs border border-border rounded-md px-2 py-1 bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-                >
-                  <option value="pending">Pendente</option>
-                  <option value="in_progress">Em progresso</option>
-                  <option value="in_review">Revisão</option>
-                  <option value="approved">Aprovado</option>
-                  <option value="done">Concluído</option>
-                  <option value="blocked">Bloqueado</option>
-                </select>
+                {task.status === 'locked' ? (
+                  <Badge variant="outline" className="bg-sand-light text-text-muted border-sand-dark/20 text-[10px] uppercase">Aguardando etapa</Badge>
+                ) : (
+                  <select
+                    value={task.status}
+                    onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatusV2)}
+                    className="text-xs border border-border rounded-md px-2 py-1 bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
+                  >
+                    <option value="pending">Pendente</option>
+                    <option value="in_progress">Em progresso</option>
+                    <option value="in_review">Revisão</option>
+                    <option value="approved">Aprovado</option>
+                    <option value="done">Concluído</option>
+                    <option value="blocked">Bloqueado</option>
+                  </select>
+                )}
               </TableCell>
               <TableCell>
                 {task.due_date ? (
@@ -130,7 +136,7 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {onEdit && (
+                  {onEdit && task.status !== 'locked' && (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -140,15 +146,17 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                       <Pencil size={14} />
                     </Button>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-status-danger hover:text-status-danger hover:bg-status-danger/10"
-                    onClick={() => handleDelete(task.id)}
-                    disabled={deletingId === task.id}
-                  >
-                    <Trash2 size={14} />
-                  </Button>
+                  {task.status !== 'locked' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-status-danger hover:text-status-danger hover:bg-status-danger/10"
+                      onClick={() => handleDelete(task.id)}
+                      disabled={deletingId === task.id}
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

@@ -31,6 +31,25 @@ export async function createV2Task(
   // Use first in-progress stage or the first stage
   const targetStage = stages.find(s => s.status === 'in_progress') || stages[0]
 
+  // Find last task in project to append to queue
+  const { data: lastTasks } = await supabase
+    .from('v2_tasks')
+    .select('id, stage_order, status')
+    .eq('project_id', projectId)
+    .order('stage_order', { ascending: false })
+    .limit(1)
+
+  let stageOrder = 1
+  let dependsOnTaskId = null
+  let initialStatus: TaskStatusV2 = 'pending'
+
+  if (lastTasks && lastTasks.length > 0) {
+    const lastTask = lastTasks[0]
+    stageOrder = (lastTask.stage_order || 0) + 1
+    dependsOnTaskId = lastTask.id
+    initialStatus = lastTask.status === 'done' ? 'pending' : 'locked'
+  }
+
   // 2. Insert Task
   const { data: task, error: taskError } = await supabase
     .from('v2_tasks')
@@ -39,11 +58,13 @@ export async function createV2Task(
       stage_id: targetStage.id,
       title: data.title,
       description: data.description,
-      status: data.status || 'pending',
+      status: initialStatus,
       priority: data.priority || 'medium',
       due_date: data.due_date,
       deliverable_type: data.deliverable_type || 'default',
-      social_post_count: data.social_post_count || 0
+      social_post_count: data.social_post_count || 0,
+      stage_order: stageOrder,
+      depends_on_task_id: dependsOnTaskId
     })
     .select('id')
     .single()

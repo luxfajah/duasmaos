@@ -139,19 +139,34 @@ export async function createV2Project(data: {
     .eq('workflow_type', data.workflow_type)
 
   if (taskTemplates && taskTemplates.length > 0) {
-    const tasksToInsert = insertedStages.flatMap(is => {
-      const templatesForStage = taskTemplates.filter(tt => tt.stage_key === is.stage_key)
-      return templatesForStage.map(tt => ({
+    let globalOrder = 1;
+    let previousTaskId: string | null = null;
+
+    const sortedTemplates = insertedStages.flatMap(is => {
+      return taskTemplates
+        .filter(tt => tt.stage_key === is.stage_key)
+        .sort((a, b) => (a.order || 0) - (b.order || 0))
+        .map(tt => ({ ...tt, stage_id: is.id }))
+    });
+
+    const tasksToInsert = sortedTemplates.map((tt, index) => {
+      const taskId = crypto.randomUUID();
+      const task = {
+        id: taskId,
         project_id: project.id,
-        stage_id: is.id,
+        stage_id: tt.stage_id,
         title: tt.title,
         type: tt.type,
         deliverable_type: tt.deliverable_type,
-        status: 'pending',
+        status: index === 0 ? 'pending' : 'locked',
         priority: 'medium',
-        order: tt.order
-      }))
-    })
+        order: tt.order,
+        stage_order: globalOrder++,
+        depends_on_task_id: previousTaskId
+      };
+      previousTaskId = taskId;
+      return task;
+    });
 
     if (tasksToInsert.length > 0) {
       await supabase.from('v2_tasks').insert(tasksToInsert)
@@ -169,15 +184,48 @@ export async function createV2Project(data: {
 export async function updateV2TaskStatus(taskId: string, status: TaskStatusV2) {
   const supabase = createClient()
 
-  // 1. Update the task
-  const { data: task, error: updateError } = await supabase
+  // 1. Fetch current task
+  const { data: taskToUpdate, error: fetchError } = await supabase
     .from('v2_tasks')
-    .update({ status })
-    .eq('id', taskId)
     .select('*, v2_project_stages(*)')
+    .eq('id', taskId)
     .single()
 
-  if (updateError) throw updateError
+  if (fetchError || !taskToUpdate) throw new Error('Tarefa não encontrada.')
+
+  if (taskToUpdate.status === 'locked') {
+    throw new Error('Não é possível modificar uma tarefa bloqueada.')
+  }
+
+  // 2. Transactional Update
+  if (status === 'done' && taskToUpdate.status !== 'done') {
+    if (taskToUpdate.deliverable_type === 'social_copy' || taskToUpdate.deliverable_type === 'social_design') {
+      const { data: posts } = await supabase.from('v2_social_posts').select('*').eq('task_id', taskId)
+      if (!posts || posts.length === 0) throw new Error('A tarefa precisa ter pelo menos um post.')
+      const hasInvalid = posts.some(p => p.status !== 'done' || p.approval_status !== 'approved' || p.approval_status === 'rejected')
+      if (hasInvalid) throw new Error('Todos os posts devem estar concluídos e aprovados.')
+    }
+    
+    const { error: rpcError } = await supabase.rpc('fn_complete_task_transaction', { p_task_id: taskId })
+    if (rpcError) throw new Error(`Falha na transação: ${rpcError.message}`)
+  } else if (taskToUpdate.status === 'done' && status !== 'done') {
+    const { error: rpcError } = await supabase.rpc('fn_reopen_task_transaction', { 
+      p_task_id: taskId, 
+      p_new_status: status 
+    })
+    if (rpcError) throw new Error(`Falha ao reabrir: ${rpcError.message}`)
+  } else {
+    const { error: updateError } = await supabase.from('v2_tasks').update({ status }).eq('id', taskId)
+    if (updateError) throw updateError
+  }
+
+  const { data: task } = await supabase
+    .from('v2_tasks')
+    .select('*, v2_project_stages(*)')
+    .eq('id', taskId)
+    .single()
+
+  if (!task) throw new Error('Tarefa não encontrada após edição.')
 
   // 2. Query remaining tasks in the same stage
   const { count, error: countError } = await supabase

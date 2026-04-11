@@ -179,12 +179,13 @@ export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
 };
 
 export const TASK_STATUS_V2_LABELS: Record<TaskStatusV2, string> = {
+  locked: 'Bloqueado',
   pending: 'Pendente',
   in_progress: 'Em andamento',
   in_review: 'Em revisão',
   approved: 'Aprovado',
   done: 'Concluído',
-  blocked: 'Bloqueado',
+  blocked: 'Pausado/Impedido',
 };
 
 export const CLIENT_STATUS_LABELS: Record<ClientStatus, string> = {
@@ -206,7 +207,7 @@ export const PIPELINE_STAGE_LABELS: Record<PipelineStage, string> = {
 
 export type WorkflowTypeV2 = 'branding' | 'social_media' | 'website';
 export type StageStatusV2 = 'pending' | 'in_progress' | 'waiting_approval' | 'approved' | 'done';
-export type TaskStatusV2 = 'pending' | 'in_progress' | 'in_review' | 'approved' | 'done' | 'blocked';
+export type TaskStatusV2 = 'locked' | 'pending' | 'in_progress' | 'in_review' | 'approved' | 'done' | 'blocked';
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
 export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval';
@@ -258,6 +259,8 @@ export interface V2Task {
   status: TaskStatusV2;
   priority: TaskPriorityV2;
   order: number | null;
+  stage_order: number | null;
+  depends_on_task_id: string | null;
   due_date: string | null;
   social_post_count?: number;
   parent_task_id?: string | null;
