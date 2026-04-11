@@ -1,4 +1,4 @@
-import { ExtendedProject } from '@/app/dashboard/projects/actions'
+import { ProjectDTO } from '@/app/dashboard/projects/actions'
 import { StatusBadge, BadgeVariant } from '@/components/ui/StatusBadge'
 import { Avatar } from '@/components/ui/avatar'
 
@@ -39,7 +39,7 @@ function getProgressColor(score: number): string {
   return 'bg-terracotta';
 }
 
-export function ProjectTable({ projects }: { projects: ExtendedProject[] }) {
+export function ProjectTable({ projects }: { projects: ProjectDTO[] }) {
   if (projects.length === 0) {
     return (
       <div className="bg-surface-elevated rounded-2xl shadow-sm border border-sand-dark/40 p-12 text-center">

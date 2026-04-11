@@ -1,7 +1,7 @@
 import React from 'react'
-import { ExtendedProject } from '@/app/dashboard/projects/actions'
+import { ProjectDTO } from '@/app/dashboard/projects/actions'
 
-export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
+export function SummaryCards({ projects }: { projects: ProjectDTO[] }) {
   const total = projects.length;
   const healthyCount = projects.filter(p => p.health_score >= 80).length;
   const timelineHealth = total > 0 ? Math.round((healthyCount / total) * 100) : 100;

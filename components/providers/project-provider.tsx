@@ -2,12 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
-// Using minimal typing corresponding to ExtendedProject
-type BaseProject = {
+// Using minimal typing corresponding to ProjectDTO
+export type BaseProject = {
   id: string
   name: string
   client_id?: string
   status?: string
+  progress?: number
+  type?: string
 }
 
 interface ProjectContextType {

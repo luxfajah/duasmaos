@@ -17,7 +17,7 @@ import {
   CalendarDays
 } from 'lucide-react'
 import { useProjectContext } from '@/components/providers/project-provider'
-import { ExtendedProject } from '@/app/dashboard/projects/actions'
+import { ProjectDTO } from '@/app/dashboard/projects/actions'
 import { Task } from '@/types/database'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown'
@@ -38,7 +38,7 @@ interface DashboardClientViewProps {
     avatarUrl?: string | null
   }
   team: Array<{ id: string; full_name: string; avatar_url: string | null }>
-  initialProjects: any[] // BaseProject / ExtendedProject
+  initialProjects: ProjectDTO[]
   initialTasks: any[] // Extended Task
 }
 
