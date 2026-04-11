@@ -1,3 +1,5 @@
+'use server'
+
 import { createClient } from '@/utils/supabase/server'
 import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority, V2Task, V2ProjectStage } from '@/types/database'
 import { revalidatePath } from 'next/cache'
