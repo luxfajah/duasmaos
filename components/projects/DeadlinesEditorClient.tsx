@@ -6,9 +6,11 @@ import { bulkUpdateTaskDeadlines, updateProjectStartDate } from '@/app/dashboard
 import { 
   Calendar, Save, AlertCircle, Loader2, Lock, Unlock, 
   RefreshCcw, AlertTriangle, Link2, Unlink, CalendarClock, 
-  ChevronRight, LayoutList, History, Info, ArrowRight
+  ChevronRight, LayoutList, History, Info, ArrowRight, Edit3
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { ProjectSelector } from './ProjectSelector'
+import { TaskEditModal } from '../tasks/TaskEditModal'
 
 interface DeadlinesEditorProps {
   projectId: string
@@ -16,6 +18,7 @@ interface DeadlinesEditorProps {
   tasks: any[]
   userRole: UserRole
   projectData: V2Project & { start_date?: string }
+  allProjects: any[]
 }
 
 // --- Utils ---
@@ -68,6 +71,9 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
     })
     return initial
   })
+  
+  // Modal State
+  const [editingTask, setEditingTask] = useState<any>(null)
 
   // --- Handlers ---
   const handleTaskDateChange = (taskId: string, field: 'start' | 'end', val: string) => {
@@ -133,10 +139,18 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
 
   return (
     <div className="flex flex-col gap-8 pb-32">
-      
-
-
-      {/* 2. Horizontal Pipeline Timeline */}
+      {/* 1. Project Selector Context */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <ProjectSelector currentProjectId={projectId} projects={allProjects} />
+        
+        <div className="flex items-center gap-3 bg-brand-primary/5 px-6 py-4 rounded-2xl border border-brand-primary/10">
+           <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">Percentual de Entrega</span>
+              <span className="text-xl font-black text-text-primary">{completionPercent}%</span>
+           </div>
+           <div className="w-1.5 h-10 bg-brand-primary/20 rounded-full ml-2" />
+        </div>
+      </div>      {/* 2. Horizontal Pipeline Timeline */}
       <div className="glass rounded-[32px] p-6 border border-border overflow-hidden">
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary mb-6 flex items-center gap-2">
            <LayoutList size={14} /> Pipeline Cronograma
@@ -246,6 +260,16 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
                               />
                            </div>
                         </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                           <button 
+                            onClick={() => setEditingTask(task)}
+                            className="p-3 rounded-xl bg-surface-muted hover:bg-brand-primary/10 text-text-muted hover:text-brand-primary transition-all border border-transparent hover:border-brand-primary/20"
+                            title="Editar tarefa e equipe"
+                           >
+                              <Edit3 size={16} />
+                           </button>
+                        </div>
                       </div>
                     )
                  })}
@@ -298,7 +322,13 @@ export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, proj
             </div>
           </div>
         </div>
-      )}
+      {/* Task Edit Modal */}
+      <TaskEditModal 
+        open={!!editingTask} 
+        onClose={() => setEditingTask(null)} 
+        task={editingTask}
+        projectId={projectId}
+      />
 
     </div>
   )

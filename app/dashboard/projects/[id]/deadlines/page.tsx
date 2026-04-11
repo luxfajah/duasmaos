@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
-import { getV2ProjectById } from '@/app/dashboard/v2/actions'
+import { getV2ProjectById, getV2AllProjects } from '@/app/dashboard/v2/actions'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 import { DeadlinesEditorClient } from '@/components/projects/DeadlinesEditorClient'
 import { ArrowLeft as ArrowLeftIcon } from 'lucide-react'
@@ -18,7 +18,11 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
   if (!user) redirect('/login')
 
   // Fetch V2 Project Data (already includes stages and tasks)
-  const project = await getV2ProjectById(params.id)
+  const [project, allProjects] = await Promise.all([
+    getV2ProjectById(params.id),
+    getV2AllProjects()
+  ])
+
   if (!project) notFound()
 
   // In V2, project object returns 'stages' and 'tasks' directly
@@ -39,7 +43,7 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
 
   return (
     <div className="flex-1 w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="flex flex-col gap-8 h-full">
+      <div className="flex flex-col gap-8">
         {/* Back Button */}
         <div>
           <Link
@@ -52,8 +56,8 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
         </div>
 
         <EditorialHeader 
-          title="Gestão de Prazos" 
-          subtitle="Ajuste os prazos das entregas deste projeto" 
+          title="Gestão de Prazos e Equipes" 
+          subtitle="Ajuste os prazos das entregas e gerencie a equipe deste projeto" 
         />
 
         {/* Project Name Context */}
@@ -74,6 +78,7 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
           tasks={validTasks}
           userRole={userRole}
           projectData={project}
+          allProjects={allProjects}
         />
       </div>
     </div>
