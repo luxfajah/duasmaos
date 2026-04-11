@@ -3,7 +3,6 @@ import { redirect, notFound } from 'next/navigation'
 import { getV2ProjectById } from '@/app/dashboard/v2/actions'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 import { DeadlinesEditorClient } from '@/components/projects/DeadlinesEditorClient'
-import { ArrowLeft } from 'lucide-center' // Wait, I should stick to the icons I already have
 import { ArrowLeft as ArrowLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 
