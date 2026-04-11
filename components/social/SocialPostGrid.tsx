@@ -56,7 +56,7 @@ export function SocialPostCard({ post, onClick }: SocialPostCardProps) {
       </div>
 
       <div className="flex justify-between items-center mt-auto">
-        {post.is_approved && (
+        {post.approval_status === 'approved' && (
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-success/20 text-[10px] font-bold text-success uppercase">
             <CheckCircle2 className="w-3 h-3" />
             Aprovado
