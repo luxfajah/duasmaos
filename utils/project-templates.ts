@@ -26,4 +26,10 @@ export const PROJECT_TEMPLATES: Record<WorkflowTypeV2, { name: string; weight: n
     { name: 'Revisão do Cliente', weight: 15 },
     { name: 'Entrega', weight: 10 },
   ],
+  consultoria: [
+    { name: 'Diagnóstico', weight: 20 },
+    { name: 'Sessão Estratégica', weight: 40 },
+    { name: 'Plano de Ação', weight: 30 },
+    { name: 'Follow-up', weight: 10 },
+  ],
 };

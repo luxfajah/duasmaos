@@ -40,13 +40,14 @@ export async function seedWorkflowTemplates() {
     { name: 'Publicação', key: 'publicacao', order: 3, approval: false },
   ]
 
-  const websiteStages = [
-    { name: 'Alinhamento', key: 'alinhamento', order: 0, approval: false },
-    { name: 'Conteúdo', key: 'conteudo', order: 1, approval: false },
-    { name: 'Estrutura', key: 'estrutura', order: 2, approval: true },
-    { name: 'Desenvolvimento', key: 'desenvolvimento', order: 3, approval: false },
-    { name: 'Revisão', key: 'revisao', order: 4, approval: true },
     { name: 'Entrega', key: 'entrega', order: 5, approval: false },
+  ]
+
+  const consultoriaStages = [
+    { name: 'Diagnóstico', key: 'diagnostico', order: 0, approval: false },
+    { name: 'Sessão', key: 'sessao', order: 1, approval: false },
+    { name: 'Plano de Ação', key: 'plano_acao', order: 2, approval: true },
+    { name: 'Follow-up', key: 'follow_up', order: 3, approval: false },
   ]
 
   const insertTemplates = async (type: WorkflowTypeV2, stages: any[]) => {
@@ -76,6 +77,7 @@ export async function seedWorkflowTemplates() {
   await insertTemplates('branding', brandingStages)
   await insertTemplates('social_media', socialMediaStages)
   await insertTemplates('website', websiteStages)
+  await insertTemplates('consultoria', consultoriaStages)
 
   return { success: true }
 }
