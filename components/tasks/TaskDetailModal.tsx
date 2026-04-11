@@ -137,7 +137,7 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
                     <div className="absolute top-0 right-0 w-24 h-24 bg-brand-primary/10 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-brand-primary/20 transition-colors" />
                     <Avatar 
                       name={task.profiles?.full_name || 'U'} 
-                      src={task.profiles?.avatar_url} 
+                      src={task.profiles?.avatar_url || undefined} 
                       size="md" 
                       className="border-2 border-white/20 ring-0 shadow-lg shrink-0"
                     />

@@ -249,7 +249,7 @@ export function DashboardClientView({ user, initialProjects, initialTasks }: Das
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mt-2 relative z-10">
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    <Avatar name={task.profiles?.full_name || 'Usuário'} src={task.profiles?.avatar_url} size="sm" className="border-2 border-white ring-0" />
+                    <Avatar name={task.profiles?.full_name || 'Usuário'} src={task.profiles?.avatar_url || undefined} size="sm" className="border-2 border-white ring-0" />
                   </div>
                   <span className="text-[11px] text-text-muted font-bold whitespace-nowrap">Responsável ativo</span>
                 </div>
