@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { ProjectsTable } from '@/components/projects/ProjectsTable'
