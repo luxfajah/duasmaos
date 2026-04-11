@@ -1,8 +1,11 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { RegistrationForm } from '@/components/auth/RegistrationForm'
-import { ShieldAlert, UserPlus } from 'lucide-react'
+import { ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
+import { Badge } from '@/components/ui/badge'
+
+export const dynamic = 'force-dynamic'
 
 export default async function RegisterPage({
   searchParams,
@@ -29,6 +32,13 @@ export default async function RegisterPage({
     return <InvalidInvite message="Este convite é inválido ou já foi utilizado." />
   }
 
+  // Handle Supabase's potentially pluralized join data
+  const clientData = Array.isArray(invitation.clients) 
+    ? invitation.clients[0] 
+    : (invitation.clients as { name: string } | null)
+
+  const clientName = clientData?.name
+
   // Check expiration
   if (new Date(invitation.expires_at) < new Date()) {
     return <InvalidInvite message="Este convite expirou. Solicite um novo acesso ao administrador." />
@@ -51,13 +61,15 @@ export default async function RegisterPage({
         </div>
 
         <div className="relative z-10 max-w-lg space-y-6">
-          <Badge text={invitation.role === 'client' ? 'Acesso do Cliente' : 'Acesso da Equipe'} />
+          <Badge variant="brand" className="h-6 px-3">
+            {invitation.role === 'client' ? 'Acesso do Cliente' : 'Acesso da Equipe'}
+          </Badge>
           <h2 className="text-4xl lg:text-5xl font-medium tracking-tight leading-[1.1]">
             Seja bem-vindo à nossa plataforma.
           </h2>
           <p className="text-zinc-400 text-lg max-w-md leading-relaxed">
             {invitation.role === 'client' 
-              ? `Você foi convidado para acessar o painel do cliente${invitation.clients ? ` para a empresa ${invitation.clients.name}` : ''}.`
+              ? `Você foi convidado para acessar o painel do cliente${clientName ? ` para a empresa ${clientName}` : ''}.`
               : `Você foi convidado para se juntar à equipe da Agência Duas Mãos como ${invitation.role}.`
             }
           </p>
@@ -96,13 +108,5 @@ function InvalidInvite({ message }: { message: string }) {
         </div>
       </div>
     </div>
-  )
-}
-
-function Badge({ text }: { text: string }) {
-  return (
-    <span className="inline-block px-3 py-1 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-bold uppercase tracking-widest">
-      {text}
-    </span>
   )
 }
