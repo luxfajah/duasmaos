@@ -100,10 +100,17 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
     .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     .slice(0, 5)
 
-  // Active Health Logic
-  // Mimicking dynamic 85% visually
-  const projectHealth = safeSelectedProject?.progress || 0
-  const isHealthy = projectHealth >= 70
+  // Status Calculation Logic
+  const hasOverdueTasks = projectTasks.some(t => {
+    const deadline = t.due_date || t.deadline
+    if (!deadline || t.status === 'done' || t.status === 'approved') return false
+    return new Date(deadline) < now
+  })
+
+  // Dynamic status label based on project state
+  let statusText = 'De boa'
+  if (hasOverdueTasks) statusText = 'Ops'
+  else if (projectHealth >= 90) statusText = 'Workaholic'
 
   return (
     <div className="animate-fade-in-up pb-24 max-w-[1600px] mx-auto w-full">
@@ -226,7 +233,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                 <p className="text-[11px] xl:text-xs font-bold opacity-80 font-body uppercase tracking-wider">Concluídas</p>
               </div>
               <div>
-                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight">{projectHealth >= 50 ? 'Bom' : 'Ops'}<span className="text-lg xl:text-xl opacity-60"></span></p>
+                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight">{statusText}<span className="text-lg xl:text-xl opacity-60"></span></p>
                 <p className="text-[11px] xl:text-xs font-bold opacity-80 font-body uppercase tracking-wider">Status</p>
               </div>
             </div>
