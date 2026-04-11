@@ -240,7 +240,7 @@ export function SocialPostModal({ posts, initialIndex, taskId, taskType, onClose
                      <div className="space-y-1">
                         <h5 className="text-[11px] font-black uppercase tracking-widest text-amber-500">Requisito do Post</h5>
                         <p className="text-xs text-text-secondary leading-relaxed">
-                          Para posts em carrosel, selecione o tipo "Carousel" na aba lateral e envie de 2 a 10 imagens/vídeos.
+                          Para posts em carrosel, selecione o tipo &quot;Carousel&quot; na aba lateral e envie de 2 a 10 imagens/vídeos.
                         </p>
                      </div>
                   </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { V2SocialPost, PostTypeV2, ApprovalStatusV2, PostStatusV2 } from '@/types/database'
 import { getSocialPosts } from '@/app/dashboard/v2/task-actions'
 import { cn } from '@/lib/utils'
@@ -18,7 +18,7 @@ export function SocialPostGrid({ taskId, taskType, isEditable = true }: SocialPo
   const [loading, setLoading] = useState(true)
   const [selectedPostIndex, setSelectedPostIndex] = useState<number | null>(null)
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true)
       const data = await getSocialPosts(taskId)
@@ -28,13 +28,13 @@ export function SocialPostGrid({ taskId, taskType, isEditable = true }: SocialPo
     } finally {
       setLoading(false)
     }
-  }
+  }, [taskId])
 
   useEffect(() => {
     if (taskId) {
       fetchPosts()
     }
-  }, [taskId])
+  }, [taskId, fetchPosts])
 
   const getStatusIcon = (status: PostStatusV2) => {
     switch (status) {
