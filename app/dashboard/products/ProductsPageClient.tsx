@@ -73,6 +73,9 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
   const [typeFilter, setTypeFilter] = useState('all')
   const [showNewModal, setShowNewModal] = useState(false)
   const [newProduct, setNewProduct] = useState({
+    name: '',
+    category: 'Design',
+    type: 'service',
     base_price: 0
   })
 
