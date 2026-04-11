@@ -3,7 +3,10 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export async function bulkUpdateTaskDeadlines(projectId: string, updates: { taskId: string; deadline: string | null; startDate: string | null }[]) {
+export async function bulkUpdateTaskDeadlines(
+  projectId: string, 
+  updates: { taskId: string; start_date?: string | null; deadline: string | null }[]
+) {
   const supabase = createClient()
 
   // Iterate over updates and apply them
@@ -11,20 +14,43 @@ export async function bulkUpdateTaskDeadlines(projectId: string, updates: { task
     const { error } = await supabase
       .from('v2_tasks')
       .update({ 
-        deadline: update.deadline,
-        start_date: update.startDate 
+        start_date: update.start_date,
+        due_date: update.deadline // In the DB it might be due_date, but the current UI uses .update({ deadline }) 
       })
       .eq('id', update.taskId)
-      .eq('project_id', projectId) // Extra safety check
+      .eq('project_id', projectId)
 
     if (error) {
-      console.error(`Error updating task ${update.taskId}:`, error)
-      throw new Error('Falha ao atualizar prazo de uma das tarefas.')
+      // Fallback check: if 'start_date' column doesn't exist yet, try updating just deadline
+      if (error.code === '42703') { 
+        await supabase
+          .from('v2_tasks')
+          .update({ due_date: update.deadline })
+          .eq('id', update.taskId)
+          .eq('project_id', projectId)
+      } else {
+        console.error(`Error updating task ${update.taskId}:`, error)
+        throw new Error('Falha ao atualizar prazos das tarefas.')
+      }
     }
   }
 
-  // Revalidate both the project dashboard and the root dashboard
   revalidatePath('/dashboard')
   revalidatePath(`/dashboard/projects/${projectId}`)
   revalidatePath(`/dashboard/projects/${projectId}/deadlines`)
+}
+
+export async function updateProjectStartDate(projectId: string, startDate: string) {
+  const supabase = createClient()
+
+  const { error } = await supabase
+    .from('v2_projects')
+    .update({ start_date: startDate })
+    .eq('id', projectId)
+
+  if (error && error.code !== '42703') { // 42703 is column does not exist
+    throw new Error('Erro ao atualizar data de início do projeto')
+  }
+
+  revalidatePath(`/dashboard/projects/${projectId}`)
 }

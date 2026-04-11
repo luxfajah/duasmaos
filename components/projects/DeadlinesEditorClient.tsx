@@ -1,168 +1,297 @@
 'use client'
 
-import React, { useState, useTransition } from 'react'
-import { bulkUpdateTaskDeadlines } from '@/app/dashboard/projects/[id]/deadlines/deadline-actions'
-import { Calendar, Save, Loader2, ArrowLeft, Clock } from 'lucide-react'
+import React, { useState, useTransition, useMemo, useEffect } from 'react'
+import { PRIORITY_LABELS, UserRole, V2Project } from '@/types/database'
+import { bulkUpdateTaskDeadlines, updateProjectStartDate } from '@/app/dashboard/projects/[id]/deadlines/deadline-actions'
+import { 
+  Calendar, Save, AlertCircle, Loader2, Lock, Unlock, 
+  RefreshCcw, AlertTriangle, Link2, Unlink, CalendarClock, 
+  ChevronRight, LayoutList, History, Info
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 interface DeadlinesEditorProps {
   projectId: string
   stages: any[]
   tasks: any[]
+  userRole: UserRole
+  projectData: V2Project & { start_date?: string }
 }
 
-export function DeadlinesEditorClient({ projectId, stages, tasks }: DeadlinesEditorProps) {
+// --- Utils ---
+const toDateStr = (d: Date) => {
+  if (isNaN(d.getTime())) return new Date().toISOString().split('T')[0]
+  const offset = d.getTimezoneOffset()
+  d = new Date(d.getTime() - (offset*60*1000))
+  return d.toISOString().split('T')[0]
+}
+
+const addD = (dStr: string | null | undefined, days: number) => {
+  if (!dStr) return ''
+  const dt = new Date(dStr + 'T12:00:00')
+  dt.setDate(dt.getDate() + days)
+  return toDateStr(dt)
+}
+
+const diffD = (d1Str: string, d2Str: string) => {
+  const d1 = new Date(d1Str + 'T12:00:00')
+  const d2 = new Date(d2Str + 'T12:00:00')
+  return Math.round((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+const prettyDate = (dStr: string | null | undefined) => {
+  if (!dStr) return '--/--'
+  const parts = dStr.split('-')
+  if (parts.length < 3) return dStr
+  return `${parts[2]}/${parts[1]}`
+}
+
+export function DeadlinesEditorClient({ projectId, stages, tasks, userRole, projectData }: DeadlinesEditorProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   
-  // Local state for modified tasks
-  const [editedTasks, setEditedTasks] = useState<Record<string, { start_date: string | null; deadline: string | null }>>({})
+  const canEdit = ['admin', 'gestor'].includes(userRole)
 
-  const formatDateForInput = (dateStr: string | null) => {
-    if (!dateStr) return ''
-    try {
-      return new Date(dateStr).toISOString().split('T')[0]
-    } catch {
-      return ''
-    }
+  // --- State ---
+  const [projStartDate, setProjStartDate] = useState(
+    projectData.start_date ? toDateStr(new Date(projectData.start_date)) : toDateStr(new Date())
+  )
+
+  // taskState: Mapping taskID -> { start, end }
+  const [taskState, setTaskState] = useState<Record<string, { start: string, end: string }>>(() => {
+    const initial: Record<string, { start: string, end: string }> = {}
+    tasks.forEach(t => {
+      initial[t.id] = {
+        start: t.start_date ? toDateStr(new Date(t.start_date)) : (t.due_date ? toDateStr(new Date(t.due_date)) : ''),
+        end: t.due_date ? toDateStr(new Date(t.due_date)) : ''
+      }
+    })
+    return initial
+  })
+
+  // --- Handlers ---
+  const handleTaskDateChange = (taskId: string, field: 'start' | 'end', val: string) => {
+    if (!canEdit) return
+    setTaskState(prev => ({
+      ...prev,
+      [taskId]: { ...prev[taskId], [field]: val }
+    }))
   }
 
-  const handleDateChange = (taskId: string, field: 'start_date' | 'deadline', value: string) => {
-    const task = tasks.find(t => t.id === taskId)
-    const currentEdit = editedTasks[taskId] || { 
-      start_date: task.start_date, 
-      deadline: task.deadline || task.due_date 
-    }
+  const handleProjectStartChange = (newVal: string) => {
+    if (!canEdit) return
+    const oldVal = projStartDate
+    setProjStartDate(newVal)
+    
+    // Auto-suggest shift if the user wants it? 
+    // For now, let's keep it manual but allow a button to "Shift everything by delta"
+  }
 
-    setEditedTasks({
-      ...editedTasks,
-      [taskId]: {
-        ...currentEdit,
-        [field]: value === '' ? null : value
-      }
+  const shiftAllTasks = () => {
+    const delta = diffD(projectData.start_date ? toDateStr(new Date(projectData.start_date)) : toDateStr(new Date()), projStartDate)
+    if (delta === 0) return
+
+    setTaskState(prev => {
+      const next = { ...prev }
+      Object.keys(next).forEach(id => {
+        if (next[id].start) next[id].start = addD(next[id].start, delta)
+        if (next[id].end) next[id].end = addD(next[id].end, delta)
+      })
+      return next
     })
   }
 
   const handleSave = () => {
-    if (Object.keys(editedTasks).length === 0) return
-
     startTransition(async () => {
       try {
-        const updates = Object.entries(editedTasks).map(([taskId, dates]) => ({
+        // 1. Update project start date
+        await updateProjectStartDate(projectId, new Date(projStartDate + 'T12:00:00Z').toISOString())
+
+        // 2. Update all tasks
+        const updates = Object.entries(taskState).map(([taskId, dates]) => ({
           taskId,
-          startDate: dates.start_date ? new Date(dates.start_date + 'T12:00:00Z').toISOString() : (tasks.find(t => t.id === taskId)?.start_date || null),
-          deadline: dates.deadline ? new Date(dates.deadline + 'T12:00:00Z').toISOString() : (tasks.find(t => t.id === taskId)?.deadline || tasks.find(t => t.id === taskId)?.due_date || null)
+          start_date: dates.start ? new Date(dates.start + 'T12:00:00Z').toISOString() : null,
+          deadline: dates.end ? new Date(dates.end + 'T12:00:00Z').toISOString() : null
         }))
         
         await bulkUpdateTaskDeadlines(projectId, updates)
-        setEditedTasks({})
-        alert('Prazos atualizados com sucesso!')
+        alert('Cronograma atualizado com sucesso!')
         router.refresh()
       } catch (err: any) {
-        alert(err.message || 'Erro ao atualizar prazos.')
+        alert('Erro ao salvar: ' + err.message)
       }
     })
   }
 
-  const hasChanges = Object.keys(editedTasks).length > 0
+  // --- Derived ---
+  const completionPercent = useMemo(() => {
+    const closed = tasks.filter(t => t.status === 'done' || t.status === 'approved').length
+    return tasks.length ? Math.round((closed / tasks.length) * 100) : 0
+  }, [tasks])
+
+  const sortedStages = [...stages].sort((a,b) => a.order - b.order)
 
   return (
-    <div className="flex flex-col gap-6 pb-24">
-      {stages.map((stage) => {
-        const stageTasks = tasks.filter(t => t.stage_id === stage.id)
-        if (stageTasks.length === 0) return null
+    <div className="flex flex-col gap-8 pb-32">
+      
+      {/* 1. Anchoring Section */}
+      <div className="glass rounded-[32px] p-6 sm:p-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 border border-border relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-8 opacity-5">
+           <CalendarClock size={120} />
+        </div>
 
-        return (
-          <div key={stage.id} className="bg-slate-900/40 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
-            <div className="bg-slate-800/50 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary"></span>
-                {stage.name}
-              </h3>
-              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{stageTasks.length} {stageTasks.length === 1 ? 'Tarefa' : 'Tarefas'}</span>
-            </div>
-            
-            <div className="divide-y divide-slate-800/50">
-              {stageTasks.map((task) => {
-                const edit = editedTasks[task.id]
-                const startDate = edit?.start_date !== undefined ? (edit.start_date || '') : formatDateForInput(task.start_date)
-                const deadline = edit?.deadline !== undefined ? (edit.deadline || '') : formatDateForInput(task.deadline || task.due_date)
+        <div className="z-10">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-primary mb-2 flex items-center gap-2">
+            <LayoutList size={14} /> Configurações do Projeto
+          </p>
+          <h3 className="text-xl font-black font-heading text-text-primary">Âncora do Cronograma</h3>
+          <p className="text-sm text-text-muted mt-1 font-body">Defina a data base que rege todas as entregas.</p>
+        </div>
 
-                return (
-                  <div key={task.id} className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-5 hover:bg-slate-800/20 transition-colors group">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-200 group-hover:text-white transition-colors truncate">{task.title}</p>
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <span className="text-[9px] font-black bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded uppercase tracking-tighter">V2</span>
-                        <p className="text-[9px] text-slate-600 uppercase font-bold tracking-widest">#{task.id.slice(0, 6)}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-6">
-                      <div className="flex flex-col gap-2 min-w-[150px]">
-                        <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.15em] ml-1">Início</label>
-                        <div className="relative">
-                          <input
-                            type="date"
-                            value={startDate}
-                            onChange={(e) => handleDateChange(task.id, 'start_date', e.target.value)}
-                            className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-300 focus:text-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 outline-none transition-all"
-                          />
-                          <Clock size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-2 min-w-[150px]">
-                        <label className="text-[9px] font-black uppercase text-slate-500 tracking-[0.15em] ml-1">Fim</label>
-                        <div className="relative">
-                          <input
-                            type="date"
-                            value={deadline}
-                            onChange={(e) => handleDateChange(task.id, 'deadline', e.target.value)}
-                            className="w-full bg-slate-950/50 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-300 focus:text-white focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/20 outline-none transition-all"
-                          />
-                          <Calendar size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
+        <div className="flex flex-col sm:flex-row items-end gap-4 z-10 w-full lg:w-auto">
+          <div className="w-full sm:w-[220px]">
+            <label className="text-[9px] font-black uppercase tracking-widest text-text-muted mb-2 block">Data de Início do Projeto</label>
+            <div className="relative">
+              <input 
+                type="date"
+                value={projStartDate}
+                onChange={(e) => handleProjectStartChange(e.target.value)}
+                disabled={!canEdit}
+                className="glass-input w-full rounded-xl py-3 px-4 font-bold text-sm focus:ring-brand-primary disabled:opacity-50"
+              />
+              <Calendar size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-primary pointer-events-none" />
             </div>
           </div>
-        )
-      })}
-
-      {/* Floating Save Bar */}
-      <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-xl px-4 z-50 transition-all duration-500 ${hasChanges ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95 pointer-events-none'}`}>
-        <div className="bg-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-brand-primary/30 rounded-3xl p-2 flex items-center justify-between backdrop-blur-md">
-          <div className="px-5 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center">
-              <Clock size={16} className="text-brand-primary animate-pulse" />
-            </div>
-            <span className="text-xs font-black text-slate-200 uppercase tracking-widest">
-              {Object.keys(editedTasks).length} Pendente{Object.keys(editedTasks).length > 1 ? 's' : ''}
-            </span>
-          </div>
-          
-          <div className="flex gap-1.5">
+          {canEdit && (
             <button
-              onClick={() => setEditedTasks({})}
-              className="px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white hover:bg-white/5 transition-all"
+               onClick={shiftAllTasks}
+               className="h-[46px] px-6 rounded-xl bg-surface border border-border text-[10px] font-black uppercase tracking-widest text-text-primary hover:bg-surface-muted transition-all flex items-center gap-2"
+               title="Move todas as tarefas baseado na nova data de início"
             >
-              Cancelar
+               <RefreshCcw size={14} />
+               Reajustar Tudo
             </button>
-            <button
-              onClick={handleSave}
-              disabled={isPending}
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white px-7 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-[0_5px_20px_rgba(var(--brand-primary-rgb),0.3)] transition-all disabled:opacity-50"
-            >
-              {isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-              Salvar Alterações
-            </button>
-          </div>
+          )}
         </div>
       </div>
+
+      {/* 2. Simplified Task List Grouped by Stage */}
+      <div className="flex flex-col gap-6">
+        {sortedStages.map((stage) => {
+          const stageTasks = tasks.filter(t => t.stage_id === stage.id)
+          if (stageTasks.length === 0) return null
+
+          return (
+            <div key={stage.id} className="flex flex-col gap-4">
+              <div className="flex items-center gap-4 px-2">
+                 <div className="w-1.5 h-6 bg-brand-primary/40 rounded-full" />
+                 <h4 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-3">
+                    {stage.name}
+                    <span className="text-[10px] font-bold text-text-muted lowercase tracking-normal">
+                      ({stageTasks.length} {stageTasks.length === 1 ? 'item' : 'itens'})
+                    </span>
+                 </h4>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                 {stageTasks.map(task => {
+                    const state = taskState[task.id] || { start: '', end: '' }
+                    const isOverdue = state.end && new Date(state.end) < new Date() && task.status !== 'done' && task.status !== 'approved'
+
+                    return (
+                      <div 
+                        key={task.id} 
+                        className={`glass rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border transition-all ${isOverdue ? 'border-status-danger/30 bg-status-danger/5' : 'border-border/50'}`}
+                      >
+                        <div className="flex-1 min-w-0">
+                           <div className="flex items-center gap-2 mb-1">
+                              <span className={`text-[8px] font-black uppercase p-1 rounded ${task.priority === 'urgent' ? 'bg-status-danger text-white' : 'bg-surface-muted text-text-muted'}`}>
+                                {PRIORITY_LABELS[task.priority as keyof typeof PRIORITY_LABELS] || task.priority}
+                              </span>
+                              <p className="text-sm font-bold text-text-primary truncate">{task.title}</p>
+                           </div>
+                           <p className="text-[10px] text-text-muted font-medium flex items-center gap-1">
+                             <LayoutList size={10} /> Status: {task.status}
+                           </p>
+                        </div>
+
+                        <div className="flex items-center gap-4 shrink-0 w-full md:w-auto">
+                           <div className="flex-1 md:w-[160px]">
+                              <label className="text-[8px] font-black uppercase tracking-widest text-text-muted mb-1 block">Início</label>
+                              <input 
+                                type="date"
+                                value={state.start}
+                                onChange={(e) => handleTaskDateChange(task.id, 'start', e.target.value)}
+                                disabled={!canEdit}
+                                className="glass-input w-full py-2 px-3 rounded-lg text-xs font-bold disabled:opacity-50"
+                              />
+                           </div>
+                           <ChevronRight size={14} className="text-text-muted/30 mt-4 hidden md:block" />
+                           <div className="flex-1 md:w-[160px]">
+                              <label className="text-[8px] font-black uppercase tracking-widest text-text-muted mb-1 block">Entrega</label>
+                              <input 
+                                type="date"
+                                value={state.end}
+                                onChange={(e) => handleTaskDateChange(task.id, 'end', e.target.value)}
+                                disabled={!canEdit}
+                                className={`glass-input w-full py-2 px-3 rounded-lg text-xs font-bold disabled:opacity-50 ${isOverdue ? 'border-status-danger text-status-danger' : ''}`}
+                              />
+                           </div>
+                        </div>
+                      </div>
+                    )
+                 })}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* 3. Operational Warning / Info for non-admins */}
+      {!canEdit && (
+        <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-2xl p-6 flex gap-4 items-center">
+           <Info className="text-brand-primary shrink-0" size={24} />
+           <div>
+             <p className="text-sm font-bold text-text-primary">Modo de Visualização</p>
+             <p className="text-xs text-text-muted mt-1">Seu perfil ({userRole}) permite acompanhar o cronograma, mas alterações são restritas a Admins e Gestores.</p>
+           </div>
+        </div>
+      )}
+
+      {/* 4. Persistence Bar (Admins/Gestors Only) */}
+      {canEdit && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[1200px] px-4 z-50">
+          <div className="bg-surface-elevated/95 backdrop-blur-xl border border-brand-primary/20 shadow-2xl rounded-[32px] p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3 px-4">
+              <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+                <History size={20} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Status do Cronograma</p>
+                <p className="text-sm font-bold text-text-primary">{completionPercent}% das tarefas concluídas</p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+               <button 
+                onClick={() => router.refresh()}
+                className="px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest text-text-muted hover:text-text-primary transition-colors"
+               >
+                 Descartar
+               </button>
+               <button 
+                onClick={handleSave}
+                disabled={isPending}
+                className="px-10 py-3 rounded-full bg-brand-primary text-white text-xs font-black uppercase tracking-widest shadow-brand hover:bg-brand-primary/90 transition-all flex items-center gap-2 disabled:opacity-50"
+               >
+                 {isPending ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                 Salvar Cronograma
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

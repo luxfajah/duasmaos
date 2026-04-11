@@ -12,26 +12,14 @@ interface Props {
   params: { id: string }
 }
 
-export default async function ProjectDeadlinesPage({ params }: Props) {
-  const supabase = createClient()
+  // Fetch user role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
 
-  // Protect route
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  // Fetch data
-  const project = await getV2ProjectById(params.id)
-  if (!project) notFound()
-
-  // Fetch project dependencies
-  const [stages, tasks] = await Promise.all([
-    getProjectStages(params.id),
-    getTasks(params.id),
-  ])
-
-  // Filter tasks to only include the ones that are not strictly V1
-  // getTasks returns V2Tasks mapped back or standard tasks.
-  const validTasks = tasks.filter(t => !['archived'].includes(t.status))
+  const userRole = profile?.role || 'client'
 
   return (
     <div className="flex-1 w-full max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-8 overflow-y-auto">
@@ -55,7 +43,12 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
         {/* Project Name Context */}
         <div className="bg-sand-light/10 dark:bg-slate-900/40 p-6 rounded-[28px] border border-sand-dark/10">
           <p className="text-sm text-text-muted font-bold uppercase tracking-widest mb-1">Pipeline Ativo</p>
-          <h2 className="text-2xl font-black font-heading text-text-primary tracking-tight">{project.name}</h2>
+          <div className="flex justify-between items-end">
+            <h2 className="text-2xl font-black font-heading text-text-primary tracking-tight">{project.name}</h2>
+            <div className="px-4 py-1.5 rounded-full bg-brand-primary/10 border border-brand-primary/20 text-brand-primary text-[10px] font-black uppercase tracking-widest">
+              Acesso: {userRole}
+            </div>
+          </div>
         </div>
 
         {/* Main Editor */}
@@ -63,6 +56,8 @@ export default async function ProjectDeadlinesPage({ params }: Props) {
           projectId={project.id}
           stages={stages}
           tasks={validTasks}
+          userRole={userRole}
+          projectData={project}
         />
       </div>
     </div>
