@@ -21,6 +21,11 @@ export function SettingsClient({ profile, users, invitations, clients }: Setting
   const router = useRouter()
   const [activeSection, setActiveSection] = useState(searchParams.get('section') || 'profile')
 
+  useEffect(() => {
+    const section = searchParams.get('section')
+    if (section) setActiveSection(section)
+  }, [searchParams])
+
   if (!profile) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
@@ -32,11 +37,6 @@ export function SettingsClient({ profile, users, invitations, clients }: Setting
   }
 
   const isAdmin = profile.role === 'admin'
-
-  useEffect(() => {
-    const section = searchParams.get('section')
-    if (section) setActiveSection(section)
-  }, [searchParams])
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section)
