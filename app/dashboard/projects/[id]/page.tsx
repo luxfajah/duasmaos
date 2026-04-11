@@ -119,12 +119,14 @@ export default async function ProjectDetailPage({ params }: Props) {
           />
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={statusVariant}>{PROJECT_STATUS_LABELS[project.status]}</Badge>
-            {project.type && (
-              <ProjectTypeBadge type={project.type as WorkflowTypeV2} />
+            {(project as any).workflow_type && (
+              <ProjectTypeBadge type={(project as any).workflow_type as WorkflowTypeV2} />
             )}
-            <span className={`text-xs font-semibold ${PRIORITY_COLOR[project.priority]}`}>
-              ↑ {PRIORITY_LABELS[project.priority]}
-            </span>
+            {(project as any).priority && (
+              <span className={`text-xs font-semibold ${PRIORITY_COLOR[(project as any).priority]}`}>
+                &uarr; {PRIORITY_LABELS[(project as any).priority]}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -141,7 +143,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           {
             icon: User,
             label: 'Responsável',
-            value: project.profiles?.full_name ?? '—',
+            value: (project as any).profiles?.full_name ?? '—',
           },
           {
             icon: Calendar,

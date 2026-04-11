@@ -1,17 +1,26 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Task, TaskStatus, TASK_STATUS_LABELS } from '@/types/database'
+import { V2Task, TaskStatusV2 } from '@/types/database'
 import { updateTaskStatus } from '@/app/dashboard/tasks/actions'
 import { cn } from '@/lib/utils'
 import { Calendar, User, AlertCircle, GripVertical } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
-const COLUMNS: { id: TaskStatus; label: string; color: string }[] = [
-  { id: 'todo',        label: TASK_STATUS_LABELS.todo,        color: 'border-border' },
-  { id: 'in_progress', label: TASK_STATUS_LABELS.in_progress, color: 'border-status-info' },
-  { id: 'review',      label: TASK_STATUS_LABELS.review,      color: 'border-status-warning' },
-  { id: 'done',        label: TASK_STATUS_LABELS.done,        color: 'border-status-success' },
+const TASK_STATUS_LABELS_V2: Record<TaskStatusV2, string> = {
+  pending:     'Pendente',
+  in_progress: 'Em andamento',
+  in_review:   'Em revisão',
+  approved:    'Aprovado',
+  done:        'Concluído',
+  blocked:     'Bloqueado',
+}
+
+const COLUMNS: { id: TaskStatusV2; label: string; color: string }[] = [
+  { id: 'pending',     label: TASK_STATUS_LABELS_V2.pending,     color: 'border-border' },
+  { id: 'in_progress', label: TASK_STATUS_LABELS_V2.in_progress, color: 'border-status-info' },
+  { id: 'in_review',   label: TASK_STATUS_LABELS_V2.in_review,   color: 'border-status-warning' },
+  { id: 'done',        label: TASK_STATUS_LABELS_V2.done,        color: 'border-status-success' },
 ]
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -21,7 +30,7 @@ const PRIORITY_COLOR: Record<string, string> = {
   urgent: 'bg-status-danger text-white border-status-danger',
 }
 
-type TaskWithRelations = Task & {
+type TaskWithRelations = V2Task & {
   projects?: { name: string; client_id: string; clients?: { name: string } | null } | null
   profiles?: { full_name: string } | null
 }
@@ -40,7 +49,7 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
     setOptimisticTasks(tasks)
   }
 
-  function handleDrop(e: React.DragEvent, newStatus: TaskStatus) {
+  function handleDrop(e: React.DragEvent, newStatus: TaskStatusV2) {
     e.preventDefault()
     const taskId = e.dataTransfer.getData('taskId')
     const task = optimisticTasks.find((t) => t.id === taskId)
@@ -115,7 +124,7 @@ function TaskCard({
   onClick?: () => void
 }) {
   const isOverdue =
-    task.deadline && task.status !== 'done' && new Date(task.deadline) < new Date()
+    task.due_date && task.status !== 'done' && new Date(task.due_date) < new Date()
 
   return (
     <div
@@ -156,11 +165,11 @@ function TaskCard({
 
       {/* Footer */}
       <div className="flex items-center gap-3 pt-1">
-        {task.deadline && (
+        {task.due_date && (
           <span className={cn('flex items-center gap-1 text-[10px] font-medium', isOverdue ? 'text-status-danger' : 'text-text-muted')}>
             {isOverdue && <AlertCircle size={10} />}
             <Calendar size={10} />
-            {new Date(task.deadline).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+            {new Date(task.due_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
           </span>
         )}
         {task.profiles && (
