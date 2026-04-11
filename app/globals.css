@@ -84,11 +84,11 @@
     --shadow-glass: 0 8px 32px -4px rgb(0 0 0 / 0.12), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
     --shadow-brand: 0 6px 28px 0 hsl(var(--brand-primary) / 0.28);
 
-    /* Glass System Tokens */
-    --glass-background: 255 255 255 / 0.04;
-    --glass-border: 255 255 255 / 0.06;
-    --glass-blur: 20px;
-    --glass-inner-highlight: 255 255 255 / 0.1;
+    /* Glass System Tokens — LIGHT MODE: softer blur, warm-white bg */
+    --glass-background: 255 255 255 / 0.65;
+    --glass-border: 0 0 0 / 0.06;
+    --glass-blur: 10px;
+    --glass-inner-highlight: 255 255 255 / 0.8;
     --shadow-terracotta: 0 6px 28px 0 hsl(13 55% 50% / 0.28);
     --shadow-deep-blue: 0 8px 32px 0 hsl(222 55% 22% / 0.25);
     --shadow-card-hover: 0 16px 52px -8px rgb(0 0 0 / 0.13), 0 4px 12px 0 rgb(0 0 0 / 0.07);
@@ -131,9 +131,9 @@
     --brand-deep-blue-light: 222 45% 45%;
     --brand-highlight: 13 52% 56%;
 
-    --text-primary: 35 30% 95%;
-    --text-secondary: 222 10% 75%;
-    --text-muted: 222 8% 65%;
+    --text-primary: 0 0% 100%;          /* Pure white for max contrast */
+    --text-secondary: 220 14% 85%;      /* Was 75% — boosted to 85% */
+    --text-muted: 220 10% 70%;          /* Was 65% — boosted to 70% */
     --text-inverse: 35 30% 95%;
     --text-on-dark: 35 30% 95%;
 
@@ -155,11 +155,12 @@
     --shadow-lg: 0 10px 32px -3px rgb(0 0 0 / 0.45), 0 4px 6px -4px rgb(0 0 0 / 0.30);
     --shadow-glass: 0 4px 24px -4px rgb(0 0 0 / 0.55), inset 0 1px 1px 0 rgb(255 255 255 / 0.08);
 
-    /* Glass System Tokens (Dark) */
-    --glass-background: 255 255 255 / 0.03;
-    --glass-border: 255 255 255 / 0.05;
-    --glass-blur: 24px;
+    /* Glass System Tokens — DARK MODE: deep dense glass */
+    --glass-background: 15 23 42 / 0.6;   /* rgba(15,23,42,0.6) — deep navy glass */
+    --glass-border: 255 255 255 / 0.06;
+    --glass-blur: 18px;
     --glass-inner-highlight: 255 255 255 / 0.05;
+    --shadow-glass: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
     --shadow-card-hover: 0 16px 52px -8px rgb(0 0 0 / 0.55), 0 4px 12px 0 rgb(0 0 0 / 0.35);
     --shadow-brand: 0 6px 28px 0 hsl(13 52% 56% / 0.32);
     --shadow-terracotta: 0 6px 28px 0 hsl(13 52% 56% / 0.32);
@@ -335,12 +336,24 @@
 
   /* ── Glassmorphism ── */
   .glass {
-    background: rgb(var(--glass-background));
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid rgb(var(--glass-border));
+    /* Light: warm-white semi-transparent, low blur */
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     box-shadow: var(--shadow-glass);
     position: relative;
+  }
+
+  /* Dark Mode: deep navy glass, stronger blur */
+  .dark .glass {
+    background: rgba(15, 23, 42, 0.60);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   .glass-reflection::before {
@@ -349,14 +362,72 @@
     inset: 0;
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 25%,
       transparent 50%,
       transparent 100%
     );
     pointer-events: none;
     z-index: 1;
     border-radius: inherit;
+  }
+
+  /* ── 3-Level Depth Hierarchy ── */
+  /* Level 0: Page background — deepest */
+  .depth-bg {
+    background: #0B0F1A;
+  }
+
+  /* Level 1: Base cards — barely lifted from background */
+  .depth-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 4px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Level 2: Modals / top layer — densest glass */
+  .depth-modal {
+    background: rgba(10, 15, 30, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      0 10px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Light mode overrides for depth hierarchy */
+  :root .depth-bg {
+    background: hsl(var(--background));
+  }
+  :root .depth-card {
+    background: hsl(var(--surface));
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-sm);
+  }
+  :root .depth-modal {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* ── Premium Edge Light Border ── */
+  .edge-light {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .dark .edge-light {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 10px 30px rgba(0, 0, 0, 0.45);
   }
 
   .glass-fluted {
@@ -748,12 +819,25 @@
     position: relative;
     overflow: hidden;
   }
+  .dark .task-card {
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 6px 24px rgba(0, 0, 0, 0.30);
+  }
   .task-card:hover {
     transform: translateY(-4px);
     box-shadow:
       0 4px 12px 0 rgb(0 0 0 / 0.06),
       0 20px 56px -8px rgb(0 0 0 / 0.14),
       inset 0 1px 0 0 rgb(255 255 255 / 0.1);
+  }
+  .dark .task-card:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.45),
+      0 20px 56px -8px rgba(0, 0, 0, 0.35);
   }
   .task-card-urgent {
     border-left: 3px solid hsl(13 55% 50%);
@@ -826,5 +910,29 @@
       0 8px 40px -8px hsl(222 55% 22% / 0.45),
       0 2px 12px 0 hsl(222 55% 22% / 0.20),
       inset 1px 0 0 0 hsl(222 45% 30% / 0.15);
+  }
+
+  /* ── Modal overlay (dark mode) — deep blur + heavy veil ── */
+  .modal-overlay-dark {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* ── Glass input (dark mode) — visible but subtle ── */
+  .glass-input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.90);
+    transition: border-color 150ms ease, background 150ms ease;
+  }
+  .glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .glass-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
   }
 }

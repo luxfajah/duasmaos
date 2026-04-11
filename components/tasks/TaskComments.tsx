@@ -118,10 +118,13 @@ export function TaskComments({ taskId, comments: initial, currentUserId }: TaskC
           }}
           rows={2}
           className={cn(
-            'flex-1 resize-none text-sm rounded-lg border border-border bg-surface px-3 py-2',
-            'text-text-primary placeholder:text-text-muted',
-            'focus:outline-none focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary',
-            'transition-colors duration-150',
+            'flex-1 resize-none text-sm rounded-lg border px-3 py-2',
+            'focus:outline-none transition-colors duration-150',
+            /* Light mode */
+            'border-border bg-surface text-text-primary placeholder:text-text-muted',
+            'focus:ring-2 focus:ring-brand-primary/30 focus:border-brand-primary',
+            /* Dark mode — use glass-input class for visibility */
+            'dark:glass-input',
           )}
         />
         <button
