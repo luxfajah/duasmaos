@@ -210,8 +210,11 @@ export type TaskStatusV2 = 'pending' | 'in_progress' | 'in_review' | 'approved' 
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
 export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval';
-export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website';
+export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website' | 'social_copy' | 'social_design';
 export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
+
+export type PostTypeV2 = 'feed' | 'story' | 'carousel' | 'video_story' | 'reels';
+export type PostStatusV2 = 'pending' | 'in_progress' | 'done';
 
 export interface V2Workspace {
   id: string;
@@ -257,8 +260,25 @@ export interface V2Task {
   priority: TaskPriorityV2;
   order: number | null;
   due_date: string | null;
+  social_post_count?: number;
   /** Populated via v2_task_assignees join or direct column if migrated */
   assigned_to?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface V2SocialPost {
+  id: string;
+  task_id: string;
+  type: PostTypeV2;
+  status: PostStatusV2;
+  carousel_slides: number;
+  caption: string | null;
+  hashtags: string[];
+  optional_text: string | null;
+  design_urls: string[];
+  is_approved: boolean;
+  order: number;
   created_at: string;
   updated_at: string;
 }
@@ -323,4 +343,5 @@ export type KanbanProject = V2Project & {
   deadline?: string | null
   priority?: string | null
 }
+
 

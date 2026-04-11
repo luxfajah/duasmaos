@@ -1,8 +1,38 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { V2Task, TaskStatusV2, TaskPriorityV2 } from '@/types/database'
+import { V2Task, TaskStatusV2, TaskPriorityV2, DeliverableTypeV2 } from '@/types/database'
 import { revalidatePath } from 'next/cache'
+
+/** Logic to reconcile social posts with the desired count */
+async function syncSocialPosts(taskId: string, count: number) {
+  const supabase = createClient()
+  
+  // 1. Get current posts
+  const { data: currentPosts } = await supabase
+    .from('v2_social_posts')
+    .select('id, order')
+    .eq('task_id', taskId)
+    .order('order', { ascending: true })
+
+  const currentCount = currentPosts?.length || 0
+
+  if (currentCount < count) {
+    // Add missing posts
+    const toAdd = count - currentCount
+    const newPosts = Array.from({ length: toAdd }).map((_, i) => ({
+      task_id: taskId,
+      order: currentCount + i,
+      type: 'feed',
+      status: 'pending'
+    }))
+    await supabase.from('v2_social_posts').insert(newPosts)
+  } else if (currentCount > count) {
+    // Remove extra posts (from the end)
+    const toRemove = currentPosts!.slice(count).map(p => p.id)
+    await supabase.from('v2_social_posts').delete().in('id', toRemove)
+  }
+}
 
 export async function getTasks(projectId?: string) {
   const supabase = createClient()
@@ -33,6 +63,8 @@ export async function createTask(formData: {
   priority?: TaskPriorityV2
   due_date?: string
   assigned_to?: string
+  deliverable_type?: DeliverableTypeV2
+  social_post_count?: number
 }) {
   const supabase = createClient()
 
@@ -56,6 +88,8 @@ export async function createTask(formData: {
     status: formData.status ?? 'pending',
     priority: formData.priority ?? 'medium',
     due_date: formData.due_date ?? null,
+    deliverable_type: formData.deliverable_type ?? null,
+    social_post_count: formData.social_post_count ?? 0
   }).select('id').single()
 
   if (error) throw error
@@ -68,8 +102,52 @@ export async function createTask(formData: {
     })
   }
 
+  // 4. Sync social posts if count provided
+  if (formData.social_post_count && formData.social_post_count > 0 && task?.id) {
+    await syncSocialPosts(task.id, formData.social_post_count)
+  }
+
   revalidatePath('/dashboard/tasks')
   revalidatePath(`/dashboard/projects/${formData.project_id}`)
+}
+
+export async function updateTask(
+  id: string,
+  formData: Partial<{
+    title: string
+    description: string
+    status: TaskStatusV2
+    priority: TaskPriorityV2
+    due_date: string
+    assigned_to: string
+    deliverable_type: DeliverableTypeV2
+    social_post_count: number
+  }>
+) {
+  const supabase = createClient()
+  const { assigned_to, social_post_count, ...taskData } = formData
+  
+  const { error } = await supabase.from('v2_tasks').update({
+    ...taskData,
+    social_post_count: social_post_count
+  }).eq('id', id)
+  
+  if (error) throw error
+
+  // Update assignee via join table
+  if (assigned_to !== undefined) {
+    await supabase.from('v2_task_assignees').delete().eq('task_id', id)
+    if (assigned_to) {
+      await supabase.from('v2_task_assignees').insert({ task_id: id, user_id: assigned_to })
+    }
+  }
+
+  // Sync social posts if count changed
+  if (social_post_count !== undefined) {
+    await syncSocialPosts(id, social_post_count)
+  }
+
+  revalidatePath('/dashboard/tasks')
 }
 
 export async function updateTaskStatus(id: string, status: TaskStatusV2) {
@@ -86,29 +164,3 @@ export async function deleteTask(id: string) {
   revalidatePath('/dashboard/tasks')
 }
 
-export async function updateTask(
-  id: string,
-  formData: Partial<{
-    title: string
-    description: string
-    status: TaskStatusV2
-    priority: TaskPriorityV2
-    due_date: string
-    assigned_to: string
-  }>
-) {
-  const supabase = createClient()
-  const { assigned_to, ...taskData } = formData
-  const { error } = await supabase.from('v2_tasks').update(taskData).eq('id', id)
-  if (error) throw error
-
-  // Update assignee via join table
-  if (assigned_to !== undefined) {
-    await supabase.from('v2_task_assignees').delete().eq('task_id', id)
-    if (assigned_to) {
-      await supabase.from('v2_task_assignees').insert({ task_id: id, user_id: assigned_to })
-    }
-  }
-
-  revalidatePath('/dashboard/tasks')
-}
