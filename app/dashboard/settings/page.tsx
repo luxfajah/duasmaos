@@ -11,7 +11,7 @@ export default async function SettingsPage() {
   // Fetch current profile
   let { data: profile } = await supabase
     .from('profiles')
-    .select('*, clients(name)')
+    .select('*')
     .eq('id', user.id)
     .single()
 
@@ -26,7 +26,7 @@ export default async function SettingsPage() {
         full_name: user.user_metadata?.full_name || 'Novo Usuário',
         role: 'admin' // Default to admin for this specific request or as a fallback
       })
-      .select('*, clients(name)')
+      .select('*')
       .single()
     
     if (!insertError) profile = newProfile
