@@ -14,7 +14,7 @@ export function PipelineCard({ client }: PipelineCardProps) {
   const ticketValue = Math.floor(Math.random() * 40000 + 5000);
   const formattedTicket = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ticketValue);
   
-  const sector = client.sector || 'Geral';
+  const sector = client.segment || 'Geral';
   const displayContact = client.contacts && client.contacts.length > 0 
     ? client.contacts[0].name 
     : 'Responsável não definido';
