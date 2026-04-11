@@ -10,7 +10,7 @@ import { ProjectPipeline } from '@/components/projects/ProjectPipeline'
 import { V2ProjectWorkspace } from '@/components/projects/V2ProjectWorkspace'
 import { ProjectTypeBadge } from '@/components/projects/ProjectTypeSelect'
 import { TaskKanban } from '@/components/tasks/TaskKanban'
-import { PRIORITY_LABELS, WorkflowTypeV2 } from '@/types/database'
+import { PRIORITY_LABELS, WorkflowTypeV2, Priority } from '@/types/database'
 import {
   Calendar,
   User,
@@ -124,7 +124,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             )}
             {(project as any).priority && (
               <span className={`text-xs font-semibold ${PRIORITY_COLOR[(project as any).priority]}`}>
-                &uarr; {PRIORITY_LABELS[(project as any).priority]}
+                &uarr; {PRIORITY_LABELS[(project as any).priority as Priority]}
               </span>
             )}
           </div>
