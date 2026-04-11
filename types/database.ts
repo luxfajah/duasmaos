@@ -304,3 +304,12 @@ export type TaskWithRelations = V2Task & {
   deadline?: string | null
 }
 
+/** V2Project enriched for Kanban display (includes client name, optional profile, and legacy fields used by KanbanCard). */
+export type KanbanProject = V2Project & {
+  clients: { name: string } | null
+  profiles: { full_name: string; avatar_url?: string | null } | null
+  /** Legacy field — not present on V2Project but may be populated by query joins */
+  deadline?: string | null
+  priority?: string | null
+}
+

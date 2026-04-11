@@ -2,14 +2,9 @@
 
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
-import { Project, ProjectStatusV2 } from '@/types/database'
+import { KanbanProject, ProjectStatusV2 } from '@/types/database'
 import { KanbanCard } from './KanbanCard'
 import { updateProjectStatus } from '@/app/dashboard/projects/actions'
-
-type KanbanProject = Project & {
-  clients: { name: string }
-  profiles: { full_name: string } | null
-}
 
 const COLUMNS: { id: ProjectStatusV2; label: string; color: string }[] = [
   { id: 'active', label: 'Ativos', color: 'bg-status-info/10 text-status-info' },
