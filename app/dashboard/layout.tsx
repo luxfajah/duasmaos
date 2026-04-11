@@ -23,9 +23,69 @@ export default async function DashboardLayout({ children }: { children: React.Re
           userName={userName}
           userEmail={userEmail}
         />
-        <ContentWrapper>
-          {children}
-        </ContentWrapper>
+        {/* ── Atmospheric environment wrapper ── */}
+        <div className="dashboard-atmosphere flex-1" style={{ position: 'relative' }}>
+
+          {/* Background photo — fixed cityscape */}
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 0,
+              backgroundImage: 'url(/dashboard-bg.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 60%',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+
+          {/* Brand color overlay — keeps palette, lets photo bleed through */}
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 1,
+              background: [
+                'radial-gradient(ellipse 80% 55% at 10% 0%, hsl(13 55% 50% / 0.18) 0%, transparent 55%)',
+                'radial-gradient(ellipse 70% 50% at 90% 100%, hsl(222 55% 22% / 0.22) 0%, transparent 55%)',
+                'linear-gradient(180deg, hsl(35 22% 93% / 0.82) 0%, hsl(35 22% 93% / 0.70) 40%, hsl(35 18% 90% / 0.80) 100%)',
+              ].join(', '),
+              backdropFilter: 'blur(1px)',
+            }}
+          />
+
+          {/* Ambient blobs — slow-drifting accent shapes (above overlay) */}
+          <div
+            className="ambient-blob w-[600px] h-[600px] bg-brand-primary/5 animate-blob-drift"
+            style={{
+              position: 'absolute',
+              top: '-180px',
+              left: '-120px',
+              zIndex: 2,
+              animationDuration: '18s',
+              animationDelay: '0s',
+            }}
+          />
+          <div
+            className="ambient-blob w-[500px] h-[500px] bg-brand-deep-blue/6 animate-blob-drift"
+            style={{
+              position: 'absolute',
+              bottom: '-150px',
+              right: '-100px',
+              zIndex: 2,
+              animationDuration: '22s',
+              animationDelay: '-7s',
+            }}
+          />
+
+          {/* Page content — above all layers */}
+          <div style={{ position: 'relative', zIndex: 3 }}>
+            <ContentWrapper>
+              {children}
+            </ContentWrapper>
+          </div>
+        </div>
+
       </div>
     </div>
   )

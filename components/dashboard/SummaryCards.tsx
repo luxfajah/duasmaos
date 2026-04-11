@@ -7,9 +7,9 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
   const timelineHealth = total > 0 ? Math.round((healthyCount / total) * 100) : 100;
 
   const healthColor =
-    timelineHealth >= 80 ? 'text-olive'
-    : timelineHealth >= 50 ? 'text-yellow-dark'
-    : 'text-terracotta'
+    timelineHealth >= 80 ? 'text-[hsl(68_45%_75%)]'
+    : timelineHealth >= 50 ? 'text-yellow-light'
+    : 'text-terracotta-light'
 
   const progressColor =
     timelineHealth >= 80 ? 'bg-olive'
@@ -24,40 +24,58 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-      {/* Card 1: Timeline Health — Sand elevated surface */}
-      <div className={cn(
-        'rounded-2xl p-6 flex flex-col justify-between',
-        'bg-surface-elevated shadow-sm border border-sand-dark/40',
-        'transition-all duration-200 hover:-translate-y-1.5 hover:shadow-card-hover',
-        'cursor-default relative overflow-hidden'
-      )}>
-        {/* Terracotta accent top line */}
-        <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-brand-primary/70 via-brand-primary/25 to-transparent rounded-t-2xl" />
+      {/* Card 1: Timeline Health — Deep Blue Focus Block (editorial centrepiece) */}
+      <div className="focus-block p-7 flex flex-col justify-between min-h-[240px]">
 
-        {/* Olive accent dot right */}
-        <div className="absolute top-5 right-5 w-2 h-2 rounded-full bg-olive opacity-40" />
+        {/* Atmospheric decorations */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[inherit]">
+          {/* Large blob top-right */}
+          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/5 animate-blob-drift" />
+          <div className="absolute -bottom-12 -left-12 w-40 h-40 rounded-full bg-brand-primary/10 animate-blob-drift" style={{ animationDelay: '-5s' }} />
+          {/* Terracotta accent streak */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-primary/60 via-brand-primary/20 to-transparent rounded-t-[inherit]" />
+          {/* Grid dot pattern */}
+          <svg className="absolute bottom-6 right-6 opacity-[0.08]" width="72" height="72" viewBox="0 0 72 72" fill="none">
+            {[0, 18, 36, 54, 72].map(x =>
+              [0, 18, 36, 54, 72].map(y => (
+                <circle key={`${x}-${y}`} cx={x} cy={y} r="1.5" fill="white" />
+              ))
+            )}
+          </svg>
+          {/* Organic wave */}
+          <svg className="absolute top-6 right-6 opacity-[0.10]" width="80" height="50" viewBox="0 0 80 50" fill="none">
+            <path d="M4 25 Q22 8 40 25 Q58 42 76 25" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <path d="M4 35 Q22 18 40 35 Q58 52 76 35" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4"/>
+          </svg>
+        </div>
 
-        <div>
-          <p className="label-eyebrow text-text-muted">Saúde do Cronograma</p>
-          <div className="mt-4 flex items-end gap-3">
-            <span className={`text-5xl font-black font-heading tracking-tight tabular-nums ${healthColor}`}>
+        {/* Content */}
+        <div className="relative z-10">
+          <p className="label-eyebrow text-white/50 mb-5">Saúde do Cronograma</p>
+          <div className="flex items-end gap-4">
+            <span className={`text-7xl font-black font-heading tracking-tighter tabular-nums leading-none ${healthColor}`}>
               {timelineHealth}%
             </span>
-            <span className={`text-sm mb-2 font-bold font-body ${healthColor}`}>{healthLabel}</span>
+            <div className="mb-2">
+              <span className={`text-sm font-bold font-body block ${healthColor}`}>{healthLabel}</span>
+              <span className="text-xs text-white/40 font-body">{healthyCount} de {total} projetos</span>
+            </div>
           </div>
-          {/* Progress bar — brand palette */}
-          <div className="mt-4 h-2 bg-sand rounded-full overflow-hidden">
+
+          {/* Progress bar */}
+          <div className="mt-6 h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-700 ${progressColor}`}
               style={{ width: `${timelineHealth}%` }}
             />
           </div>
-          <div className="flex justify-between mt-1.5">
-            <span className="text-[10px] text-text-muted font-medium font-body">0%</span>
-            <span className="text-[10px] text-text-muted font-medium font-body">100%</span>
+          <div className="flex justify-between mt-2">
+            <span className="text-[10px] text-white/30 font-medium font-body">0%</span>
+            <span className="text-[10px] text-white/30 font-medium font-body">100%</span>
           </div>
         </div>
-        <p className="text-sm text-text-secondary mt-5 leading-relaxed font-body">
+
+        <p className="text-sm text-white/50 mt-5 leading-relaxed font-body relative z-10">
           {timelineHealth >= 80
             ? 'A maioria dos projetos está atingindo os marcos antecipadamente.'
             : timelineHealth >= 50
@@ -66,13 +84,15 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
         </p>
       </div>
 
-      {/* Card 2: Monthly Creative Review — TERRACOTTA DOMINANT BLOCK */}
+      {/* Card 2: Monthly Creative Review — Terracotta expressive block */}
       <div className={cn(
-        'card-terracotta rounded-2xl p-6 flex flex-col justify-between',
+        'card-terracotta rounded-2xl p-7 flex flex-col justify-between',
         'relative overflow-hidden',
         'transition-all duration-220 hover:-translate-y-2',
         'hover:shadow-[0_16px_52px_0_hsl(13_55%_50%/0.45)]',
-        'cursor-default group'
+        'glow-ring-terracotta',
+        'cursor-default group',
+        'expressive-tilt-left',   // slight tilt — expressive highlight block
       )}>
 
         {/* Organic blob decorations */}
@@ -116,7 +136,6 @@ export function SummaryCards({ projects }: { projects: ExtendedProject[] }) {
             'hover:bg-white/92 transition-all duration-150',
             'shadow-sm hover:shadow-md',
             'hover:scale-[1.02] active:scale-[0.98]',
-            'animate-pulse-brand'
           )}>
             Gerar Relatório
           </button>

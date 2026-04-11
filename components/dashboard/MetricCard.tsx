@@ -11,7 +11,7 @@ interface MetricCardProps {
   trendValue?: string
   className?: string
   accent?: 'default' | 'success' | 'warning' | 'danger' | 'info'
-  /** Featured card gets Terracotta dominant treatment */
+  /** Featured card gets Terracotta dominant treatment + expressive tilt */
   featured?: boolean
 }
 
@@ -41,13 +41,14 @@ export function MetricCard({
   featured = false,
 }: MetricCardProps) {
 
-  /* ── Featured — Terracotta dominant card ── */
+  /* ── Featured — Terracotta highlight + expressive tilt (only this block rotates) ── */
   if (featured) {
     return (
       <div
         className={cn(
           'group relative overflow-hidden rounded-2xl p-6',
-          'card-terracotta',
+          'card-terracotta glow-ring-terracotta',
+          'expressive-tilt-right',
           'cursor-default',
           className
         )}
@@ -65,6 +66,10 @@ export function MetricCard({
           <svg className="absolute bottom-5 left-5 opacity-[0.10] rotate-12" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M10 2v16M2 10h16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
           </svg>
+          {/* Hover shimmer */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+            <div className="shimmer absolute inset-0" />
+          </div>
         </div>
 
         <div className="relative z-10 flex items-start justify-between gap-3">
@@ -97,14 +102,12 @@ export function MetricCard({
     )
   }
 
-  /* ── Standard — Sand surface card ── */
+  /* ── Standard — Floating elevated card (perfectly aligned, NO rotation) ── */
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl bg-surface-elevated p-6',
-        'shadow-sm border border-sand-dark/40',
-        'transition-all duration-200 ease-out',
-        'hover:-translate-y-1.5 hover:shadow-card-hover',
+        'group relative overflow-hidden rounded-2xl p-6',
+        'floating-card',
         'cursor-default',
         className
       )}
@@ -140,7 +143,7 @@ export function MetricCard({
         </div>
       </div>
 
-      {/* Subtle terracotta glow on hover */}
+      {/* Subtle accent glow on hover */}
       <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full blur-2xl bg-brand-primary/5 translate-x-1/2 translate-y-1/2" />
       </div>

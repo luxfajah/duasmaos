@@ -18,7 +18,7 @@ interface TeamActivityFeedProps {
 
 export function TeamActivityFeed({ logs }: TeamActivityFeedProps) {
   return (
-    <div className="bg-surface rounded-xl shadow-sm p-6 flex flex-col min-h-[400px]">
+    <div className="panel-surface p-6 flex flex-col min-h-[400px]">
       {/* Internal header removed — rendered by parent */}
 
       <div className="flex-1 flex flex-col gap-5 relative">

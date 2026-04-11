@@ -16,7 +16,7 @@ const priorityConfig = {
 
 export function DailyTasksList({ tasks }: DailyTasksListProps) {
   return (
-    <div className="bg-surface rounded-xl shadow-sm p-6">
+    <div className="floating-card p-6">
 
       <div className="flex flex-col gap-2.5">
         {tasks.length === 0 ? (
