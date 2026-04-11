@@ -39,6 +39,7 @@ export async function getProjects(clientId?: string): Promise<ProjectDTO[]> {
       progress,
       health_score: progress,
       deadline: p.deadline || null,
+      priority: p.priority || 'medium',
       clients: p.clients ? {
         name: p.clients.name,
         company: p.clients.company || null
@@ -73,6 +74,7 @@ export async function getProjectById(id: string): Promise<ProjectDTO> {
     progress,
     health_score: progress,
     deadline: p.deadline || null,
+    priority: p.priority || 'medium',
     clients: p.clients ? {
       name: p.clients.name,
       company: p.clients.company || null

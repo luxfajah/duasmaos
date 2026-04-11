@@ -231,6 +231,7 @@ export interface V2Project {
   name: string;
   workflow_type: WorkflowTypeV2;
   status: ProjectStatusV2;
+  priority: TaskPriorityV2 | null;
   owner_id: string | null;
   type: 'one_time' | 'recurring';
   amount: number | null;
