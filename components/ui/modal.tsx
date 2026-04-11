@@ -60,7 +60,7 @@ function Modal({ open, onClose, children }: ModalProps) {
         role="dialog"
       >
         <div
-          className="absolute inset-0 bg-foreground/40 backdrop-blur-sm animate-fade-in"
+          className="absolute inset-0 bg-foreground/30 backdrop-blur-md animate-fade-in"
           onClick={onClose}
           aria-hidden
         />
