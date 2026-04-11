@@ -67,7 +67,10 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
     }
   }, [initialProjects, projects.length, setProjects])
 
-  const safeSelectedProject = selectedProject || initialProjects.find(p => p.status !== 'completed' && p.status !== 'delayed') || initialProjects[0]
+  let safeSelectedProject = selectedProject
+  if (!safeSelectedProject) {
+    safeSelectedProject = projects.find(p => p.status !== 'completed') || projects[0]
+  }
 
   // Filter local payload tasks directly derived from server
   const activeProjectId = safeSelectedProject?.id

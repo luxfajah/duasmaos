@@ -39,7 +39,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     }
 
     if (!initialProject) {
-      initialProject = projects.find(p => p.status !== 'completed' && p.status !== 'delayed') || projects[0]
+      initialProject = projects.find(p => p.status !== 'completed') || projects[0]
     }
     
     if (initialProject && (!selectedProject || selectedProject.id !== initialProject.id)) {
