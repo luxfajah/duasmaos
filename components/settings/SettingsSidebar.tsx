@@ -13,7 +13,6 @@ const SECTIONS = [
   { id: 'profile', label: 'Perfil', icon: User, adminOnly: false },
   { id: 'users', label: 'Usuários', icon: Users, adminOnly: true },
   { id: 'security', label: 'Segurança', icon: Shield, adminOnly: false },
-  { id: 'invitations', label: 'Convites', icon: Mail, adminOnly: true },
 ]
 
 export function SettingsSidebar({ activeSection, onSectionChange, isAdmin }: SettingsSidebarProps) {

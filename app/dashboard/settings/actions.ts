@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { randomBytes } from 'crypto'
@@ -43,36 +44,39 @@ const COMMON_PASSWORDS = ['123456', 'password', '12345678', 'qwerty']
 export async function changePassword(formData: FormData) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Não autorizado.')
+  if (!user) throw new Error('Não autorizado')
 
   const currentPassword = formData.get('current_password') as string
   const newPassword = formData.get('new_password') as string
   const confirmPassword = formData.get('confirm_password') as string
 
-  // Fetch profile to check if current password is required
+  // 1. Fetch profile to check if it's first access
   const { data: profile } = await supabase
     .from('profiles')
     .select('requires_password_change')
     .eq('id', user.id)
     .single()
 
-  // Verify current password if NOT forced to change
+  // 2. Verify current password if NOT forced change
   if (profile && !profile.requires_password_change) {
     if (!currentPassword) throw new Error('A senha atual é obrigatória.')
     
-    const { error: verifyError } = await supabase.auth.signInWithPassword({
+    // Verify current password by attempting to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email: user.email!,
       password: currentPassword
     })
-    
-    if (verifyError) throw new Error('A senha atual está incorreta.')
+
+    if (signInError) {
+      throw new Error('A senha atual está incorreta.')
+    }
   }
 
+  // 3. Validations
   if (newPassword !== confirmPassword) {
     throw new Error('As senhas não coincidem.')
   }
 
-  // Real-time validation logic should also be in UI, but here is the final check
   const hasUpper = /[A-Z]/.test(newPassword)
   const hasLower = /[a-z]/.test(newPassword)
   const hasNumber = /[0-9]/.test(newPassword)
@@ -86,16 +90,15 @@ export async function changePassword(formData: FormData) {
     throw new Error('Esta senha é muito comum. Por favor, escolha outra.')
   }
 
+  // 4. Update password
   const { error } = await supabase.auth.updateUser({
     password: newPassword
   })
 
   if (error) throw error
 
-  // Reset forced password change flag
-  if (user) {
-    await supabase.from('profiles').update({ requires_password_change: false }).eq('id', user.id)
-  }
+  // 5. Reset forced password change flag
+  await supabase.from('profiles').update({ requires_password_change: false }).eq('id', user.id)
 
   revalidatePath('/dashboard/settings')
   return { success: true }
@@ -150,61 +153,68 @@ export async function toggleUserStatus(userId: string, active: boolean) {
 
 export async function deleteUser(userId: string) {
   if (!await checkAdmin()) throw new Error('Unauthorized')
-  const supabase = createClient()
+  const adminSupabase = createAdminClient()
   
-  const { error } = await supabase.from('profiles').delete().eq('id', userId)
-  if (error) throw error
+  // 1. Delete from Auth (this also deletes from profiles due to potential triggers or cascade, 
+  // but we do it explicitly just in case or if we want to bypass triggers)
+  const { error: authError } = await adminSupabase.auth.admin.deleteUser(userId)
+  if (authError) throw authError
   
   revalidatePath('/dashboard/settings')
   return { success: true }
 }
 
 /**
- * 4. Invitations
+ * 4. Create User (Admin Only)
  */
-export async function createInvitation(data: {
-  email?: string,
+export async function createNewUser(data: {
+  email: string,
+  firstName: string,
+  lastName: string,
   role: 'admin' | 'gestor' | 'designer' | 'writer' | 'client',
-  client_id?: string,
-  expiresInDays: number
+  clientId?: string,
+  avatarUrl?: string
 }) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
+  if (!await checkAdmin()) throw new Error('Não autorizado')
+  
+  const adminSupabase = createAdminClient()
+  const tempPassword = randomBytes(4).toString('hex') // Temp password
 
-  const token = randomBytes(32).toString('hex')
-  const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + data.expiresInDays)
+  // 1. Create User in Auth
+  const { data: userData, error: authError } = await adminSupabase.auth.admin.createUser({
+    email: data.email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: {
+      full_name: `${data.firstName} ${data.lastName}`.trim(),
+      firstName: data.firstName,
+      lastName: data.lastName
+    }
+  })
 
-  const { data: invitation, error } = await supabase
-    .from('invitations')
+  if (authError) throw authError
+
+  // 2. Create Profile
+  const { error: profileError } = await adminSupabase
+    .from('profiles')
     .insert({
+      id: userData.user.id,
       email: data.email,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      full_name: `${data.firstName} ${data.lastName}`.trim(),
       role: data.role,
-      client_id: data.client_id,
-      token,
-      expires_at: expiresAt.toISOString(),
-      created_by: user.id,
-      status: 'pending'
+      client_id: data.clientId || null,
+      avatar_url: data.avatarUrl || '/avatars/Clipped.svg',
+      requires_password_change: true
     })
-    .select()
-    .single()
 
-  if (error) throw error
-
-  revalidatePath('/dashboard/settings')
-  return { success: true, token }
-}
-
-export async function invalidateInvitation(invitationId: string) {
-  const supabase = createClient()
-  const { error } = await supabase
-    .from('invitations')
-    .update({ status: 'invalidated' })
-    .eq('id', invitationId)
-
-  if (error) throw error
+  if (profileError) {
+    // Cleanup Auth user if profile fails
+    await adminSupabase.auth.admin.deleteUser(userData.user.id)
+    throw profileError
+  }
 
   revalidatePath('/dashboard/settings')
-  return { success: true }
+  return { success: true, tempPassword }
 }

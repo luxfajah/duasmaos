@@ -36,26 +36,17 @@ export default async function SettingsPage() {
 
   // Initialize data
   let allProfiles: any[] = []
-  let allInvitations: any[] = []
   let allClients: any[] = []
 
   if (isAdmin) {
-    // Fetch all profiles
+    // Fetch all profiles without joins to avoid failure if some don't have clients
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('id, full_name, first_name, last_name, role, avatar_url, last_login')
+      .select('id, full_name, first_name, last_name, role, avatar_url, last_login, client_id')
       .order('role')
       .order('full_name')
     
     allProfiles = profiles ?? []
-
-    // Fetch all invitations
-    const { data: invitations } = await supabase
-      .from('invitations')
-      .select('*')
-      .order('created_at', { ascending: false })
-    
-    allInvitations = invitations ?? []
 
     // Fetch all clients
     const { data: clients } = await supabase
@@ -76,7 +67,6 @@ export default async function SettingsPage() {
       <SettingsClient 
         profile={profile} 
         users={allProfiles} 
-        invitations={allInvitations} 
         clients={allClients} 
       />
     </div>

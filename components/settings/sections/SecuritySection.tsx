@@ -8,15 +8,13 @@ import { changePassword } from '@/app/dashboard/settings/actions'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
-interface SecuritySectionProps {
-  requiresPasswordChange?: boolean
-}
-
-export function SecuritySection({ requiresPasswordChange }: SecuritySectionProps) {
+export function SecuritySection({ profile }: { profile: any }) {
   const [loading, setLoading] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+
+  const isFirstAccess = profile?.requires_password_change
 
   const validations = {
     length: password.length >= 8,
@@ -27,17 +25,17 @@ export function SecuritySection({ requiresPasswordChange }: SecuritySectionProps
 
   const allValid = Object.values(validations).every(v => v)
   const passwordsMatch = password && password === confirmPassword
+  const canSubmit = allValid && passwordsMatch && (isFirstAccess || currentPassword.length > 0)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!allValid || !passwordsMatch) return
+    if (!canSubmit) return
 
     setLoading(true)
     const formData = new FormData(e.currentTarget)
     try {
       await changePassword(formData)
       toast.success('Senha alterada com sucesso!')
-      setCurrentPassword('')
       setPassword('')
       setConfirmPassword('')
     } catch (err: any) {
@@ -63,23 +61,21 @@ export function SecuritySection({ requiresPasswordChange }: SecuritySectionProps
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {!requiresPasswordChange && (
-            <div className="max-w-md">
-              <InputField
-                label="Senha Atual"
-                name="current_password"
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-                autoComplete="current-password"
-              />
-            </div>
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
+              {!isFirstAccess && (
+                <InputField
+                  label="Senha Atual"
+                  name="current_password"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  hint="Digite sua senha atual para confirmar a mudança"
+                />
+              )}
               <InputField
                 label="Nova Senha"
                 name="new_password"
@@ -120,12 +116,12 @@ export function SecuritySection({ requiresPasswordChange }: SecuritySectionProps
           <div className="flex justify-end pt-4 border-t border-border">
             <Button 
               type="submit" 
-              disabled={loading || !allValid || !passwordsMatch} 
+              disabled={loading || !canSubmit} 
               variant="default"
-              className="w-full md:w-auto"
+              className="w-full md:w-auto px-8 font-bold"
             >
               {loading ? <Loader2 className="animate-spin mr-2" /> : null}
-              {allValid && passwordsMatch ? (
+              {canSubmit ? (
                 <>Atualizar Senha</>
               ) : (
                 <>Senha Incompleta</>

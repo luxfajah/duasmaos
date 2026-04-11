@@ -20,7 +20,8 @@ import {
   Link as LinkIcon, 
   Calendar,
   Shield,
-  Loader2
+  Loader2,
+  UserPlus
 } from 'lucide-react'
 import { 
   DropdownMenu, 
@@ -30,12 +31,15 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown'
 import { resetUserPassword, deleteUser } from '@/app/dashboard/settings/actions'
+import { CreateUserModal } from '../CreateUserModal'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 interface UsersSectionProps {
   users: any[]
+  clients: any[]
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -54,8 +58,10 @@ const ROLE_VARIANT: Record<string, 'default' | 'secondary' | 'outline' | 'destru
   client: 'outline',
 }
 
-export function UsersSection({ users }: UsersSectionProps) {
+export function UsersSection({ users, clients }: UsersSectionProps) {
+  const router = useRouter()
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   async function handleResetPassword(userId: string) {
     setLoadingAction(userId)
@@ -86,10 +92,28 @@ export function UsersSection({ users }: UsersSectionProps) {
 
   return (
     <div className="space-y-6 animate-in fade-in-up duration-500">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-2xl font-bold font-heading text-text-primary">Usuários</h2>
-        <p className="text-text-secondary">Gerencie os membros da equipe e acessos de clientes.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-2xl font-bold font-heading text-text-primary">Usuários</h2>
+          <p className="text-text-secondary">Gerencie os membros da equipe e acessos de clientes.</p>
+        </div>
+        <Button 
+          onClick={() => setIsCreateModalOpen(true)}
+          className="shadow-lg shadow-brand-primary/20 gap-2 h-11 px-6 font-bold"
+        >
+          <UserPlus size={18} />
+          Criar Usuário
+        </Button>
       </div>
+
+      <CreateUserModal 
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        clients={clients}
+        onSuccess={() => {
+          router.refresh()
+        }}
+      />
 
       <div className="glass overflow-hidden rounded-xl border border-border">
         <Table>

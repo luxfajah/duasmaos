@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Camera, Loader2, Calendar } from 'lucide-react'
 import { updateProfile } from '@/app/dashboard/settings/actions'
 import { createClient } from '@/utils/supabase/client'
+import { AvatarPicker } from '@/components/settings/AvatarPicker'
 import { toast } from 'sonner'
 
 interface ProfileSectionProps {
@@ -21,10 +22,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
   // Use a ref or state for avatar URL to allow immediate preview
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || '')
 
-  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  async function handleAvatarUpload(file: File) {
     setUploading(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -32,7 +30,7 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
     if (!user) {
       toast.error('Não autorizado')
       setUploading(false)
-      return
+      return ''
     }
 
     const fileExt = file.name.split('.').pop()
@@ -45,16 +43,16 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
     if (uploadError) {
       toast.error('Erro ao fazer upload da imagem')
       setUploading(false)
-      return
+      return ''
     }
 
     const { data: { publicUrl } } = supabase.storage
       .from('avatars')
       .getPublicUrl(filePath)
 
-    setAvatarUrl(publicUrl)
     setUploading(false)
     toast.success('Avatar carregado com sucesso!')
+    return publicUrl
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -81,35 +79,13 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
         <p className="text-text-secondary">Gerencie suas informações pessoais e avatar.</p>
       </div>
 
-      <div className="flex items-center gap-6 p-6 glass rounded-xl">
-        <div className="relative group">
-          <Avatar 
-            name={profile?.full_name || 'Usuário'} 
-            src={avatarUrl} 
-            size="xl" 
-            variant="brand" 
-            className="ring-4 ring-brand-primary/10 shadow-lg" 
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
-          >
-            {uploading ? <Loader2 className="animate-spin text-white" /> : <Camera className="text-white" />}
-          </button>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleAvatarUpload} 
-            className="hidden" 
-            accept="image/*" 
-          />
-        </div>
-        <div>
-          <h3 className="font-bold text-text-primary">{profile?.full_name || 'Usuário'}</h3>
-          <p className="text-sm text-text-muted">Clique na imagem para alterar seu avatar.</p>
-        </div>
+      <div className="p-6 glass rounded-xl">
+        <AvatarPicker 
+          currentUrl={avatarUrl} 
+          onSelect={setAvatarUrl} 
+          onUpload={handleAvatarUpload}
+          uploading={uploading}
+        />
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 glass rounded-xl">
