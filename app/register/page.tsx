@@ -21,28 +21,38 @@ export default async function RegisterPage({
   const supabase = createClient()
   
   // Validate token
-  const { data: invitation, error } = await supabase
+  const { data: invitationData, error } = await supabase
     .from('invitations')
-    .select('*, clients(name)')
+    .select('id, token, role, email, client_id, expires_at, status')
     .eq('token', token)
     .eq('status', 'pending')
     .single()
 
-  if (error || !invitation) {
+  if (error || !invitationData) {
     return <InvalidInvite message="Este convite é inválido ou já foi utilizado." />
   }
 
-  // Handle Supabase's potentially pluralized join data
-  const clientData = Array.isArray(invitation.clients) 
-    ? invitation.clients[0] 
-    : (invitation.clients as { name: string } | null)
-
-  const clientName = clientData?.name
-
   // Check expiration
-  if (new Date(invitation.expires_at) < new Date()) {
+  if (new Date(invitationData.expires_at) < new Date()) {
     return <InvalidInvite message="Este convite expirou. Solicite um novo acesso ao administrador." />
   }
+
+  // Fetch client name separately to avoid complex join serialization issues
+  let clientName = null
+  if (invitationData.client_id) {
+    const { data: client } = await supabase
+      .from('clients')
+      .select('name')
+      .eq('id', invitationData.client_id)
+      .single()
+    clientName = client?.name
+  }
+
+  // Ensure invitation data is a plain serializable object
+  const invitation = JSON.parse(JSON.stringify({
+    ...invitationData,
+    clientName
+  }))
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans">
