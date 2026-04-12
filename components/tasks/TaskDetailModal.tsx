@@ -7,7 +7,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { Calendar, Clock, ClipboardList, AlertCircle, ChevronLeft, X } from 'lucide-react'
 import { TaskComments } from './TaskComments'
 import { getTaskComments } from '@/app/dashboard/tasks/comment-actions'
-import { SocialPostGrid } from './SocialPostGrid'
+import Link from 'next/link'
 
 interface TaskDetailModalProps {
   task: (V2Task & { profiles?: { full_name: string; avatar_url: string | null } | null }) | null
@@ -97,8 +97,8 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
                 </div>
               </section>
 
-              {/* Social Media Production Grid */}
-              {(task.deliverable_type === 'social_copy' || task.deliverable_type === 'social_design') && (
+              {/* Social Media Production Grid Replacement */}
+              {(task.deliverable_type === 'social_copy' || task.deliverable_type === 'social_design' || (task as any).task_type === 'content_post') && (
                 <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="flex items-center gap-3 mb-8">
                     <div className="w-10 h-10 rounded-xl bg-brand-primary shadow-brand flex items-center justify-center text-white">
@@ -106,16 +106,23 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
                     </div>
                     <div className="flex flex-col">
                       <h4 className="text-sm font-black text-text-primary uppercase tracking-widest">
-                        Grade de Produção
+                        Estúdio Editorial
                       </h4>
-                      <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Fila de execução por post</p>
+                      <p className="text-[10px] text-text-muted font-bold uppercase tracking-widest">Gestão Multi-Post Ativa</p>
                     </div>
                   </div>
                   
-                  <SocialPostGrid 
-                    taskId={task.id} 
-                    taskType={task.deliverable_type} 
-                  />
+                  <div className="p-8 rounded-[32px] bg-brand-primary/5 border-2 border-dashed border-brand-primary/20 flex flex-col items-center justify-center text-center gap-4">
+                     <p className="text-sm text-text-secondary font-medium max-w-xs">
+                        Esta tarefa agora é gerenciada através do novo **Estúdio Editorial**, permitindo múltiplos posts e versionamento.
+                     </p>
+                     <Link 
+                       href={`/dashboard/tasks/${task.id}`}
+                       className="px-6 py-3 bg-brand-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-brand hover:scale-105 transition-all"
+                     >
+                        Abrir Estúdio Editorial
+                     </Link>
+                  </div>
                 </section>
               )}
 
