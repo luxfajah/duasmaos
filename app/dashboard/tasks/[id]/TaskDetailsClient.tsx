@@ -19,6 +19,7 @@ import { PostCard } from '@/components/tasks/PostCard'
 import { PostEditorPopup } from '@/components/tasks/PostEditorPopup'
 import { syncSocialPosts } from '@/app/dashboard/v2/task-actions'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
 
 interface TaskDetailsClientProps {
   task: any // Typed in page.tsx as V2Task + Relations

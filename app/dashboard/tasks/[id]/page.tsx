@@ -1,7 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import { TaskDetailsClient } from './TaskDetailsClient'
-import { getTaskComments } from '../comment-actions'
 
 export default async function TaskDetailsPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -30,12 +29,9 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
   if (taskError || !task) return notFound()
 
   // comments can stay as initialComments for now or we can move to v2_task_comments
-  const comments = await getTaskComments(params.id)
-
   return (
     <TaskDetailsClient 
       task={task} 
-      initialComments={comments} 
       currentUser={{ id: user.id, email: user.email }} 
     />
   )
