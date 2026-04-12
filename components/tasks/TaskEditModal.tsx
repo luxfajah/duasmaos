@@ -601,7 +601,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                          </div>
                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center relative border border-border/20">
                             {postData.media?.[0]?.url ? (
-                               <img src={postData.media[0].url} className="w-full h-full object-cover" />
+                               <img src={postData.media[0].url} alt="Mídia" className="w-full h-full object-cover" />
                             ) : (
                                <ImageIcon size={48} className="text-text-muted opacity-20" />
                             )}
@@ -642,7 +642,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                         <div className="grid grid-cols-[120px,1fr] gap-8">
                            <div className="aspect-square rounded-2xl bg-surface-muted overflow-hidden border border-border/30">
                               {version.media_snapshot?.[0]?.url && (
-                                <img src={version.media_snapshot[0].url} className="w-full h-full object-cover" />
+                                <img src={version.media_snapshot[0].url} alt={`Versão ${version.version_number}`} className="w-full h-full object-cover" />
                               )}
                            </div>
                            <div className="space-y-4">
@@ -651,7 +651,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                                 {new Date(version.created_at).toLocaleString('pt-BR')}
                               </div>
                               <p className="text-sm leading-relaxed text-text-secondary line-clamp-3 italic">
-                                "{version.copy_snapshot?.caption || 'Sem legenda nesta versão'}"
+                                &quot;{version.copy_snapshot?.caption || 'Sem legenda nesta versão'}&quot;
                               </p>
                               {version.copy_snapshot?.art_text && (
                                 <div className="flex items-center gap-2">
@@ -770,7 +770,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                             <AlertCircle size={24} />
                             <div className="text-left">
                                <p className="text-xs font-black uppercase tracking-widest">Solicitar Ajuste</p>
-                               <p className="text-[10px] opacity-70 font-bold">Retorna para 'Ajuste'</p>
+                               <p className="text-[10px] opacity-70 font-bold">Retorna para &apos;Ajuste&apos;</p>
                             </div>
                          </div>
                       </button>
