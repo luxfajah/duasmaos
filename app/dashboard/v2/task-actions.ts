@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { TaskStatusV2, TaskPriorityV2, DeliverableTypeV2 } from '@/types/database'
+import { TaskStatusV2, TaskPriorityV2, DeliverableTypeV2, TaskTypeV2 } from '@/types/database'
 
 export async function createV2Task(
   projectId: string,
@@ -13,7 +13,7 @@ export async function createV2Task(
     priority?: TaskPriorityV2
     due_date?: string | null
     assignees?: string[]
-    task_type?: 'operational' | 'content_post' | 'approval' | 'document'
+    task_type?: TaskTypeV2
     deliverable_type?: DeliverableTypeV2
     social_post_count?: number
   }
@@ -106,7 +106,7 @@ export async function updateV2Task(
     priority?: TaskPriorityV2
     due_date?: string | null
     assignees?: string[] // array of profile IDs
-    task_type?: 'operational' | 'content_post' | 'approval' | 'document'
+    task_type?: TaskTypeV2
     deliverable_type?: DeliverableTypeV2
     social_post_count?: number
   }
