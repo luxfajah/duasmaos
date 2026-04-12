@@ -35,9 +35,10 @@ export async function createV2Task(
   // Find last task in project to append to queue
   const { data: lastTasks } = await supabase
     .from('v2_tasks')
-    .select('id, stage_order, status')
+    .select('id, stage_order, status, created_at')
     .eq('project_id', projectId)
-    .order('stage_order', { ascending: false })
+    .order('stage_order', { ascending: false, nullsFirst: false })
+    .order('created_at', { ascending: false })
     .limit(1)
 
   let stageOrder = 1
