@@ -554,7 +554,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                                if (url) {
                                  setPostData(p => ({
                                    ...p,
-                                   media: [...p.media, { url, type: url.includes('mp4') ? 'video' : 'image', order: p.media.length }]
+                                   media: [...p.media, { public_url: url, type: url.includes('mp4') ? 'video' : 'image', order: p.media.length }]
                                  }))
                                }
                              }}
