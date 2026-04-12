@@ -139,7 +139,7 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
                     <div className="max-w-xs">
                        <h3 className="text-lg font-serif font-bold text-text-primary">Container Editorial Vazio</h3>
                        <p className="text-sm text-text-muted mt-1 leading-relaxed">
-                         Esta tarefa ainda não possui posts. Use o botão <b>Sincronizar Posts</b> para gerar a grade base.
+                         Esta tarefa ainda não possui posts. Use o botão <b>Adicionar Posts</b> para gerar a grade base.
                        </p>
                     </div>
                  </div>
