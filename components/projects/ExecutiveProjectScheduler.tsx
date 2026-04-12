@@ -15,7 +15,11 @@ import {
   Clock, 
   ChevronRight,
   UserPlus,
-  Target
+  Target,
+  Settings,
+  PenTool,
+  FileText,
+  CheckCircle2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -66,18 +70,24 @@ function CompactToggle({ checked, onChange }: { checked: boolean; onChange: (v: 
 }
 
 const TASK_TYPE_ICONS: Record<TaskTypeV2, any> = {
+  operational: Settings,
+  content_post: PenTool,
+  approval: CheckCircle2,
+  document: FileText,
   task: Target,
   meeting: Users,
   review: Clock,
-  approval: Check,
   deliverable: Workflow
 }
 
 const TASK_TYPE_LABELS: Record<TaskTypeV2, string> = {
+  operational: 'Operacional',
+  content_post: 'Post Social',
+  approval: 'Aprovação',
+  document: 'Documento',
   task: 'Tarefa',
   meeting: 'Reunião',
   review: 'Revisão',
-  approval: 'Aprovação',
   deliverable: 'Entrega'
 }
 
