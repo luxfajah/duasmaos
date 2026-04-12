@@ -205,27 +205,29 @@ export async function updateV2TaskStatus(taskId: string, status: TaskStatusV2) {
     throw new Error('Não é possível modificar uma tarefa bloqueada.')
   }
 
-  // 2. Transactional Update
-  if (status === 'done' && taskToUpdate.status !== 'done') {
+  // 2. Status Update
+  // Trigger tr_v2_tasks_progression in Postgres handles unlocking/re-locking next tasks
+  if (status === 'done' || status === 'approved') {
     if (taskToUpdate.deliverable_type === 'social_copy' || taskToUpdate.deliverable_type === 'social_design') {
       const { data: posts } = await supabase.from('v2_social_posts').select('*').eq('task_id', taskId)
       if (!posts || posts.length === 0) throw new Error('A tarefa precisa ter pelo menos um post.')
-      const hasInvalid = posts.some(p => p.status !== 'done' || p.approval_status !== 'approved' || p.approval_status === 'rejected')
-      if (hasInvalid) throw new Error('Todos os posts devem estar concluídos e aprovados.')
+      
+      // Check for approved/done posts
+      const hasInvalid = posts.some(p => {
+        const s = p.status || p.post_status
+        const a = p.approval_status || p.post_status
+        return s !== 'done' && a !== 'approved'
+      })
+      if (hasInvalid) throw new Error('Todos os posts devem estar concluídos ou aprovados.')
     }
-    
-    const { error: rpcError } = await supabase.rpc('fn_complete_task_transaction', { p_task_id: taskId })
-    if (rpcError) throw new Error(`Falha na transação: ${rpcError.message}`)
-  } else if (taskToUpdate.status === 'done' && status !== 'done') {
-    const { error: rpcError } = await supabase.rpc('fn_reopen_task_transaction', { 
-      p_task_id: taskId, 
-      p_new_status: status 
-    })
-    if (rpcError) throw new Error(`Falha ao reabrir: ${rpcError.message}`)
-  } else {
-    const { error: updateError } = await supabase.from('v2_tasks').update({ status }).eq('id', taskId)
-    if (updateError) throw updateError
   }
+
+  const { error: updateError } = await supabase
+    .from('v2_tasks')
+    .update({ status })
+    .eq('id', taskId)
+
+  if (updateError) throw updateError
 
   const { data: task } = await supabase
     .from('v2_tasks')
