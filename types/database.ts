@@ -254,8 +254,8 @@ export type TaskStatusV2 = 'locked' | 'pending' | 'in_progress' | 'in_review' | 
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
 export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskTypeV2 = 'operational' | 'content_post' | 'approval' | 'document' | 'task' | 'meeting' | 'review' | 'deliverable';
-export type PostTypeV2 = 'image' | 'carousel' | 'video' | 'feed' | 'story' | 'video_story' | 'reels';
-export type PostStatusV2 = 'draft' | 'awaiting_review' | 'approved' | 'rejected' | 'pending' | 'in_progress' | 'done';
+export type PostTypeV2 = 'image' | 'carousel' | 'video';
+export type PostStatusV2 = 'draft' | 'in_production' | 'awaiting_review' | 'approved' | 'rejected';
 export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
 export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website' | 'social_copy' | 'social_design' | 'default';
 
@@ -333,41 +333,53 @@ export interface V2Task {
 export interface V2SocialPost {
   id: string;
   task_id: string;
-  type: PostTypeV2;
-  post_type?: 'image' | 'carousel' | 'video';
+  order_index: number;
+  post_type: PostTypeV2;
+  
   status: PostStatusV2;
-  post_status?: PostStatusV2;
-  approval_status: ApprovalStatusV2;
-  carousel_slides: number;
+  requires_approval: boolean;
+  approved_at: string | null;
+  rejected_at: string | null;
+
   caption: string | null;
+  art_text: string | null;
+  script: string | null;
   hashtags: string[];
-  optional_text: string | null;
-  art_text?: string | null;
-  script?: string | null;
-  media: any[]; // Array of { url, type, order }
-  order: number;
-  started_at: string | null;
-  completed_at: string | null;
-  inherits_from_post_id?: string | null;
+  
+  /** Relations */
+  media?: V2PostMedia[];
+  versions?: V2SocialPostVersion[];
+  
   created_at: string;
   updated_at: string;
+}
+
+export interface V2PostMedia {
+  id: string;
+  post_id: string;
+  storage_provider: 'supabase' | 'drive';
+  file_path: string | null;
+  public_url: string;
+  media_type: 'image' | 'video';
+  order_index: number;
+  created_at: string;
 }
 
 export interface V2SocialPostVersion {
   id: string;
   post_id: string;
   version_number: number;
+  
   copy_snapshot: {
     caption: string | null;
     art_text: string | null;
     script: string | null;
     hashtags: string[];
   };
-  media_snapshot: {
-    url: string;
-    type: string;
-    order: number;
-  }[];
+  media_snapshot: any[]; // Array of V2PostMedia snapshots
+  status_snapshot: PostStatusV2;
+  post_type_snapshot: PostTypeV2;
+  
   created_at: string;
   created_by: string | null;
 }

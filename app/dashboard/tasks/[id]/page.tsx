@@ -8,16 +8,28 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // We fetch task details
+  // Fetch Task v2 details
   const { data: task, error: taskError } = await supabase
-    .from('tasks')
-    .select('*, projects(name, client_id, clients(name))')
+    .from('v2_tasks')
+    .select(`
+      *,
+      project:v2_projects(
+        name, 
+        client:clients(name)
+      ),
+      stage:v2_project_stages(name),
+      posts:v2_social_posts(
+        *,
+        media:v2_post_media(*),
+        versions:v2_social_post_versions(*)
+      )
+    `)
     .eq('id', params.id)
     .single()
 
   if (taskError || !task) return notFound()
 
-  // We fetch comments
+  // comments can stay as initialComments for now or we can move to v2_task_comments
   const comments = await getTaskComments(params.id)
 
   return (

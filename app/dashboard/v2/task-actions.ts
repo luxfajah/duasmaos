@@ -171,9 +171,9 @@ export async function getSocialPosts(taskId: string) {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('v2_social_posts')
-    .select('*')
+    .select('*, media:v2_post_media(*)')
     .eq('task_id', taskId)
-    .order('order', { ascending: true })
+    .order('order_index', { ascending: true })
 
   if (error) throw error
   return data || []
@@ -187,7 +187,7 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
     .from('v2_social_posts')
     .select('*')
     .eq('task_id', taskId)
-    .order('order', { ascending: true })
+    .order('order_index', { ascending: true })
 
   if (getError) throw getError
 
@@ -199,10 +199,9 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
     for (let i = currentCount; i < targetCount; i++) {
       newPosts.push({
         task_id: taskId,
-        order: i,
-        type: 'feed',
-        status: 'pending',
-        approval_status: 'pending',
+        order_index: i,
+        post_type: 'image',
+        status: 'draft',
         hashtags: []
       })
     }
@@ -212,13 +211,12 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
       if (insertError) throw insertError
     }
   } else if (targetCount < currentCount) {
-    // Identify empty posts to delete that are above the target count
+    // Identify empty posts to delete
     const postsToDelete = currentPosts.filter(post => {
-      if (post.order < targetCount) return false
+      if (post.order_index < targetCount) return false
       
       const isEmpty = !post.caption && 
-                      (!post.hashtags || post.hashtags.length === 0) && 
-                      (!post.media || (Array.isArray(post.media) && post.media.length === 0))
+                      (!post.hashtags || post.hashtags.length === 0)
       
       return isEmpty
     })
@@ -310,15 +308,13 @@ export async function createDesignTaskFromCopy(copyTaskId: string) {
   if (copyPosts && copyPosts.length > 0) {
     const designPostsToInsert = copyPosts.map(p => ({
       task_id: designTask.id,
-      inherits_from_post_id: p.id,
-      type: p.type,
-      carousel_slides: p.carousel_slides,
+      post_type: p.post_type,
       caption: p.caption,
       hashtags: p.hashtags,
-      optional_text: p.optional_text,
-      status: 'pending',
-      approval_status: 'pending',
-      order: p.order
+      art_text: p.art_text,
+      script: p.script,
+      status: 'draft',
+      order_index: p.order_index
     }))
 
     const { error: insertPostsError } = await supabase
@@ -340,26 +336,27 @@ export async function createDesignTaskFromCopy(copyTaskId: string) {
 export async function submitPostForReview(postId: string) {
   const supabase = createClient()
   
-  // 1. Get current post to snapshot
+  // 1. Get current post with media to snapshot
   const { data: post } = await supabase
     .from('v2_social_posts')
-    .select('*')
+    .select('*, media:v2_post_media(*)')
     .eq('id', postId)
     .single()
 
   if (!post) throw new Error('Post não encontrado')
 
-  // 2. Create version snapshot
+  // 2. Determine next version number
   const { data: lastVersion } = await supabase
     .from('v2_social_post_versions')
     .select('version_number')
     .eq('post_id', postId)
     .order('version_number', { ascending: false })
     .limit(1)
-    .single()
+    .maybeSingle()
 
   const nextVersion = (lastVersion?.version_number || 0) + 1
 
+  // 3. Create version snapshot (Copy + Media + Status + Type)
   await supabase.from('v2_social_post_versions').insert({
     post_id: postId,
     version_number: nextVersion,
@@ -369,36 +366,53 @@ export async function submitPostForReview(postId: string) {
       script: post.script,
       hashtags: post.hashtags
     },
-    media_snapshot: post.media,
+    media_snapshot: post.media || [],
+    status_snapshot: post.status,
+    post_type_snapshot: post.post_type,
     created_at: new Date().toISOString()
   })
 
-  // 3. Update status
+  // 4. Update status and Lock
   const { error } = await supabase
     .from('v2_social_posts')
     .update({ 
-      post_status: 'awaiting_review',
+      status: 'awaiting_review',
       updated_at: new Date().toISOString() 
     })
     .eq('id', postId)
 
   if (error) throw error
   revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
   return { success: true }
 }
 
 export async function approvePost(postId: string) {
   const supabase = createClient()
+  
+  const { data: post } = await supabase
+    .from('v2_social_posts')
+    .select('task_id')
+    .eq('id', postId)
+    .single()
+
   const { error } = await supabase
     .from('v2_social_posts')
     .update({ 
-      post_status: 'approved',
+      status: 'approved',
+      approved_at: new Date().toISOString(),
       updated_at: new Date().toISOString() 
     })
     .eq('id', postId)
 
   if (error) throw error
+  
+  if (post?.task_id) {
+    await checkTaskAutoCompletion(post.task_id)
+  }
+
   revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
   return { success: true }
 }
 
@@ -407,13 +421,15 @@ export async function rejectPost(postId: string) {
   const { error } = await supabase
     .from('v2_social_posts')
     .update({ 
-      post_status: 'rejected',
+      status: 'rejected',
+      rejected_at: new Date().toISOString(),
       updated_at: new Date().toISOString() 
     })
     .eq('id', postId)
 
   if (error) throw error
   revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
   return { success: true }
 }
 
@@ -427,4 +443,52 @@ export async function getPostVersions(postId: string) {
 
   if (error) throw error
   return data || []
+}
+
+/**
+ * Automagically completes a task if all its posts are approved.
+ */
+async function checkTaskAutoCompletion(taskId: string) {
+  const supabase = createClient()
+  
+  const { data: posts } = await supabase
+    .from('v2_social_posts')
+    .select('status')
+    .eq('task_id', taskId)
+
+  if (!posts || posts.length === 0) return
+
+  const allApproved = posts.every(p => p.status === 'approved')
+  
+  if (allApproved) {
+    await supabase
+      .from('v2_tasks')
+      .update({ status: 'done', updated_at: new Date().toISOString() })
+      .eq('id', taskId)
+  }
+}
+
+export async function upsertPostMedia(postId: string, mediaItems: any[]) {
+  const supabase = createClient()
+  
+  // 1. Delete old media for this post (simplest sync)
+  await supabase.from('v2_post_media').delete().eq('post_id', postId)
+  
+  // 2. Insert new media
+  if (mediaItems.length > 0) {
+    const { error } = await supabase.from('v2_post_media').insert(
+      mediaItems.map((item, index) => ({
+        post_id: postId,
+        storage_provider: item.storage_provider,
+        file_path: item.file_path,
+        public_url: item.public_url,
+        media_type: item.media_type,
+        order_index: index
+      }))
+    )
+    if (error) throw error
+  }
+  
+  revalidatePath('/dashboard/tasks')
+  return { success: true }
 }
