@@ -113,15 +113,31 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
               </div>
               
               <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-text-muted uppercase">Nome do projeto *</label>
-                  <Input
-                    value={form.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    placeholder="Ex: Branding Duas Mãos"
-                    className="h-11 bg-surface-muted/30"
-                    disabled={isPending}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-text-muted uppercase">Nome do projeto *</label>
+                    <Input
+                      value={form.name}
+                      onChange={(e) => handleChange('name', e.target.value)}
+                      placeholder="Ex: Branding Duas Mãos"
+                      className="h-11 bg-surface-muted/30"
+                      disabled={isPending}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-text-muted uppercase">Status do Projeto</label>
+                    <select
+                      value={form.status}
+                      onChange={(e) => handleChange('status', e.target.value)}
+                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface-muted/30 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                      disabled={isPending}
+                    >
+                      <option value="active">Ativo / Em Andamento</option>
+                      <option value="paused">Pausado</option>
+                      <option value="completed">Concluído</option>
+                      <option value="archived">Arquivado</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

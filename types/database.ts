@@ -253,9 +253,9 @@ export type StageStatusV2 = 'pending' | 'in_progress' | 'waiting_approval' | 'ap
 export type TaskStatusV2 = 'locked' | 'pending' | 'in_progress' | 'in_review' | 'approved' | 'done' | 'blocked';
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
 export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
-export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval' | 'deliverable';
-export type PostTypeV2 = 'feed' | 'story' | 'carousel' | 'video_story' | 'reels';
-export type PostStatusV2 = 'pending' | 'in_progress' | 'done';
+export type TaskTypeV2 = 'operational' | 'content_post' | 'approval' | 'document' | 'task' | 'meeting' | 'review' | 'deliverable';
+export type PostTypeV2 = 'image' | 'carousel' | 'video' | 'feed' | 'story' | 'video_story' | 'reels';
+export type PostStatusV2 = 'draft' | 'awaiting_review' | 'approved' | 'rejected' | 'pending' | 'in_progress' | 'done';
 export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
 export type DeliverableTypeV2 = 'copy' | 'design' | 'strategy' | 'website' | 'social_copy' | 'social_design' | 'default';
 
@@ -310,6 +310,7 @@ export interface V2Task {
   title: string;
   description: string | null;
   type: TaskTypeV2;
+  task_type?: TaskTypeV2; // Direct column access
   deliverable_type: DeliverableTypeV2 | null;
   status: TaskStatusV2;
   priority: TaskPriorityV2;
@@ -333,19 +334,42 @@ export interface V2SocialPost {
   id: string;
   task_id: string;
   type: PostTypeV2;
+  post_type?: 'image' | 'carousel' | 'video';
   status: PostStatusV2;
+  post_status?: PostStatusV2;
   approval_status: ApprovalStatusV2;
   carousel_slides: number;
   caption: string | null;
   hashtags: string[];
   optional_text: string | null;
-  media: any[]; // Array of media objects
+  art_text?: string | null;
+  script?: string | null;
+  media: any[]; // Array of { url, type, order }
   order: number;
   started_at: string | null;
   completed_at: string | null;
   inherits_from_post_id?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface V2SocialPostVersion {
+  id: string;
+  post_id: string;
+  version_number: number;
+  copy_snapshot: {
+    caption: string | null;
+    art_text: string | null;
+    script: string | null;
+    hashtags: string[];
+  };
+  media_snapshot: {
+    url: string;
+    type: string;
+    order: number;
+  }[];
+  created_at: string;
+  created_by: string | null;
 }
 
 export interface V2ProjectMember {
@@ -398,6 +422,8 @@ export interface V2TaskComment {
 export type TaskWithRelations = V2Task & {
   projects: { name: string; client_id: string; clients: { name: string } | null } | null
   profiles: { full_name: string } | null
+  v2_social_posts?: V2SocialPost[]
+  v2_project_stages?: { name: string } | null
   /** Alias kept for legacy fallback components that read task.deadline */
   deadline?: string | null
 }

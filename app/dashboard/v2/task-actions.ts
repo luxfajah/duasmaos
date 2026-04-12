@@ -13,6 +13,7 @@ export async function createV2Task(
     priority?: TaskPriorityV2
     due_date?: string | null
     assignees?: string[]
+    task_type?: 'operational' | 'content_post' | 'approval' | 'document'
     deliverable_type?: DeliverableTypeV2
     social_post_count?: number
   }
@@ -61,6 +62,7 @@ export async function createV2Task(
       status: initialStatus,
       priority: data.priority || 'medium',
       due_date: data.due_date,
+      task_type: data.task_type || 'operational',
       deliverable_type: data.deliverable_type || 'default',
       social_post_count: data.social_post_count || 0,
       stage_order: stageOrder,
@@ -104,6 +106,7 @@ export async function updateV2Task(
     priority?: TaskPriorityV2
     due_date?: string | null
     assignees?: string[] // array of profile IDs
+    task_type?: 'operational' | 'content_post' | 'approval' | 'document'
     deliverable_type?: DeliverableTypeV2
     social_post_count?: number
   }
@@ -119,6 +122,7 @@ export async function updateV2Task(
       status: data.status,
       priority: data.priority,
       due_date: data.due_date,
+      task_type: data.task_type,
       deliverable_type: data.deliverable_type,
       social_post_count: data.social_post_count,
       updated_at: new Date().toISOString()
@@ -328,4 +332,98 @@ export async function createDesignTaskFromCopy(copyTaskId: string) {
   revalidatePath(`/dashboard/projects/${copyTask.project_id}`)
 
   return { id: designTask.id }
+}
+
+// ── Content Governance & Versioning ──────────────────────────────────────────
+
+export async function submitPostForReview(postId: string) {
+  const supabase = createClient()
+  
+  // 1. Get current post to snapshot
+  const { data: post } = await supabase
+    .from('v2_social_posts')
+    .select('*')
+    .eq('id', postId)
+    .single()
+
+  if (!post) throw new Error('Post não encontrado')
+
+  // 2. Create version snapshot
+  const { data: lastVersion } = await supabase
+    .from('v2_social_post_versions')
+    .select('version_number')
+    .eq('post_id', postId)
+    .order('version_number', { ascending: false })
+    .limit(1)
+    .single()
+
+  const nextVersion = (lastVersion?.version_number || 0) + 1
+
+  await supabase.from('v2_social_post_versions').insert({
+    post_id: postId,
+    version_number: nextVersion,
+    copy_snapshot: {
+      caption: post.caption,
+      art_text: post.art_text,
+      script: post.script,
+      hashtags: post.hashtags
+    },
+    media_snapshot: post.media,
+    created_at: new Date().toISOString()
+  })
+
+  // 3. Update status
+  const { error } = await supabase
+    .from('v2_social_posts')
+    .update({ 
+      post_status: 'awaiting_review',
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', postId)
+
+  if (error) throw error
+  revalidatePath('/dashboard', 'layout')
+  return { success: true }
+}
+
+export async function approvePost(postId: string) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('v2_social_posts')
+    .update({ 
+      post_status: 'approved',
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', postId)
+
+  if (error) throw error
+  revalidatePath('/dashboard', 'layout')
+  return { success: true }
+}
+
+export async function rejectPost(postId: string) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('v2_social_posts')
+    .update({ 
+      post_status: 'rejected',
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', postId)
+
+  if (error) throw error
+  revalidatePath('/dashboard', 'layout')
+  return { success: true }
+}
+
+export async function getPostVersions(postId: string) {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('v2_social_post_versions')
+    .select('*')
+    .eq('post_id', postId)
+    .order('version_number', { ascending: false })
+
+  if (error) throw error
+  return data || []
 }

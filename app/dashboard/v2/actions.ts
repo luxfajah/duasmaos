@@ -462,7 +462,7 @@ export async function getV2AllTasks() {
   
   const { data: tasks, error } = await supabase
     .from('v2_tasks')
-    .select('*, v2_projects(name), v2_project_stages(*), v2_task_assignees(*, profiles(*))')
+    .select('*, v2_projects(name), v2_project_stages(*), v2_task_assignees(*, profiles(*)), v2_social_posts(*)')
     .order('due_date', { ascending: true })
 
   if (error) throw error
@@ -470,7 +470,9 @@ export async function getV2AllTasks() {
   return (tasks ?? []).map(t => ({
     ...t,
     deadline: t.due_date, // Map for UI compatibility
-    profiles: t.v2_task_assignees?.[0]?.profiles // Take first assignee for simple UI
+    profiles: t.v2_task_assignees?.[0]?.profiles, // Take first assignee for simple UI
+    v2_social_posts: t.v2_social_posts,
+    v2_project_stages: t.v2_project_stages
   }))
 }
 

@@ -33,6 +33,13 @@ const priorityMap: Record<string, string> = {
   urgent: '⚡ Urgente',
 }
 
+const postStatusConfig: Record<string, { label: string; color: string }> = {
+  draft: { label: 'Rascunho', color: 'bg-slate-500/10 text-slate-500' },
+  awaiting_review: { label: 'Em Revisão', color: 'bg-amber-500/10 text-amber-500' },
+  approved: { label: 'Aprovado', color: 'bg-emerald-500/10 text-emerald-500' },
+  rejected: { label: 'Ajuste', color: 'bg-rose-500/10 text-rose-500' },
+}
+
 interface TasksTableProps {
   tasks: TaskWithRelations[]
   onEdit?: (task: TaskWithRelations) => void
@@ -78,9 +85,9 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Tarefa</TableHead>
-          <TableHead>Projeto</TableHead>
+          <TableHead>Tipo / Conteúdo</TableHead>
+          <TableHead>Projeto / Etapa</TableHead>
           <TableHead>Responsável</TableHead>
-          <TableHead>Prioridade</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Prazo</TableHead>
           <TableHead className="text-right">Ações</TableHead>
@@ -93,35 +100,96 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
             task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
           return (
             <TableRow key={task.id} className={cn("group", task.status === 'locked' && "opacity-50 pointer-events-none")}>
-              <TableCell className="font-medium text-text-primary max-w-[200px] truncate flex items-center gap-2">
-                {task.status === 'locked' && <Lock size={14} className="text-text-muted" />}
-                {task.title}
+              <TableCell className="font-medium text-text-primary max-w-[200px] truncate">
+                <div className="flex items-center gap-2">
+                  {task.status === 'locked' && <Lock size={14} className="text-text-muted" />}
+                  <div className="flex flex-col">
+                    <span className="truncate">{task.title}</span>
+                    <span className={cn("text-[9px] font-black uppercase tracking-wider", task.priority === 'urgent' ? 'text-status-danger' : 'text-text-muted')}>
+                      {priorityMap[task.priority] || task.priority}
+                    </span>
+                  </div>
+                </div>
               </TableCell>
-              <TableCell className="text-text-secondary text-sm">
-                {task.projects?.name ?? '—'}
+              
+              <TableCell>
+                {task.task_type === 'content_post' && task.v2_social_posts?.[0] ? (
+                  <div className="flex items-center gap-3 py-1">
+                    <div className="w-10 h-10 rounded-lg bg-surface-muted border border-border overflow-hidden shrink-0 flex items-center justify-center relative">
+                      {task.v2_social_posts[0].media?.[0]?.url ? (
+                        <img 
+                          src={task.v2_social_posts[0].media[0].url} 
+                          alt="preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-[10px] text-text-muted">No Media</span>
+                      )}
+                      <div className="absolute top-0 right-0 p-0.5 bg-black/50 backdrop-blur-sm">
+                        {task.v2_social_posts[0].post_type === 'video' ? '📹' : '🖼️'}
+                      </div>
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs text-text-secondary truncate max-w-[120px]">
+                        {task.v2_social_posts[0].caption || 'Sem legenda...'}
+                      </span>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", 
+                          task.v2_social_posts[0].post_status === 'approved' ? 'bg-emerald-500' : 
+                          task.v2_social_posts[0].post_status === 'awaiting_review' ? 'bg-amber-500' :
+                          task.v2_social_posts[0].post_status === 'rejected' ? 'bg-rose-500' : 'bg-slate-400'
+                        )} />
+                        <span className="text-[9px] font-black uppercase text-text-muted tracking-tight">
+                          {postStatusConfig[task.v2_social_posts[0].post_status || 'draft']?.label || 'Rascunho'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest text-text-muted border-border/50">
+                    {task.task_type || 'Operacional'}
+                  </Badge>
+                )}
               </TableCell>
-              <TableCell className="text-text-secondary">
-                {task.profiles?.full_name ?? '—'}
+
+              <TableCell>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-text-primary truncate">{task.projects?.name ?? '—'}</span>
+                  <span className="text-[10px] text-text-muted uppercase tracking-tighter">
+                    {task.v2_project_stages?.name || 'Etapa não def.'}
+                  </span>
+                </div>
               </TableCell>
-              <TableCell className="text-text-secondary text-sm">
-                {priorityMap[task.priority] ?? task.priority}
+
+              <TableCell>
+                <div className="flex items-center gap-2">
+                   <div className="w-1 h-6 rounded-full bg-brand-primary" />
+                   <span className="text-text-secondary font-medium tracking-tight">
+                     {task.profiles?.full_name ?? '—'}
+                   </span>
+                </div>
               </TableCell>
+              
               <TableCell>
                 {task.status === 'locked' ? (
-                  <Badge variant="outline" className="bg-sand-light text-text-muted border-sand-dark/20 text-[10px] uppercase">Aguardando etapa</Badge>
+                  <Badge variant="outline" className="bg-sand-light text-text-muted border-sand-dark/20 text-[10px] uppercase">Bloqueado</Badge>
                 ) : (
-                  <select
-                    value={task.status}
-                    onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatusV2)}
-                    className="text-xs border border-border rounded-md px-2 py-1 bg-surface text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
-                  >
-                    <option value="pending">Pendente</option>
-                    <option value="in_progress">Em progresso</option>
-                    <option value="in_review">Revisão</option>
-                    <option value="approved">Aprovado</option>
-                    <option value="done">Concluído</option>
-                    <option value="blocked">Bloqueado</option>
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <div className={cn("w-2 h-2 rounded-full", 
+                      task.status === 'done' ? 'bg-emerald-500' : 
+                      task.status === 'in_progress' ? 'bg-brand-primary' : 'bg-slate-300'
+                    )} />
+                    <select
+                      value={task.status}
+                      onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatusV2)}
+                      className="text-[11px] font-bold border-none bg-transparent text-text-primary focus:outline-none p-0 cursor-pointer uppercase tracking-tight"
+                    >
+                      <option value="pending">Pendente</option>
+                      <option value="in_progress">Fazendo</option>
+                      <option value="blocked">Pausado</option>
+                      <option value="done">Pronto</option>
+                    </select>
+                  </div>
                 )}
               </TableCell>
               <TableCell>

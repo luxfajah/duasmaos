@@ -20,9 +20,9 @@ import Link from 'next/link'
 
 
 
-const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' }> = {
-  active: { label: 'Ativo', variant: 'default' },
-  paused: { label: 'Pausado', variant: 'destructive' },
+const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' | 'success' | 'warning' }> = {
+  active: { label: 'Em Andamento', variant: 'default' },
+  paused: { label: 'Pausado', variant: 'warning' as const },
   completed: { label: 'Concluído', variant: 'success' as const },
   archived: { label: 'Arquivado', variant: 'outline' },
 }
@@ -94,6 +94,18 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
             const isRecurring = project.type === 'recurring'
             const paymentStatus = project.revenues?.some(r => r.status === 'paid') ? 'paid' : 'pending'
 
+            // Dynamic status adjustment for display
+            let finalLabel = cfg.label
+            let finalVariant = cfg.variant
+
+            if (project.status === 'active' && progress === 0) {
+              finalLabel = 'Não Iniciado'
+              finalVariant = 'secondary'
+            } else if (project.status === 'completed' && progress < 100) {
+              // Highlight inconsistency if project is marked completed but progress is low
+              finalVariant = 'warning'
+            }
+
             return (
               <TableRow key={project.id} className="group hover:bg-surface-muted/50 transition-colors">
                 <TableCell>
@@ -106,7 +118,7 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
                 <TableCell>
                   <div className="flex flex-col gap-1.5 min-w-[120px]">
                     <div className="flex items-center justify-between">
-                      <Badge variant={cfg.variant as any} className="text-[10px] h-5">{cfg.label}</Badge>
+                      <Badge variant={finalVariant as any} className="text-[10px] h-5">{finalLabel}</Badge>
                       <span className="text-[10px] font-bold text-text-primary">{progress}%</span>
                     </div>
                     <Progress value={progress} className="h-1" />
