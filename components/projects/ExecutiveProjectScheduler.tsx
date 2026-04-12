@@ -142,7 +142,7 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
   }
 
   return (
-    <div className="flex flex-col h-full bg-background -mt-6 -mx-8">
+    <div className="flex flex-col h-full bg-background isolate relative z-10 pointer-events-auto">
       {/* ── Fixed Premium Header ── */}
       <div className="sticky top-0 z-30 flex items-center justify-between px-8 py-4 bg-surface/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="flex items-center gap-6">
