@@ -38,6 +38,7 @@ function CompactToggle({ checked, onChange }: { checked: boolean; onChange: (v: 
     <button
       type="button"
       role="switch"
+      aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
         'relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full transition-all duration-200 outline-none',

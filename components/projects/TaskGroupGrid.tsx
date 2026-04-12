@@ -16,7 +16,8 @@ const TYPE_CONFIG: Record<TaskTypeV2, { label: string, color: string }> = {
   task: { label: "Tarefas", color: "text-brand-primary" },
   meeting: { label: "Reuniões", color: "text-brand-secondary" },
   review: { label: "Revisões", color: "text-brand-accent" },
-  approval: { label: "Aprovações", color: "text-success" }
+  approval: { label: "Aprovações", color: "text-success" },
+  deliverable: { label: "Entregas", color: "text-brand-primary" }
 }
 
 const PRIORITY_BADGE: Record<TaskPriorityV2, string> = {
@@ -32,6 +33,7 @@ export function TaskGroupGrid({ tasks, onTaskClick }: TaskGroupGridProps) {
     meeting: tasks.filter(t => t.type === 'meeting'),
     review: tasks.filter(t => t.type === 'review'),
     approval: tasks.filter(t => t.type === 'approval'),
+    deliverable: tasks.filter(t => t.type === 'deliverable'),
   }
 
   return (
