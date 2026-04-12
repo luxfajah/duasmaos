@@ -190,6 +190,3 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
   )
 }
 
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ')
-}
