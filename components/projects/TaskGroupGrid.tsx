@@ -13,10 +13,13 @@ interface TaskGroupGridProps {
 }
 
 const TYPE_CONFIG: Record<TaskTypeV2, { label: string, color: string }> = {
+  operational: { label: "Operacional", color: "text-slate-500" },
+  content_post: { label: "Posts", color: "text-brand-primary" },
+  document: { label: "Documentos", color: "text-amber-500" },
+  approval: { label: "Aprovações", color: "text-emerald-500" },
   task: { label: "Tarefas", color: "text-brand-primary" },
   meeting: { label: "Reuniões", color: "text-brand-secondary" },
   review: { label: "Revisões", color: "text-brand-accent" },
-  approval: { label: "Aprovações", color: "text-success" },
   deliverable: { label: "Entregas", color: "text-brand-primary" }
 }
 
@@ -29,10 +32,13 @@ const PRIORITY_BADGE: Record<TaskPriorityV2, string> = {
 
 export function TaskGroupGrid({ tasks, onTaskClick }: TaskGroupGridProps) {
   const groups: Record<TaskTypeV2, V2Task[]> = {
+    operational: tasks.filter(t => t.type === 'operational'),
+    content_post: tasks.filter(t => t.type === 'content_post'),
+    document: tasks.filter(t => t.type === 'document'),
+    approval: tasks.filter(t => t.type === 'approval'),
     task: tasks.filter(t => t.type === 'task'),
     meeting: tasks.filter(t => t.type === 'meeting'),
     review: tasks.filter(t => t.type === 'review'),
-    approval: tasks.filter(t => t.type === 'approval'),
     deliverable: tasks.filter(t => t.type === 'deliverable'),
   }
 
