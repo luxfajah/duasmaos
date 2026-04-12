@@ -6,8 +6,7 @@ import { TasksTable } from '@/components/tasks/TasksTable'
 import { TaskEditModal } from '@/components/tasks/TaskEditModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Plus, Search } from 'lucide-react'
-
+import { useRouter } from 'next/navigation'
 
 interface TasksPageClientProps {
   initialTasks: TaskWithRelations[]
@@ -16,6 +15,7 @@ interface TasksPageClientProps {
 }
 
 export function TasksPageClient({ initialTasks, projects, team }: TasksPageClientProps) {
+  const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [editingTask, setEditingTask] = useState<TaskWithRelations | null>(null)
   const [search, setSearch] = useState('')
@@ -66,7 +66,7 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
       <div className="bg-surface border border-border rounded-xl overflow-hidden mt-4">
         <TasksTable
           tasks={filtered}
-          onEdit={(task) => setEditingTask(task)}
+          onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}
         />
       </div>
 

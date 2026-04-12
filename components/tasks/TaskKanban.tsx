@@ -6,6 +6,7 @@ import { updateTaskStatus } from '@/app/dashboard/tasks/actions'
 import { cn } from '@/lib/utils'
 import { Calendar, User, AlertCircle, GripVertical } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useRouter } from 'next/navigation'
 
 const TASK_STATUS_LABELS_V2: Record<TaskStatusV2, string> = {
   locked:      'Aguardando',
@@ -39,6 +40,7 @@ interface TaskKanbanProps {
 }
 
 export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
+  const router = useRouter()
   const [, startTransition] = useTransition()
   const [optimisticTasks, setOptimisticTasks] = useState(tasks)
 
@@ -106,7 +108,7 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
                   key={task.id}
                   task={task}
                   onDragStart={(e) => handleDragStart(e, task.id)}
-                  onClick={onTaskClick ? () => onTaskClick(task) : undefined}
+                  onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
                 />
               ))}
               {colTasks.length === 0 && (

@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Pencil, Trash2, Clock, AlertCircle, Lock } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 
 const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
@@ -47,6 +48,7 @@ interface TasksTableProps {
 }
 
 export function TasksTable({ tasks, onEdit }: TasksTableProps) {
+  const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function handleDelete(id: string) {
@@ -100,7 +102,14 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
           const isOverdue =
             task.due_date && new Date(task.due_date) < new Date() && task.status !== 'done'
           return (
-            <TableRow key={task.id} className={cn("group", task.status === 'locked' && "opacity-50 pointer-events-none")}>
+            <TableRow 
+              key={task.id} 
+              className={cn(
+                "group cursor-pointer hover:bg-surface-muted/30 transition-colors", 
+                task.status === 'locked' && "opacity-50 pointer-events-none"
+              )}
+              onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
+            >
               <TableCell className="font-medium text-text-primary max-w-[200px] truncate">
                 <div className="flex items-center gap-2">
                   {task.status === 'locked' && <Lock size={14} className="text-text-muted" />}

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Avatar } from '@/components/ui/avatar'
 import {
   ChevronDown,
@@ -18,7 +19,6 @@ import {
 } from 'lucide-react'
 import { useProjectContext } from '@/components/providers/project-provider'
 import { ProjectDTO } from '@/app/dashboard/projects/actions'
-import { Task } from '@/types/database'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown'
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
@@ -43,6 +43,7 @@ interface DashboardClientViewProps {
 }
 
 export function DashboardClientView({ user, team, initialProjects, initialTasks }: DashboardClientViewProps) {
+  const router = useRouter()
   const { projects, selectedProject, setProjects, setSelectedProject } = useProjectContext()
   const now = new Date()
   const greeting = getGreeting(now.getHours())
@@ -305,10 +306,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                   <span className="text-[11px] text-text-muted font-bold whitespace-nowrap">Responsável ativo</span>
                 </div>
                 <button 
-                  onClick={() => {
-                    setSelectedTaskDetail(task)
-                    setTaskDetailModalOpen(true)
-                  }}
+                  onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
                   className={`px-5 py-2.5 rounded-full text-[11px] font-bold font-heading shrink-0 uppercase tracking-widest hover:scale-105 active:scale-95 duration-200 shadow-sm flex items-center gap-2 ${
                     isHighPriority 
                       ? 'bg-status-danger/90 hover:bg-status-danger text-white border border-status-danger/20' 
