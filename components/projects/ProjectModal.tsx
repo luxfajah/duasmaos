@@ -95,8 +95,8 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader className="border-b border-border pb-4">
+      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-none shadow-2xl">
+        <DialogHeader className="border-b border-border p-6 pt-8 bg-surface">
           <DialogTitle className="flex items-center gap-2 text-xl font-black font-heading">
             {isEdit ? 'Editar Projeto' : 'Configurar Novo Projeto'}
           </DialogTitle>
