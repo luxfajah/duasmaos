@@ -122,6 +122,16 @@ export async function updateProject(
   revalidatePath('/dashboard/kanban')
 }
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '_')
+    .replace(/^-+|-+$/g, '');
+}
+
 export async function createProjectV3(data: {
   name: string
   client_id: string
@@ -158,8 +168,8 @@ export async function createProjectV3(data: {
       billing_day: data.billing_day,
       auto_restart: data.auto_restart || false,
       status: 'active',
-      owner_id: data.owner_id,
-      deadline: data.deadline,
+      owner_id: data.owner_id || null, // Handle empty string as null for UUID
+      deadline: data.deadline || null,
       workspace_id: 'e777e7e7-e7e7-e7e7-e7e7-e7e7e7e7e7e7'
     })
     .select()
@@ -176,13 +186,15 @@ export async function createProjectV3(data: {
 
   if (stages) {
     for (const stage of stages) {
+      const stageKey = slugify(stage.name)
       const { data: projectStage, error: psError } = await supabase
         .from('v2_project_stages')
         .insert({
           project_id: project.id,
           name: stage.name,
+          stage_key: stageKey, // Added required stage_key
           order: stage.order_index,
-          status: 'pending',
+          status: stage.order_index === 0 ? 'in_progress' : 'pending',
           requires_approval: stage.requires_approval
         })
         .select()
@@ -197,7 +209,7 @@ export async function createProjectV3(data: {
             stage_id: projectStage.id,
             title: t.title,
             type: t.task_type || 'task',
-            status: 'locked',
+            status: stage.order_index === 0 ? 'pending' : 'locked', // Unlock if first stage
             priority: 'medium'
           }))
         )
@@ -205,14 +217,16 @@ export async function createProjectV3(data: {
     }
   }
 
-  // 3. Create Initial Revenue entry
-  await supabase.from('revenues').insert({
-    project_id: project.id,
-    amount: data.amount,
-    due_date: data.start_date,
-    status: 'pending',
-    type: data.payment_type
-  })
+  // 3. Create Initial Revenue entry if amount > 0
+  if (data.amount > 0) {
+    await supabase.from('revenues').insert({
+      project_id: project.id,
+      amount: data.amount,
+      due_date: data.start_date,
+      status: 'pending',
+      type: data.payment_type
+    })
+  }
 
   revalidatePath('/dashboard/projects')
   return project

@@ -62,6 +62,10 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
       setError('O nome do projeto é obrigatório.')
       return
     }
+    if (!form.client_id) {
+      setError('Selecione um cliente para o projeto.')
+      return
+    }
     if (!form.template_id && !isEdit) {
       setError('Selecione um template de produto.')
       return
