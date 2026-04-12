@@ -218,3 +218,53 @@ export async function createNewUser(data: {
   revalidatePath('/dashboard/settings')
   return { success: true, tempPassword }
 }
+
+/**
+ * 5. Invitations Management
+ */
+export async function createInvitation(data: {
+  role: 'admin' | 'gestor' | 'designer' | 'writer' | 'client',
+  client_id?: string,
+  expiresInDays: number
+}) {
+  if (!await checkAdmin()) throw new Error('Não autorizado')
+  
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autorizado')
+
+  const token = randomBytes(32).toString('hex')
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + data.expiresInDays)
+
+  const { error } = await supabase
+    .from('invitations')
+    .insert({
+      role: data.role,
+      client_id: data.client_id || null,
+      token,
+      expires_at: expiresAt.toISOString(),
+      created_by: user.id,
+      status: 'pending'
+    })
+
+  if (error) throw error
+
+  revalidatePath('/dashboard/settings')
+  return { success: true, token }
+}
+
+export async function invalidateInvitation(id: string) {
+  if (!await checkAdmin()) throw new Error('Não autorizado')
+  
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('invitations')
+    .update({ status: 'invalidated' })
+    .eq('id', id)
+
+  if (error) throw error
+
+  revalidatePath('/dashboard/settings')
+  return { success: true }
+}

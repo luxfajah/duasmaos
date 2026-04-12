@@ -5,6 +5,7 @@ import { SettingsSidebar } from '@/components/settings/SettingsSidebar'
 import { ProfileSection } from '@/components/settings/sections/ProfileSection'
 import { UsersSection } from '@/components/settings/sections/UsersSection'
 import { SecuritySection } from '@/components/settings/sections/SecuritySection'
+import { InvitationsSection } from '@/components/settings/sections/InvitationsSection'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ShieldAlert } from 'lucide-react'
 
@@ -12,9 +13,10 @@ interface SettingsClientProps {
   profile: any
   users: any[]
   clients: any[]
+  invitations: any[]
 }
 
-export function SettingsClient({ profile, users, clients }: SettingsClientProps) {
+export function SettingsClient({ profile, users, clients, invitations }: SettingsClientProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [activeSection, setActiveSection] = useState(searchParams.get('section') || 'profile')
@@ -70,6 +72,7 @@ export function SettingsClient({ profile, users, clients }: SettingsClientProps)
       <main className="flex-1">
         {activeSection === 'profile' && <ProfileSection profile={profile} />}
         {activeSection === 'users' && isAdmin && <UsersSection users={users} clients={clients} />}
+        {activeSection === 'invitations' && isAdmin && <InvitationsSection clients={clients} invitations={invitations} />}
         {activeSection === 'security' && <SecuritySection profile={profile} />}
       </main>
     </div>

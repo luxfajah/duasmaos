@@ -57,6 +57,17 @@ export default async function SettingsPage() {
     allClients = clients ?? []
   }
 
+  // Fetch invitations if admin
+  let invitations: any[] = []
+  if (isAdmin) {
+    const { data: invites } = await supabase
+      .from('invitations')
+      .select('*, clients(name)')
+      .order('created_at', { ascending: false })
+    
+    invitations = invites ?? []
+  }
+
   return (
     <div className="space-y-10 animate-in fade-in duration-500">
       <EditorialHeader
@@ -68,6 +79,7 @@ export default async function SettingsPage() {
         profile={profile} 
         users={allProfiles} 
         clients={allClients} 
+        invitations={invitations}
       />
     </div>
   )
