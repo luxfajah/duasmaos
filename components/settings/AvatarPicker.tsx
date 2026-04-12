@@ -59,7 +59,7 @@ export function AvatarPicker({ currentUrl, onSelect, onUpload, uploading }: Avat
           <div className="flex flex-wrap gap-2">
             <Button 
               type="button" 
-              variant="brand" 
+              variant="primary" 
               size="sm" 
               onClick={() => setShowLibrary(true)}
               className="h-9 px-4 text-xs font-bold uppercase tracking-wider"

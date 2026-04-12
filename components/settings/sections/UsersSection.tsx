@@ -144,9 +144,16 @@ export function UsersSection({ users, clients }: UsersSectionProps) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={ROLE_VARIANT[user.role] || 'outline'} className="capitalize">
-                    {ROLE_LABELS[user.role] || user.role}
-                  </Badge>
+                  <div className="flex flex-col gap-1">
+                    <Badge variant={ROLE_VARIANT[user.role] || 'outline'} className="capitalize w-fit">
+                      {ROLE_LABELS[user.role] || user.role}
+                    </Badge>
+                    {user.client_id && (
+                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-tight">
+                        Cliente: {clients.find(c => c.id === user.client_id)?.name || 'Desconhecido'}
+                      </span>
+                    )}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5">
