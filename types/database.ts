@@ -253,7 +253,7 @@ export type StageStatusV2 = 'pending' | 'in_progress' | 'waiting_approval' | 'ap
 export type TaskStatusV2 = 'locked' | 'pending' | 'in_progress' | 'in_review' | 'approved' | 'done' | 'blocked';
 export type ProjectStatusV2 = 'active' | 'paused' | 'completed' | 'archived';
 export type TaskPriorityV2 = 'low' | 'medium' | 'high' | 'urgent';
-export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval';
+export type TaskTypeV2 = 'task' | 'meeting' | 'review' | 'approval' | 'deliverable';
 export type PostTypeV2 = 'feed' | 'story' | 'carousel' | 'video_story' | 'reels';
 export type PostStatusV2 = 'pending' | 'in_progress' | 'done';
 export type ApprovalStatusV2 = 'pending' | 'approved' | 'rejected';
@@ -280,6 +280,7 @@ export interface V2Project {
   amount: number | null;
   billing_day: number | null;
   auto_restart: boolean;
+  start_date: string | null;
   deadline: string | null;
   completed_at: string | null;
   created_at: string;
@@ -294,6 +295,9 @@ export interface V2ProjectStage {
   order: number;
   status: StageStatusV2;
   requires_approval: boolean;
+  duration_days: number;
+  start_mode: 'auto' | 'manual';
+  depends_on_stage_key: string | null;
   started_at: string | null;
   completed_at: string | null;
   created_at: string;
@@ -313,6 +317,8 @@ export interface V2Task {
   stage_order: number | null;
   depends_on_task_id: string | null;
   due_date: string | null;
+  deadline_offset_days: number;
+  offset_type: 'stage_start' | 'stage_end';
   social_post_count?: number;
   parent_task_id?: string | null;
   /** Populated via v2_task_assignees join or direct column if migrated */
@@ -340,10 +346,12 @@ export interface V2SocialPost {
   updated_at: string;
 }
 
-export interface V2TaskAssignee {
+export interface V2ProjectMember {
   id: string;
-  task_id: string;
+  project_id: string;
   user_id: string;
+  role_key: string | null;
+  created_at: string;
 }
 
 export interface V2StageTemplate {
