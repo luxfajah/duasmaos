@@ -19,7 +19,6 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
       stage:v2_project_stages(name),
       posts:v2_social_posts(
         *,
-        media:v2_post_media(*),
         versions:v2_social_post_versions(*)
       )
     `)

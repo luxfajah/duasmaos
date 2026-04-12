@@ -171,7 +171,7 @@ export async function getSocialPosts(taskId: string) {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('v2_social_posts')
-    .select('*, media:v2_post_media(*)')
+    .select('*')
     .eq('task_id', taskId)
     .order('order_index', { ascending: true })
 
@@ -339,7 +339,7 @@ export async function submitPostForReview(postId: string) {
   // 1. Get current post with media to snapshot
   const { data: post } = await supabase
     .from('v2_social_posts')
-    .select('*, media:v2_post_media(*)')
+    .select('*')
     .eq('id', postId)
     .single()
 
@@ -471,24 +471,17 @@ async function checkTaskAutoCompletion(taskId: string) {
 export async function upsertPostMedia(postId: string, mediaItems: any[]) {
   const supabase = createClient()
   
-  // 1. Delete old media for this post (simplest sync)
-  await supabase.from('v2_post_media').delete().eq('post_id', postId)
-  
-  // 2. Insert new media
-  if (mediaItems.length > 0) {
-    const { error } = await supabase.from('v2_post_media').insert(
-      mediaItems.map((item, index) => ({
-        post_id: postId,
-        storage_provider: item.storage_provider,
-        file_path: item.file_path,
-        public_url: item.public_url,
-        media_type: item.media_type,
-        order_index: index
-      }))
-    )
-    if (error) throw error
-  }
+  const { error } = await supabase
+    .from('v2_social_posts')
+    .update({
+      media: mediaItems,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', postId)
+
+  if (error) throw error
   
   revalidatePath('/dashboard/tasks')
+  revalidatePath(`/dashboard/tasks/${postId}`)
   return { success: true }
 }
