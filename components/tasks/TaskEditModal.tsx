@@ -54,7 +54,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
   // Post State (Content specific)
   const [postData, setPostData] = useState({
     post_type: 'image' as PostTypeV2,
-    post_status: 'draft' as PostStatusV2,
+    status: 'draft' as PostStatusV2,
     caption: '',
     art_text: '',
     script: '',
@@ -86,7 +86,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
               setCurrentPost(post)
               setPostData({
                 post_type: post.post_type || post.type || 'image',
-                post_status: post.post_status || post.status || 'draft',
+                status: post.status || post.status || 'draft',
                 caption: post.caption || '',
                 art_text: post.art_text || '',
                 script: post.script || '',
@@ -115,7 +115,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
         })
         setPostData({
           post_type: 'image',
-          post_status: 'draft',
+          status: 'draft',
           caption: '',
           art_text: '',
           script: '',
@@ -182,13 +182,13 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
         if (action === 'submit') {
           await updateSocialPost(currentPost.id, postData) // Save first
           await submitPostForReview(currentPost.id)
-          setPostData(p => ({ ...p, post_status: 'awaiting_review' }))
+          setPostData(p => ({ ...p, status: 'awaiting_review' }))
         } else if (action === 'approve') {
           await approvePost(currentPost.id)
-          setPostData(p => ({ ...p, post_status: 'approved' }))
+          setPostData(p => ({ ...p, status: 'approved' }))
         } else if (action === 'reject') {
           await rejectPost(currentPost.id)
-          setPostData(p => ({ ...p, post_status: 'rejected' }))
+          setPostData(p => ({ ...p, status: 'rejected' }))
         }
         
         // Refresh history
@@ -201,7 +201,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
     })
   }
 
-  const isLocked = postData.post_status === 'awaiting_review'
+  const isLocked = postData.status === 'awaiting_review'
 
   const toggleAssignee = (userId: string) => {
     setFormData(prev => ({
@@ -269,14 +269,14 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                 {formData.task_type === 'content_post' && (
                   <Badge variant="outline" className={cn(
                     "px-4 py-2 text-[10px] font-black uppercase tracking-[0.15em] border-2",
-                    postData.post_status === 'approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                    postData.post_status === 'awaiting_review' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                    postData.post_status === 'rejected' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
+                    postData.status === 'approved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                    postData.status === 'awaiting_review' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                    postData.status === 'rejected' ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' :
                     'bg-slate-500/10 text-slate-500 border-slate-500/20'
                   )}>
-                    {postData.post_status === 'draft' ? 'Rascunho' : 
-                     postData.post_status === 'awaiting_review' ? 'Em Revisão' :
-                     postData.post_status === 'approved' ? 'Aprovado' : 'Ajuste Solicitado'}
+                    {postData.status === 'draft' ? 'Rascunho' : 
+                     postData.status === 'awaiting_review' ? 'Em Revisão' :
+                     postData.status === 'approved' ? 'Aprovado' : 'Ajuste Solicitado'}
                   </Badge>
                 )}
                 <div className="h-10 w-[1px] bg-border/50 mx-2" />
@@ -571,7 +571,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                                    <Play className="text-white drop-shadow-md" size={24} />
                                 </div>
                               ) : (
-                                <img src={item.url} alt="media" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                                <img src={item.public_url} alt="media" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                               )}
                               <button 
                                 disabled={isLocked}
@@ -601,8 +601,8 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                             <Badge variant="outline" className="text-[10px] font-black uppercase text-text-muted">Preview</Badge>
                          </div>
                          <div className="aspect-square rounded-2xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center relative border border-border/20">
-                            {postData.media?.[0]?.url ? (
-                               <img src={postData.media[0].url} alt="Mídia" className="w-full h-full object-cover" />
+                            {postData.media?.[0]?.public_url ? (
+                               <img src={postData.media[0].public_url} alt="Mídia" className="w-full h-full object-cover" />
                             ) : (
                                <ImageIcon size={48} className="text-text-muted opacity-20" />
                             )}
@@ -642,8 +642,8 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                         </div>
                         <div className="grid grid-cols-[120px,1fr] gap-8">
                            <div className="aspect-square rounded-2xl bg-surface-muted overflow-hidden border border-border/30">
-                              {version.media_snapshot?.[0]?.url && (
-                                <img src={version.media_snapshot[0].url} alt={`Versão ${version.version_number}`} className="w-full h-full object-cover" />
+                              {version.media_snapshot?.[0]?.public_url && (
+                                <img src={version.media_snapshot[0].public_url} alt={`Versão ${version.version_number}`} className="w-full h-full object-cover" />
                               )}
                            </div>
                            <div className="space-y-4">
@@ -700,25 +700,25 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                   <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Ciclo de Entrega</h4>
                   <div className={cn(
                     "p-8 rounded-[40px] flex flex-col items-center justify-center gap-4 border-2 shadow-2xl transition-all animate-in fade-in zoom-in duration-700",
-                    postData.post_status === 'approved' ? 'bg-emerald-500 text-white border-white/20' :
-                    postData.post_status === 'awaiting_review' ? 'bg-amber-500 text-white border-white/20' :
-                    postData.post_status === 'rejected' ? 'bg-rose-600 text-white border-white/20' :
+                    postData.status === 'approved' ? 'bg-emerald-500 text-white border-white/20' :
+                    postData.status === 'awaiting_review' ? 'bg-amber-500 text-white border-white/20' :
+                    postData.status === 'rejected' ? 'bg-rose-600 text-white border-white/20' :
                     'bg-slate-950 text-white border-white/10 shadow-slate-900/50'
                   )}>
-                    {postData.post_status === 'approved' ? <CheckCircle2 size={48} className="animate-bounce" /> :
-                     postData.post_status === 'awaiting_review' ? <MessageSquare size={48} className="animate-pulse" /> :
-                     postData.post_status === 'rejected' ? <AlertCircle size={48} /> : <ImageIcon size={48} className="opacity-20" />}
+                    {postData.status === 'approved' ? <CheckCircle2 size={48} className="animate-bounce" /> :
+                     postData.status === 'awaiting_review' ? <MessageSquare size={48} className="animate-pulse" /> :
+                     postData.status === 'rejected' ? <AlertCircle size={48} /> : <ImageIcon size={48} className="opacity-20" />}
                     
                     <div className="text-center">
                       <p className="text-lg font-black tracking-tight leading-none uppercase">
-                        {postData.post_status === 'draft' ? 'Em Produção' : 
-                         postData.post_status === 'awaiting_review' ? 'Em Auditoria' :
-                         postData.post_status === 'approved' ? 'Aprovado' : 'Ação Necessária'}
+                        {postData.status === 'draft' ? 'Em Produção' : 
+                         postData.status === 'awaiting_review' ? 'Em Auditoria' :
+                         postData.status === 'approved' ? 'Aprovado' : 'Ação Necessária'}
                       </p>
                       <p className="text-[10px] font-black uppercase opacity-60 mt-1 tracking-widest">
-                        {postData.post_status === 'draft' ? 'Aguardando envio' : 
-                         postData.post_status === 'awaiting_review' ? 'Pendente de aprovação' :
-                         postData.post_status === 'approved' ? 'Pronto para publicação' : 'Ajustes solicitados'}
+                        {postData.status === 'draft' ? 'Aguardando envio' : 
+                         postData.status === 'awaiting_review' ? 'Pendente de aprovação' :
+                         postData.status === 'approved' ? 'Pronto para publicação' : 'Ajustes solicitados'}
                       </p>
                     </div>
                   </div>
@@ -728,7 +728,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                 <div className="space-y-4 flex-1">
                   <h4 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-4">Governança</h4>
                   
-                  {postData.post_status === 'draft' && (
+                  {postData.status === 'draft' && (
                     <button
                       onClick={() => handleGovernanceAction('submit')}
                       disabled={isPending}
@@ -747,7 +747,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                     </button>
                   )}
 
-                  {postData.post_status === 'awaiting_review' && (
+                  {postData.status === 'awaiting_review' && (
                     <div className="grid grid-cols-1 gap-4">
                       <button
                         onClick={() => handleGovernanceAction('approve')}
@@ -778,7 +778,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                     </div>
                   )}
 
-                  {postData.post_status === 'rejected' && (
+                  {postData.status === 'rejected' && (
                      <button
                         onClick={() => handleGovernanceAction('submit')}
                         disabled={isPending}
@@ -794,7 +794,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                       </button>
                   )}
 
-                  {postData.post_status === 'approved' && (
+                  {postData.status === 'approved' && (
                      <div className="p-8 rounded-[40px] bg-emerald-50 dark:bg-emerald-950/20 border-2 border-emerald-100 dark:border-emerald-500/20 text-center space-y-4">
                         <CheckCircle2 size={32} className="mx-auto text-emerald-500" />
                         <p className="text-xs font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Entrega Concluída</p>

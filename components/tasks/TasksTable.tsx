@@ -38,7 +38,8 @@ const postStatusConfig: Record<string, { label: string; color: string }> = {
   awaiting_review: { label: 'Em Revisão', color: 'bg-amber-500/10 text-amber-500' },
   approved: { label: 'Aprovado', color: 'bg-emerald-500/10 text-emerald-500' },
   rejected: { label: 'Ajuste', color: 'bg-rose-500/10 text-rose-500' },
-}
+  in_production: { label: 'Em Produção', color: 'bg-indigo-500/10 text-indigo-500' },
+};
 
 interface TasksTableProps {
   tasks: TaskWithRelations[]
@@ -116,9 +117,9 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                 {task.task_type === 'content_post' && task.v2_social_posts?.[0] ? (
                   <div className="flex items-center gap-3 py-1">
                     <div className="w-10 h-10 rounded-lg bg-surface-muted border border-border overflow-hidden shrink-0 flex items-center justify-center relative">
-                      {task.v2_social_posts[0].media?.[0]?.url ? (
+                      {task.v2_social_posts[0].media?.[0]?.public_url ? (
                         <img 
-                          src={task.v2_social_posts[0].media[0].url} 
+                          src={task.v2_social_posts[0].media[0].public_url} 
                           alt="preview" 
                           className="w-full h-full object-cover"
                         />
@@ -129,21 +130,22 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                         {task.v2_social_posts[0].post_type === 'video' ? '📹' : '🖼️'}
                       </div>
                     </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-xs text-text-secondary truncate max-w-[120px]">
-                        {task.v2_social_posts[0].caption || 'Sem legenda...'}
-                      </span>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", 
-                          task.v2_social_posts[0].post_status === 'approved' ? 'bg-emerald-500' : 
-                          task.v2_social_posts[0].post_status === 'awaiting_review' ? 'bg-amber-500' :
-                          task.v2_social_posts[0].post_status === 'rejected' ? 'bg-rose-500' : 'bg-slate-400'
-                        )} />
-                        <span className="text-[9px] font-black uppercase text-text-muted tracking-tight">
-                          {postStatusConfig[task.v2_social_posts[0].post_status || 'draft']?.label || 'Rascunho'}
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-xs text-text-secondary truncate max-w-[120px]">
+                          {task.v2_social_posts[0].caption || 'Sem legenda...'}
                         </span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", 
+                            task.v2_social_posts[0].status === 'approved' ? 'bg-emerald-500' : 
+                            task.v2_social_posts[0].status === 'awaiting_review' ? 'bg-amber-500' :
+                            task.v2_social_posts[0].status === 'rejected' ? 'bg-rose-500' : 
+                            task.v2_social_posts[0].status === 'in_production' ? 'bg-indigo-500' : 'bg-slate-400'
+                          )} />
+                          <span className="text-[9px] font-black uppercase text-text-muted tracking-tight">
+                            {postStatusConfig[task.v2_social_posts[0].status || 'draft']?.label || 'Rascunho'}
+                          </span>
+                        </div>
                       </div>
-                    </div>
                   </div>
                 ) : (
                   <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest text-text-muted border-border/50">
