@@ -31,6 +31,7 @@ interface TaskEditModalProps {
 
 export function TaskEditModal({ task, open, onClose, projectId, projects }: TaskEditModalProps) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const [activeTab, setActiveTab] = useState<'workflow' | 'content' | 'history'>('workflow')
   const [profiles, setProfiles] = useState<any[]>([])
   const [versions, setVersions] = useState<any[]>([])
