@@ -31,11 +31,9 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const router = useRouter()
 
-  const handleSyncPosts = async () => {
-    const count = prompt('Deseja sincronizar quantos posts para esta tarefa?', task.social_post_count?.toString() || '0')
-    if (count === null) return
-    
-    await syncSocialPosts(task.id, parseInt(count))
+  const handleAddPost = async () => {
+    // Simply add one more post to the current list
+    await syncSocialPosts(task.id, sortedPosts.length + 1)
     router.refresh()
   }
 
@@ -88,10 +86,10 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
 
         <div className="flex gap-3">
           <button 
-            onClick={handleSyncPosts}
+            onClick={handleAddPost}
             className="flex items-center gap-2 px-4 py-2 bg-surface text-text-primary border border-border rounded-lg font-bold text-sm hover:border-text-muted transition-all shadow-sm"
           >
-            <Plus className="w-4 h-4 text-brand-primary" /> Sincronizar Posts
+            <Plus className="w-4 h-4 text-brand-primary" /> Adicionar Posts
           </button>
           <button className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-bold text-sm hover:bg-brand-secondary transition-all shadow-brand">
             <CheckCircle className="w-4 h-4" /> Finalizar Task
