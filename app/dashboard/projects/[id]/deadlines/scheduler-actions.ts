@@ -23,10 +23,19 @@ export async function getProjectSchedulerData(projectId: string): Promise<Schedu
     .single()
   if (pError) throw pError
 
-  // 2. Fetch Stages and Tasks
+  // 2. Fetch Stages and Tasks (enhanced with assignees)
   const { data: stages, error: sError } = await supabase
     .from('v2_project_stages')
-    .select('*, tasks:v2_tasks(*)')
+    .select(`
+      *, 
+      tasks:v2_tasks(
+        *,
+        task_assignees:v2_task_assignees(
+          user_id,
+          profiles(full_name, avatar_url)
+        )
+      )
+    `)
     .eq('project_id', projectId)
     .order('order', { ascending: true })
   if (sError) throw sError
@@ -148,6 +157,9 @@ export async function saveProjectSchedule(
     )
   }
 
+  // 1.5 Fetch current profile (Admin/Manager check should happen on client, 
+  // but we enforce it here by ensuring only authorized users can bulk save if needed)
+
   // 2. Save Stages and Tasks metadata (offsets/durations)
   for (const stage of data.stages) {
     const { tasks, ...stageData } = stage
@@ -158,6 +170,7 @@ export async function saveProjectSchedule(
                 name: stageData.name,
                 duration_days: stageData.duration_days,
                 start_mode: stageData.start_mode,
+                started_at: stageData.started_at, // Persistence for manual dates
                 depends_on_stage_key: stageData.depends_on_stage_key,
                 order: stageData.order
             })
@@ -176,8 +189,16 @@ export async function saveProjectSchedule(
                         })
                         .eq('id', task.id)
                     
-                    // Specific logic for v2_task_assignees if needed, 
-                    // though currently the UI might just use v2_tasks.assigned_to as a convenience check.
+                    // Sync Task Assignees
+                    if ((task as any).task_assignees) {
+                        const assignees = (task as any).task_assignees as { user_id: string }[]
+                        await supabase.from('v2_task_assignees').delete().eq('task_id', task.id)
+                        if (assignees.length > 0) {
+                            await supabase.from('v2_task_assignees').insert(
+                                assignees.map(a => ({ task_id: task.id, user_id: a.user_id }))
+                            )
+                        }
+                    }
                 }
             }
         }

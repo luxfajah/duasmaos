@@ -322,7 +322,9 @@ export interface V2Task {
   social_post_count?: number;
   parent_task_id?: string | null;
   /** Populated via v2_task_assignees join or direct column if migrated */
+  /** @deprecated use task_assignees for multiple members */
   assigned_to?: string | null;
+  task_assignees?: { user_id: string; profiles: { full_name: string; avatar_url: string | null } }[];
   created_at: string;
   updated_at: string;
 }

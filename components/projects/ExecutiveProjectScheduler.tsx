@@ -20,16 +20,28 @@ import {
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { addDays, format, isValid, parseISO } from 'date-fns'
+import { addDays, format, isValid, parseISO, differenceInDays } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { 
   V2Project, 
   V2ProjectStage, 
   V2Task, 
   V2ProjectMember,
-  TaskTypeV2
+  TaskTypeV2,
+  UserRole
 } from '@/types/database'
 import { saveProjectSchedule, SchedulerData } from '@/app/dashboard/projects/[id]/deadlines/scheduler-actions'
+import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ui/modal'
+import { Avatar } from '@/components/ui/avatar'
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem
+} from '@/components/ui/dropdown'
 
 // ─── UI Helpers ──────────────────────────────────────────────────────────────
 
@@ -69,17 +81,87 @@ const TASK_TYPE_LABELS: Record<TaskTypeV2, string> = {
   deliverable: 'Entrega'
 }
 
+function TaskAssigneeSelector({ 
+  currentAssignees, 
+  members, 
+  onChange 
+}: { 
+  currentAssignees: { user_id: string; profiles: { full_name: string; avatar_url: string | null } }[]; 
+  members: (V2ProjectMember & { profiles: { full_name: string; avatar_url: string | null } | null })[];
+  onChange: (newList: { user_id: string; profiles: any }[]) => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center -space-x-2 hover:space-x-0.5 transition-all duration-300">
+          {currentAssignees.length === 0 ? (
+            <div className="w-8 h-8 rounded-full border-2 border-dashed border-border flex items-center justify-center text-text-muted hover:text-brand-primary hover:border-brand-primary/50 bg-surface/50 transition-colors">
+              <UserPlus size={14} />
+            </div>
+          ) : (
+            <>
+              {currentAssignees.map((a, idx) => (
+                <div key={a.user_id} className="relative group/avatar">
+                   <Avatar 
+                      name={a.profiles.full_name} 
+                      src={a.profiles.avatar_url || undefined} 
+                      size="sm"
+                      className="ring-2 ring-background transition-transform group-hover/avatar:scale-110"
+                   />
+                </div>
+              ))}
+              <div className="w-8 h-8 rounded-full border-2 border-background bg-surface-muted flex items-center justify-center text-[10px] font-black text-text-muted group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                 <Plus size={12} />
+              </div>
+            </>
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-56">
+        <DropdownMenuLabel>Responsáveis</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <div className="max-h-48 overflow-y-auto">
+          {members.map(member => {
+            const isSelected = currentAssignees.some(a => a.user_id === member.user_id)
+            return (
+              <DropdownMenuCheckboxItem
+                key={member.user_id}
+                checked={isSelected}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    onChange([...currentAssignees, { user_id: member.user_id, profiles: member.profiles }])
+                  } else {
+                    onChange(currentAssignees.filter(a => a.user_id !== member.user_id))
+                  }
+                }}
+              >
+                {member.profiles?.full_name}
+              </DropdownMenuCheckboxItem>
+            )
+          })}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 interface ExecutiveProjectSchedulerProps {
   initialData: SchedulerData
+  userRole: UserRole
 }
 
-export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSchedulerProps) {
+export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutiveProjectSchedulerProps) {
   const router = useRouter()
   const [stages, setStages] = useState(initialData.stages)
   const [members, setMembers] = useState(initialData.members)
   const [isSaving, setIsSaving] = useState(false)
+  
+  // Modais Control
+  const [isMemberModalOpen, setIsMemberModalOpen] = useState(false)
+
+  const isAdminOrGestor = userRole === 'admin' || userRole === 'gestor'
 
   // Simulation Engine: Derived Timeline
   const timeline = useMemo(() => {
@@ -139,6 +221,23 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleAddMember = (profile: any) => {
+    if (members.find(m => m.user_id === profile.id)) return
+    setMembers([
+      ...members,
+      { 
+        user_id: profile.id, 
+        project_id: initialData.project.id, 
+        role_key: 'member',
+        profiles: { full_name: profile.full_name, avatar_url: profile.avatar_url }
+      } as any
+    ])
+  }
+
+  const handleRemoveMember = (userId: string) => {
+    setMembers(members.filter(m => m.user_id !== userId))
   }
 
   return (
@@ -201,10 +300,17 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
                 <span className="w-1.5 h-4 rounded-full bg-brand-primary" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-text-muted">Equipe de Execução</h2>
               </div>
-              <Button variant="outline" size="sm" className="rounded-lg h-8 text-[10px] font-bold uppercase tracking-wider gap-2">
-                <UserPlus size={14} />
-                Gerenciar Membros
-              </Button>
+              {isAdminOrGestor && (
+                <Button 
+                  onClick={() => setIsMemberModalOpen(true)}
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-lg h-8 text-[10px] font-bold uppercase tracking-wider gap-2"
+                >
+                  <UserPlus size={14} />
+                  Gerenciar Membros
+                </Button>
+              )}
             </div>
             <div className="flex flex-wrap gap-2">
               {members.map(member => (
@@ -250,14 +356,9 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
                           className="bg-transparent font-black text-base text-text-primary outline-none focus:text-brand-primary transition-colors hover:bg-white/5 rounded px-1"
                         />
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-status-danger">
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
                     </div>
-
-                    <div className="flex flex-wrap items-center gap-4">
+                    
+                    <div className="flex flex-wrap items-center gap-4 mt-4">
                       {/* Duration Simulation Input */}
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface border border-border shadow-inner group/input">
                         <Clock size={12} className="text-text-muted group-focus-within/input:text-brand-primary transition-colors" />
@@ -268,6 +369,25 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
                           className="w-10 bg-transparent text-sm font-black text-text-primary outline-none text-center"
                         />
                         <span className="text-[10px] font-black uppercase text-text-muted tracking-wide">dias</span>
+                      </div>
+
+                      {/* Manual Start Date Input */}
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface border border-border">
+                        <Calendar size={12} className="text-text-muted" />
+                        <input 
+                          type="date"
+                          value={stage.started_at ? format(parseISO(stage.started_at), 'yyyy-MM-dd') : format(stage.calculatedStart, 'yyyy-MM-dd')}
+                          onChange={(e) => {
+                             const newDate = parseISO(e.target.value)
+                             if (isValid(newDate)) {
+                                handleUpdateStage(sIdx, { 
+                                  started_at: newDate.toISOString(),
+                                  start_mode: 'manual' 
+                                })
+                             }
+                          }}
+                          className="bg-transparent text-[11px] font-bold text-text-primary outline-none"
+                        />
                       </div>
 
                       {/* Mode Toggle */}
@@ -284,8 +404,8 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
 
                     {/* Simulation Result Badge */}
                     <div className="flex items-center gap-2 mt-4 text-[10px] font-bold text-brand-primary bg-brand-primary/5 border border-brand-primary/10 rounded-lg py-1 px-3 w-fit">
-                        <Calendar size={12} />
-                        <span>PREVISÃO: {format(stage.calculatedStart, "dd 'de' MMM", { locale: ptBR })} — {format(stage.calculatedEnd, "dd 'de' MMM", { locale: ptBR })}</span>
+                        <Target size={12} />
+                        <span>ENTREGA PREVISTA: {format(stage.calculatedEnd, "dd 'de' MMM", { locale: ptBR })}</span>
                     </div>
                   </div>
 
@@ -314,19 +434,12 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
                          </div>
 
                          <div className="flex items-center justify-between gap-4 mt-1 border-t border-border/10 pt-3">
-                            {/* Responsible */}
-                            <select 
-                              value={task.assigned_to || ''}
-                              onChange={(e) => handleUpdateTask(sIdx, tIdx, { assigned_to: e.target.value })}
-                              className="flex-1 bg-transparent text-[11px] font-bold text-text-muted hover:text-text-primary outline-none truncate"
-                            >
-                               <option value="" className="bg-surface text-text-primary">Responsável</option>
-                               {members.map(m => (
-                                 <option key={m.user_id} value={m.user_id} className="bg-surface text-text-primary">
-                                   {m.profiles?.full_name}
-                                 </option>
-                               ))}
-                            </select>
+                            {/* Multi-Responsible Pile */}
+                            <TaskAssigneeSelector 
+                              currentAssignees={task.task_assignees || []}
+                              members={members}
+                              onChange={(newList) => handleUpdateTask(sIdx, tIdx, { task_assignees: newList } as any)}
+                            />
 
                             {/* Offset Engine */}
                             <div className="flex items-center gap-2 shrink-0">
@@ -346,24 +459,16 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
                                >
                                  <option value="stage_start" className="bg-surface">do início</option>
                                  <option value="stage_end" className="bg-surface">do fim</option>
-                               </select>
-                            </div>
-
-                            {/* Result Date Badge */}
-                            <div className="shrink-0 px-2 py-1 rounded bg-brand-primary/5 text-[9px] font-black text-brand-primary border border-brand-primary/5">
-                               {(task as any).calculatedDate ? format((task as any).calculatedDate, 'dd/MM') : '--/--'}
-                            </div>
-                         </div>
-                      </div>
+                                </select>
+                             </div>
+ 
+                             {/* Result Date Badge */}
+                             <div className="shrink-0 px-2 py-1 rounded bg-brand-primary/5 text-[9px] font-black text-brand-primary border border-brand-primary/5">
+                                {(task as any).calculatedDate ? format((task as any).calculatedDate, 'dd/MM') : '--/--'}
+                             </div>
+                          </div>
+                       </div>
                     ))}
-
-                    <Button 
-                      variant="ghost" 
-                      className="w-full h-12 border-2 border-dashed border-border rounded-2xl hover:bg-brand-primary/5 hover:border-brand-primary/20 hover:text-brand-primary transition-all gap-2 font-bold text-xs"
-                    >
-                       <Plus size={16} />
-                       Adicionar Job
-                    </Button>
                   </div>
 
                   {/* Stage Footer */}
@@ -462,6 +567,65 @@ export function ExecutiveProjectScheduler({ initialData }: ExecutiveProjectSched
           </div>
         </div>
       </div>
+
+      {/* ── Member Management Modal ── */}
+      <Modal open={isMemberModalOpen} onClose={() => setIsMemberModalOpen(false)}>
+        <ModalContent className="max-w-md">
+          <ModalHeader>
+            <ModalTitle>Gerenciar Equipe do Projeto</ModalTitle>
+          </ModalHeader>
+          <ModalBody className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Membros Atuais</label>
+              <div className="space-y-2">
+                {members.map(member => (
+                  <div key={member.user_id} className="flex items-center justify-between p-3 rounded-xl bg-surface border border-border">
+                    <div className="flex items-center gap-3">
+                      <Avatar name={member.profiles?.full_name} src={member.profiles?.avatar_url || undefined} size="sm" />
+                      <span className="text-sm font-bold text-text-primary">{member.profiles?.full_name}</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-text-muted hover:text-status-danger"
+                      onClick={() => handleRemoveMember(member.user_id)}
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-4 border-t border-border">
+              <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Adicionar novos membros</label>
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                {initialData.allProfiles
+                  .filter(p => !members.find(m => m.user_id === p.id))
+                  .map(profile => (
+                  <div key={profile.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-muted transition-colors">
+                    <div className="flex items-center gap-2">
+                      <Avatar name={profile.full_name} src={profile.avatar_url || undefined} size="xs" />
+                      <span className="text-xs font-medium text-text-primary">{profile.full_name}</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 px-2 text-brand-primary"
+                      onClick={() => handleAddMember(profile)}
+                    >
+                      <Plus size={14} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+             <Button className="w-full rounded-xl" onClick={() => setIsMemberModalOpen(false)}>Concluir</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
