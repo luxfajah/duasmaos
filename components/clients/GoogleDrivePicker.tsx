@@ -41,12 +41,32 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
-    if (user && user.identities) {
-      const googleId = user.identities.find(id => id.provider === 'google')
-      setIsLinked(!!googleId)
+    if (user) {
+      const googleId = user.identities?.find(id => id.provider === 'google')
+      
+      // Também verifica se temos o token no banco para garantir persistência
+      const { data: integration } = await supabase
+        .from('user_integrations')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      setIsLinked(!!googleId && !!integration)
     }
     setCheckingLink(false)
   }
+
+  useEffect(() => {
+    // Escutar mensagem do popup de callback
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return
+      if (event.data === 'auth-success') {
+        checkLinkedStatus()
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
 
   // Initialize gapi.client
   const gapiLoad = () => {
@@ -80,11 +100,11 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
     setLoading(true)
     const supabase = createClient()
     
-    // Redirect back to current page
+    // Abrir em popup
     const redirectUrl = new URL('/auth/callback', window.location.origin)
-    redirectUrl.searchParams.set('next', window.location.pathname + window.location.search)
+    redirectUrl.searchParams.set('next', '/auth/close-popup') // Página especial para fechar o popup
 
-    const { error } = await supabase.auth.linkIdentity({
+    const { data, error } = await supabase.auth.linkIdentity({
       provider: 'google',
       options: {
         redirectTo: redirectUrl.toString(),
@@ -99,6 +119,15 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
     if (error) {
       toast.error('Erro ao iniciar vinculação: ' + error.message)
       setLoading(false)
+      return
+    }
+
+    if (data?.url) {
+      const width = 600
+      const height = 700
+      const left = window.screenX + (window.outerWidth - width) / 2
+      const top = window.screenY + (window.outerHeight - height) / 2
+      window.open(data.url, 'google-auth', `width=${width},height=${height},left=${left},top=${top}`)
     }
   }
 

@@ -34,14 +34,26 @@ export function GoogleDriveLink() {
     setFetchingStatus(false)
   }
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return
+      if (event.data === 'auth-success') {
+        checkLinkedStatus()
+        setLoading(false)
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
   const handleLinkGoogle = async () => {
     setLoading(true)
     const supabase = createClient()
     
     const redirectUrl = new URL('/auth/callback', window.location.origin)
-    redirectUrl.searchParams.set('next', window.location.pathname + window.location.search)
+    redirectUrl.searchParams.set('next', '/auth/close-popup')
 
-    const { error } = await supabase.auth.linkIdentity({
+    const { data, error } = await supabase.auth.linkIdentity({
       provider: 'google',
       options: {
         redirectTo: redirectUrl.toString(),
@@ -56,6 +68,15 @@ export function GoogleDriveLink() {
     if (error) {
       toast.error('Erro ao iniciar vinculação: ' + error.message)
       setLoading(false)
+      return
+    }
+
+    if (data?.url) {
+      const width = 600
+      const height = 700
+      const left = window.screenX + (window.outerWidth - width) / 2
+      const top = window.screenY + (window.outerHeight - height) / 2
+      window.open(data.url, 'google-auth', `width=${width},height=${height},left=${left},top=${top}`)
     }
   }
 
