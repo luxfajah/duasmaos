@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react'
+import { Upload, X, Loader2 } from 'lucide-react'
 import { convertToWebP } from '@/utils/image-utils'
 import { uploadPortalImage } from '@/app/dashboard/clients/actions'
 import { toast } from 'sonner'
@@ -13,10 +11,9 @@ interface Props {
   label: string
   value: string
   onChange: (url: string) => void
-  aspect?: 'square' | 'any'
 }
 
-export function PortalImageUpload({ clientId, label, value, onChange, aspect = 'any' }: Props) {
+export function PortalImageUpload({ clientId, label, value, onChange }: Props) {
   const [uploading, setUploading] = useState(false)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,29 +22,30 @@ export function PortalImageUpload({ clientId, label, value, onChange, aspect = '
 
     try {
       setUploading(true)
-      let uploadBlob: Blob = file
+      toast.loading('Convertendo para WebP...', { id: 'upload-img' })
       
-      if (file.type !== 'image/webp') {
-        toast.loading('Convertendo para WebP...', { id: 'upload-img' })
-        uploadBlob = await convertToWebP(file)
+      // If already webp, skip conversion
+      let webpBlob: Blob
+      if (file.type === 'image/webp') {
+        webpBlob = file
+      } else {
+        webpBlob = await convertToWebP(file)
       }
       
       toast.loading('Enviando...', { id: 'upload-img' })
       
-      const formData = new FormData()
-      formData.append('clientId', clientId)
-      formData.append('file', uploadBlob)
-      formData.append('fileName', file.name)
-
-      const publicUrl = await uploadPortalImage(formData)
+      // Pass via FormData to avoid Server Action serialization error
+      const fd = new FormData()
+      fd.append('file', webpBlob, file.name.replace(/\.[^/.]+$/, '') + '.webp')
+      fd.append('clientId', clientId)
       
+      const publicUrl = await uploadPortalImage(fd)
       onChange(publicUrl)
       toast.success('Imagem enviada!', { id: 'upload-img' })
     } catch (err: any) {
       toast.error('Erro no upload: ' + err.message, { id: 'upload-img' })
     } finally {
       setUploading(false)
-      // Reset input
       e.target.value = ''
     }
   }
@@ -58,6 +56,7 @@ export function PortalImageUpload({ clientId, label, value, onChange, aspect = '
         <label className="text-xs font-medium text-text-muted">{label}</label>
         {value && (
           <button 
+            type="button"
             onClick={() => onChange('')}
             className="text-[10px] text-status-danger flex items-center gap-1 hover:underline"
           >
@@ -91,9 +90,9 @@ export function PortalImageUpload({ clientId, label, value, onChange, aspect = '
             <p className="text-xs font-medium text-text-primary">
               {uploading ? 'Processando...' : 'Clique para subir'}
             </p>
-            <p className="text-[10px] text-text-muted">WebP automático</p>
+            <p className="text-[10px] text-text-muted">Qualquer formato → WebP</p>
           </div>
-          <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+          <input type="file" className="hidden" accept="image/*,image/webp" onChange={handleFileChange} disabled={uploading} />
         </label>
       )}
     </div>

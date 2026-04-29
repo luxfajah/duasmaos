@@ -272,11 +272,7 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                 <div className="info-icon">📅</div>
                 <div>
                   <div className="info-label">Período das postagens</div>
-                  <div className="info-value">
-                    {settings.planning_period 
-                      ? format(parseISO(settings.planning_period + '-01'), 'MMMM yyyy', { locale: ptBR }) 
-                      : format(new Date(), 'MMMM yyyy', { locale: ptBR })}
-                  </div>
+                  <div className="info-value">{settings.planning_period || format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
                 </div>
               </div>
               <div className="info-row">
@@ -284,8 +280,15 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                 <div>
                   <div className="info-label">Prazo para aprovação</div>
                   <div className="info-value">
-                    {settings.deadline_description 
-                      ? format(parseISO(settings.deadline_description), "dd 'de' MMMM", { locale: ptBR })
+                    {settings.deadline_description
+                      ? (() => {
+                          const d = settings.deadline_description
+                          // If it's a date (YYYY-MM-DD), format nicely
+                          if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+                            return new Date(d + 'T12:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+                          }
+                          return d
+                        })()
                       : 'Aguardamos seu feedback para iniciar a produção.'}
                   </div>
                 </div>

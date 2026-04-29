@@ -209,13 +209,11 @@ export async function uploadClientDocument(clientId: string, file: File, type: s
 export async function uploadPortalImage(formData: FormData) {
   const supabase = createClient()
   
-  const clientId = formData.get('clientId') as string
   const file = formData.get('file') as File
-  const fileName = formData.get('fileName') as string
+  const clientId = formData.get('clientId') as string
+  if (!file || !clientId) throw new Error('Dados inválidos para upload.')
 
-  if (!clientId || !file) throw new Error('Dados incompletos para upload.')
-
-  const cleanFileName = fileName.replace(/\.[^/.]+$/, "") // remove extension
+  const cleanFileName = file.name.replace(/\.[^/.]+$/, '')
   const path = `${clientId}/${Date.now()}_${cleanFileName}.webp`
 
   const { error: uploadError } = await supabase.storage
@@ -233,41 +231,6 @@ export async function uploadPortalImage(formData: FormData) {
     .getPublicUrl(path)
 
   return publicUrl
-}
-
-export async function fetchInstagramData(username: string) {
-  // Remove @ if present
-  const handle = username.replace('@', '').trim()
-  if (!handle) throw new Error('Username inválido')
-
-  try {
-    // Attempting to fetch via a public CORS-friendly or proxy-like approach if possible
-    // Note: IG is very restrictive. In a real production app, you'd use a service like Apify or RapidAPI.
-    // For this implementation, I'll provide a structure that can be easily updated with an API key.
-    
-    // Fallback: Return a structured response that the UI can handle.
-    // In the future, this could use a fetch to: `https://www.instagram.com/${handle}/?__a=1&__d=dis`
-    
-    return {
-      success: true,
-      data: {
-        username: handle,
-        full_name: handle.charAt(0).toUpperCase() + handle.slice(1),
-        biography: "Perfil extraído automaticamente do Instagram.",
-        external_url: `https://instagram.com/${handle}`,
-        edge_followed_by: { count: 1200 },
-        edge_follow: { count: 800 },
-        edge_owner_to_timeline_media: { count: 45 },
-        profile_pic_url_hd: `https://unavatar.io/instagram/${handle}`, // Using a third party service for avatar
-        highlights: [
-          { title: 'Portfolio', image_url: '' },
-          { title: 'Feedback', image_url: '' }
-        ]
-      }
-    }
-  } catch (err) {
-    throw new Error('Não foi possível extrair dados automaticamente. Verifique se o perfil é público.')
-  }
 }
 
 // ── Approval Portal ──────────────────────────────────────────────────────────
