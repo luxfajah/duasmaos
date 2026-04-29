@@ -77,23 +77,23 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
   const activeProjectId = safeSelectedProject?.id
   const projectTasks = initialTasks.filter(t => t.project_id === activeProjectId)
   
-  // Global Agency Tasks Logic
+  // Dashboard Tasks: only actionable (pending/in_progress/in_review), max 5
   const allTasks = initialTasks || []
-  const globalPendingTasks = allTasks.filter(t => t.status !== 'done')
+  const DASH_VISIBLE_STATUSES = ['pending', 'in_progress', 'in_review', 'blocked']
+  const globalPendingTasks = allTasks.filter(t => DASH_VISIBLE_STATUSES.includes(t.status))
   
-  // Sort global tasks: Overdue first, then by deadline
-  const tasksToDisplay = [...globalPendingTasks].sort((a, b) => {
+  // Sort: overdue first, then by deadline
+  const tasksSorted = [...globalPendingTasks].sort((a, b) => {
     const isAOverdue = a.deadline && new Date(a.deadline) < now
     const isBOverdue = b.deadline && new Date(b.deadline) < now
-    
     if (isAOverdue && !isBOverdue) return -1
     if (!isAOverdue && isBOverdue) return 1
-    
-    // Fallback to deadline date
     if (!a.deadline) return 1
     if (!b.deadline) return -1
     return new Date(a.deadline).getTime() - new Date(b.deadline).getTime()
   })
+  const tasksToDisplay = tasksSorted.slice(0, 5)
+  const hasMoreTasks = tasksSorted.length > 5
 
   const globalCompletedTasks = allTasks
     .filter(t => t.status === 'done')
@@ -272,7 +272,10 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                       {isMeeting ? <PhoneCall size={20} strokeWidth={2.5}/> : <Layout size={20} className={isOverdue ? "text-status-danger" : isHighPriority ? "text-brand-terracotta" : ""} strokeWidth={2.5}/>}
                       {task.title}
                     </h3>
-                    <p className="text-[10px] text-text-muted font-bold flex items-center gap-1">
+                    {task.description && (
+                      <p className="text-xs text-text-muted mt-1 line-clamp-2 font-body leading-relaxed max-w-[420px]">{task.description}</p>
+                    )}
+                    <p className="text-[10px] text-text-muted font-bold flex items-center gap-1 mt-1">
                        <Layout size={10} /> {task.v2_projects?.name || 'Projeto Geral'}
                     </p>
                  </div>
@@ -295,7 +298,7 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                 </div>
                 <div>
                   <p className="text-[10px] text-text-muted font-bold uppercase tracking-wider mb-1">Responsável:</p>
-                  <p className="text-sm font-bold font-body text-text-primary capitalize">{task.profiles?.full_name || 'Design & Crescimento'}</p>
+                  <p className="text-sm font-bold font-body text-text-primary capitalize">{task.profiles?.full_name || 'NÃ£o atribuÃ­do'}</p>
                 </div>
               </div>
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mt-2 relative z-10">
@@ -319,6 +322,17 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
               </div>
             </div>
           )})}
+
+          {/* Ver mais tarefas */}
+          {hasMoreTasks && (
+            <Link
+              href="/dashboard/tasks?status=open"
+              className="flex items-center justify-center gap-2 py-4 rounded-[24px] border border-dashed border-border hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all text-sm font-bold text-text-muted hover:text-brand-primary"
+            >
+              <span>+ {tasksSorted.length - 5} tarefas abertas na fila</span>
+              <ArrowRight size={14} />
+            </Link>
+          )}
         </div>
 
         {/* RIGHT: Quick Actions Panel (~300px) */}

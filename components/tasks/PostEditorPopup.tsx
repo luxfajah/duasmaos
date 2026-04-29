@@ -65,6 +65,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
         script: formData.script,
         hashtags: formData.hashtags,
         post_type: formData.post_type,
+        carousel_slides: formData.carousel_slides || 1,
         status: post.status === 'rejected' ? 'in_production' : post.status
       })
       onUpdate()
@@ -75,7 +76,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
     }
   }
 
-  const handleHandleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHandleUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetIndex?: number) => {
     if (isLocked) return
     const files = e.target.files
     if (!files || files.length === 0) return
@@ -84,12 +85,13 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
     try {
       const newMedia: any[] = []
       for (const file of Array.from(files)) {
-        const filePath = `posts/${post.id}/${Math.random().toString(36).substring(7)}`
-        const { data, error } = await supabase.storage.from('media').upload(filePath, file)
+        const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '')
+        const filePath = `posts/${post.id}/${Date.now()}_${cleanName}`
+        const { data, error } = await supabase.storage.from('tasks').upload(filePath, file)
         
         if (error) throw error
         
-        const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(filePath)
+        const { data: { publicUrl } } = supabase.storage.from('tasks').getPublicUrl(filePath)
         
         newMedia.push({
           storage_provider: 'supabase',
@@ -99,10 +101,18 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
         })
       }
       
-      const combinedMedia = [...(post.media || []), ...newMedia]
+      let combinedMedia = [...(post.media || [])]
+      if (targetIndex !== undefined) {
+         // Replace the specific slot
+         combinedMedia[targetIndex] = newMedia[0]
+      } else {
+         combinedMedia = [...combinedMedia, ...newMedia]
+      }
+      
       await upsertPostMedia(post.id, combinedMedia)
       onUpdate()
-    } catch (err) {
+    } catch (err: any) {
+      alert('Erro ao subir arquivo: ' + err.message)
       console.error(err)
     } finally {
       setUploading(false)
@@ -138,7 +148,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
             )} />
             <div>
               <DialogTitle className="text-xl font-serif font-bold text-text-primary">
-                Post #{post.order_index + 1}
+                Post #{post.order + 1}
               </DialogTitle>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
@@ -287,53 +297,67 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
                                <ExternalLink className="w-3.5 h-3.5 text-blue-500" /> Link Drive
                             </button>
                             <label className="flex items-center gap-2 px-3 py-1.5 bg-brand-primary text-white rounded-lg text-xs font-bold cursor-pointer hover:bg-brand-secondary transition-all">
-                               <Plus className="w-3.5 h-3.5" /> Upload Imagem
-                               <input type="file" multiple className="hidden" onChange={handleHandleUpload} disabled={uploading} />
+                               {uploading ? <History className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />} Upload Imagem
+                               <input type="file" multiple className="hidden" onChange={(e) => handleHandleUpload(e)} disabled={uploading} />
                             </label>
                          </div>
                        )}
                     </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                       {post.media?.map((m, idx) => (
-                         <div key={idx} className="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 border border-border shadow-sm">
-                            {m.media_type === 'video' ? (
-                               <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/10 gap-2">
-                                  <VideoIcon size={24} className="text-text-muted" />
-                                  <span className="text-[10px] uppercase font-black text-text-muted">Vídeo</span>
-                               </div>
-                            ) : (
-                               <img src={m.public_url} className="w-full h-full object-cover" alt="Midia" />
-                            )}
-                            
-                            <div className="absolute top-1.5 right-1.5 flex gap-1 transform translate-y-[-20px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
-                               <a href={m.public_url} target="_blank" className="p-1 px-2 bg-white/90 rounded text-[10px] font-bold shadow-sm">Abrir</a>
-                               {!isLocked && (
-                                 <button 
-                                   onClick={async () => {
-                                      const filtered = post.media?.filter((_, i) => i !== idx) || []
-                                      await upsertPostMedia(post.id, filtered)
-                                      onUpdate()
-                                   }}
-                                   className="p-1 bg-rose-500 text-white rounded shadow-sm"
-                                 >
-                                   <Trash2 className="w-3 h-3" />
-                                 </button>
-                               )}
-                            </div>
-                            
-                            <div className="absolute bottom-0 inset-x-0 p-1 bg-black/40 backdrop-blur-sm text-[8px] text-white font-black uppercase text-center tracking-widest">
-                               {m.storage_provider === 'drive' ? 'External' : 'Server'}
-                            </div>
-                         </div>
-                       ))}
-                       
-                       {(!post.media || post.media.length === 0) && (
-                         <div className="col-span-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl text-text-muted gap-2">
-                            <ImageIcon size={32} />
-                            <p className="text-sm font-medium">Nenhum arquivo anexado ainda.</p>
-                         </div>
-                       )}
+                       {Array.from({ length: formData.post_type === 'carousel' ? (formData.carousel_slides || 1) : Math.max(1, (post.media?.length || 1)) }).map((_, idx) => {
+                         const m = post.media?.[idx]
+                         
+                         return (
+                           <div key={idx} className="group relative aspect-square rounded-xl overflow-hidden bg-surface-muted/50 border border-border shadow-sm flex flex-col items-center justify-center">
+                              {m ? (
+                                <>
+                                  {m.media_type === 'video' ? (
+                                     <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/10 gap-2">
+                                        <VideoIcon size={24} className="text-text-muted" />
+                                        <span className="text-[10px] uppercase font-black text-text-muted">Vídeo</span>
+                                     </div>
+                                  ) : (
+                                     <img src={m.public_url} className="w-full h-full object-cover" alt="Midia" />
+                                  )}
+                                  
+                                  <div className="absolute top-1.5 right-1.5 flex gap-1 transform translate-y-[-20px] opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all">
+                                     <a href={m.public_url} target="_blank" className="p-1 px-2 bg-white/90 rounded text-[10px] font-bold shadow-sm">Abrir</a>
+                                     {!isLocked && (
+                                       <button 
+                                         onClick={async () => {
+                                            const filtered = [...(post.media || [])]
+                                            filtered[idx] = null as any // Remove it
+                                            const cleaned = filtered.filter(Boolean)
+                                            await upsertPostMedia(post.id, cleaned)
+                                            onUpdate()
+                                         }}
+                                         className="p-1 bg-rose-500 text-white rounded shadow-sm hover:bg-rose-600"
+                                       >
+                                         <Trash2 className="w-3 h-3" />
+                                       </button>
+                                     )}
+                                  </div>
+                                  
+                                  <div className="absolute bottom-0 inset-x-0 p-1 bg-black/40 backdrop-blur-sm text-[8px] text-white font-black uppercase text-center tracking-widest flex justify-between px-2">
+                                     <span>{formData.post_type === 'carousel' ? `Lauda ${idx + 1}` : 'Conteúdo'}</span>
+                                     <span>{m.storage_provider === 'drive' ? 'External' : 'Server'}</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer transition-colors hover:bg-surface-muted/90 group p-4 text-center">
+                                  <div className="w-8 h-8 rounded-full bg-surface border border-border shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                    <Plus className="w-4 h-4 text-brand-primary" />
+                                  </div>
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted group-hover:text-text-primary">
+                                    {formData.post_type === 'carousel' ? `Lauda ${idx + 1}` : 'Adicionar Mídia'}
+                                  </span>
+                                  <input type="file" disabled={uploading || isLocked} className="hidden" onChange={(e) => handleHandleUpload(e, idx)} />
+                                </label>
+                              )}
+                           </div>
+                         )
+                       })}
                     </div>
 
                     {post.post_type === 'carousel' && (
@@ -359,18 +383,41 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
                               disabled={isLocked}
                               onClick={() => setFormData(p => ({ ...p, post_type: t }))}
                               className={cn(
-                                "flex items-center justify-between p-4 rounded-xl border text-sm font-bold transition-all",
+                                "flex items-center justify-between p-4 rounded-xl text-sm font-bold transition-all disabled:opacity-50",
                                 formData.post_type === t 
-                                  ? "bg-brand-primary/5 border-brand-primary text-brand-primary shadow-sm" 
-                                  : "bg-surface border-border text-text-muted hover:border-text-secondary"
+                                  ? "bg-brand-primary text-white shadow-xl shadow-brand-primary/20 ring-4 ring-brand-primary/10 border-transparent transform scale-[1.02]" 
+                                  : "bg-surface border border-border text-text-muted hover:border-text-secondary hover:bg-surface-muted/30"
                               )}
                             >
                                <span className="capitalize">{t}</span>
-                               {formData.post_type === t && <CheckCircle2 className="w-4 h-4" />}
+                               {formData.post_type === t && <CheckCircle2 className="w-4 h-4 text-white" />}
                             </button>
                           ))}
                        </div>
                     </div>
+
+                    {formData.post_type === 'carousel' && (
+                       <div className="space-y-4 animate-in fade-in slide-in-from-top-2 p-6 bg-surface-muted/20 border border-border rounded-xl">
+                          <label className="text-xs font-black uppercase tracking-widest text-text-primary flex items-center justify-between">
+                            <span>Quantidade de Laudas (Slides)</span>
+                            <span className="text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">{formData.carousel_slides || 1}</span>
+                          </label>
+                          <div className="flex gap-2 items-center">
+                            <input 
+                              type="range" 
+                              min="2" 
+                              max="10" 
+                              disabled={isLocked}
+                              value={formData.carousel_slides || 2} 
+                              onChange={(e) => setFormData(p => ({ ...p, carousel_slides: parseInt(e.target.value) }))}
+                              className="w-full accent-brand-primary"
+                            />
+                          </div>
+                          <p className="text-[10px] text-text-muted">
+                            Defina o total de slides deste carrossel. As vagas correspondentes aparecerão na aba <b>Mídia</b> para aprovação em sequência.
+                          </p>
+                       </div>
+                    )}
                  </div>
               </TabsContent>
 

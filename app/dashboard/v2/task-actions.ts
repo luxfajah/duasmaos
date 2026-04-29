@@ -16,6 +16,7 @@ export async function createV2Task(
     task_type?: TaskTypeV2
     deliverable_type?: DeliverableTypeV2
     social_post_count?: number
+    html_content?: string
   }
 ) {
   const supabase = createClient()
@@ -66,6 +67,7 @@ export async function createV2Task(
       task_type: data.task_type || 'operational',
       deliverable_type: data.deliverable_type || 'default',
       social_post_count: data.social_post_count || 0,
+      html_content: data.html_content || null,
       stage_order: stageOrder,
       depends_on_task_id: dependsOnTaskId
     })
@@ -110,6 +112,9 @@ export async function updateV2Task(
     task_type?: TaskTypeV2
     deliverable_type?: DeliverableTypeV2
     social_post_count?: number
+    html_content?: string
+    delivery_content?: string
+    delivery_link?: string
   }
 ) {
   const supabase = createClient()
@@ -126,6 +131,9 @@ export async function updateV2Task(
       task_type: data.task_type,
       deliverable_type: data.deliverable_type,
       social_post_count: data.social_post_count,
+      html_content: data.html_content,
+      delivery_content: data.delivery_content,
+      delivery_link: data.delivery_link,
       updated_at: new Date().toISOString()
     })
     .eq('id', taskId)
@@ -173,7 +181,7 @@ export async function getSocialPosts(taskId: string) {
     .from('v2_social_posts')
     .select('*')
     .eq('task_id', taskId)
-    .order('order_index', { ascending: true })
+    .order('order', { ascending: true })
 
   if (error) throw error
   return data || []
@@ -187,7 +195,7 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
     .from('v2_social_posts')
     .select('*')
     .eq('task_id', taskId)
-    .order('order_index', { ascending: true })
+    .order('order', { ascending: true })
 
   if (getError) throw getError
 
@@ -199,7 +207,7 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
     for (let i = currentCount; i < targetCount; i++) {
       newPosts.push({
         task_id: taskId,
-        order_index: i,
+        order: i,
         post_type: 'image',
         status: 'draft',
         hashtags: []
@@ -213,7 +221,7 @@ export async function syncSocialPosts(taskId: string, targetCount: number) {
   } else if (targetCount < currentCount) {
     // Identify empty posts to delete
     const postsToDelete = currentPosts.filter(post => {
-      if (post.order_index < targetCount) return false
+      if (post.order < targetCount) return false
       
       const isEmpty = !post.caption && 
                       (!post.hashtags || post.hashtags.length === 0)
@@ -314,7 +322,7 @@ export async function createDesignTaskFromCopy(copyTaskId: string) {
       art_text: p.art_text,
       script: p.script,
       status: 'draft',
-      order_index: p.order_index
+      order: p.order
     }))
 
     const { error: insertPostsError } = await supabase
@@ -416,6 +424,58 @@ export async function approvePost(postId: string) {
   return { success: true }
 }
 
+/**
+ * Reject a post with mandatory reason.
+ * Creates a task_comment with comment_type 'rejection_reason' linked to the post.
+ */
+export async function rejectPostWithReason(postId: string, reason: string) {
+  if (!reason || reason.trim().length === 0) {
+    throw new Error('É obrigatório informar o motivo da rejeição.')
+  }
+
+  const supabase = createClient()
+
+  // Get task_id for the comment
+  const { data: post } = await supabase
+    .from('v2_social_posts')
+    .select('task_id')
+    .eq('id', postId)
+    .single()
+
+  if (!post) throw new Error('Post não encontrado.')
+
+  // Update post status
+  const { error: updateError } = await supabase
+    .from('v2_social_posts')
+    .update({ 
+      status: 'rejected',
+      rejected_at: new Date().toISOString(),
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', postId)
+
+  if (updateError) throw updateError
+
+  // Get current user for the comment
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Create rejection comment linked to the post
+  await supabase.from('task_comments').insert({
+    task_id: post.task_id,
+    social_post_id: postId,
+    user_id: user?.id ?? null,
+    body: reason.trim(),
+    comment_type: 'rejection_reason',
+  })
+
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
+  return { success: true }
+}
+
+/**
+ * @deprecated Use rejectPostWithReason instead. Kept for backward compatibility.
+ */
 export async function rejectPost(postId: string) {
   const supabase = createClient()
   const { error } = await supabase
@@ -428,6 +488,53 @@ export async function rejectPost(postId: string) {
     .eq('id', postId)
 
   if (error) throw error
+  revalidatePath('/dashboard', 'layout')
+  revalidatePath('/dashboard/tasks')
+  return { success: true }
+}
+
+/**
+ * Request revision on a post with mandatory notes.
+ * Creates a task_comment with comment_type 'revision_request' linked to the post.
+ */
+export async function requestPostRevision(postId: string, notes: string) {
+  if (!notes || notes.trim().length === 0) {
+    throw new Error('É obrigatório informar as observações para revisão.')
+  }
+
+  const supabase = createClient()
+
+  const { data: post } = await supabase
+    .from('v2_social_posts')
+    .select('task_id')
+    .eq('id', postId)
+    .single()
+
+  if (!post) throw new Error('Post não encontrado.')
+
+  // Update post status back to draft for revision
+  const { error: updateError } = await supabase
+    .from('v2_social_posts')
+    .update({
+      status: 'draft',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', postId)
+
+  if (updateError) throw updateError
+
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // Create revision comment linked to the post
+  await supabase.from('task_comments').insert({
+    task_id: post.task_id,
+    social_post_id: postId,
+    user_id: user?.id ?? null,
+    body: notes.trim(),
+    comment_type: 'revision_request',
+  })
+
   revalidatePath('/dashboard', 'layout')
   revalidatePath('/dashboard/tasks')
   return { success: true }
@@ -484,4 +591,16 @@ export async function upsertPostMedia(postId: string, mediaItems: any[]) {
   revalidatePath('/dashboard/tasks')
   revalidatePath(`/dashboard/tasks/${postId}`)
   return { success: true }
+}
+
+export async function getTaskFiles(taskId: string) {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('project_files')
+    .select('*, profiles(full_name)')
+    .eq('task_id', taskId)
+    .order('created_at', { ascending: false })
+  
+  if (error) throw error
+  return data
 }

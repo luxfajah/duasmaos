@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useTransition } from 'react'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
+import 'react-quill/dist/quill.snow.css'
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
 import { Modal, ModalBody, ModalContent, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { TaskStatusV2, TaskPriorityV2, PRIORITY_LABELS, TASK_STATUS_V2_LABELS, DeliverableTypeV2, TaskTypeV2, PostStatusV2, PostTypeV2 } from '@/types/database'
 import { 
@@ -48,7 +52,10 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
     due_date: '',
     assignees: [] as string[],
     deliverable_type: 'default' as DeliverableTypeV2,
-    social_post_count: 0
+    social_post_count: 0,
+    html_content: '',
+    delivery_content: '',
+    delivery_link: ''
   })
 
   // Post State (Content specific)
@@ -75,7 +82,10 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
           due_date: task.due_date ? task.due_date.split('T')[0] : '',
           assignees: task.v2_task_assignees?.map((a: any) => a.user_id) || [],
           deliverable_type: task.deliverable_type || 'default',
-          social_post_count: task.social_post_count || 0
+          social_post_count: task.social_post_count || 0,
+          html_content: task.html_content || '',
+          delivery_content: task.delivery_content || '',
+          delivery_link: task.delivery_link || ''
         })
 
         // Fetch post content if it's a content post
@@ -111,7 +121,10 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
           due_date: '',
           assignees: [],
           deliverable_type: 'default',
-          social_post_count: 0
+          social_post_count: 0,
+          html_content: '',
+          delivery_content: '',
+          delivery_link: ''
         })
         setPostData({
           post_type: 'image',
@@ -400,9 +413,23 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                     <textarea 
                       value={formData.description}
                       onChange={e => setFormData(p => ({ ...p, description: e.target.value }))}
-                      className="w-full bg-surface-muted/10 border border-border/50 rounded-2xl p-6 text-sm leading-relaxed min-h-[200px] outline-none focus:border-brand-primary/40 transition-colors"
-                      placeholder="Descreva os objetivos, referências e especificações técnicas..."
+                      className="w-full bg-surface-muted/10 border border-border/50 rounded-2xl p-4 text-sm leading-relaxed min-h-[100px] outline-none focus:border-brand-primary/40 transition-colors"
+                      placeholder="Resumo ou diretrizes gerais da operação..."
                     />
+
+                    <div className="flex items-center gap-3 mt-4">
+                      <div className="w-1.5 h-6 rounded-full bg-brand-primary" />
+                      <h4 className="text-sm font-black text-text-primary uppercase tracking-widest">Conteúdo Detalhado</h4>
+                    </div>
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-border/50 overflow-hidden">
+                      <ReactQuill 
+                        theme="snow" 
+                        value={formData.html_content} 
+                        onChange={(val) => setFormData(p => ({ ...p, html_content: val }))}
+                        placeholder="Escreva livremente aqui..."
+                        className="min-h-[250px]"
+                      />
+                    </div>
                   </div>
 
                   {/* Operational Team */}

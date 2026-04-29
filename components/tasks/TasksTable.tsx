@@ -192,6 +192,7 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                     )} />
                     <select
                       value={task.status}
+                      onClick={(e) => e.stopPropagation()}
                       onChange={(e) => handleStatusChange(task.id, e.target.value as TaskStatusV2)}
                       className="text-[11px] font-bold border-none bg-transparent text-text-primary focus:outline-none p-0 cursor-pointer uppercase tracking-tight"
                     >
@@ -220,7 +221,10 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0"
-                      onClick={() => onEdit(task)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(task);
+                      }}
                     >
                       <Pencil size={14} />
                     </Button>
@@ -230,7 +234,10 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
                       variant="ghost"
                       size="sm"
                       className="h-8 w-8 p-0 text-status-danger hover:text-status-danger hover:bg-status-danger/10"
-                      onClick={() => handleDelete(task.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(task.id);
+                      }}
                       disabled={deletingId === task.id}
                     >
                       <Trash2 size={14} />

@@ -1,21 +1,26 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-import { PostStatus } from '@/types/database';
+import { PostStatusV2, ClientApprovalStatus } from '@/types/database';
+
+type StatusType = PostStatusV2 | ClientApprovalStatus;
 
 interface StatusPillProps {
-  status: PostStatus;
+  status: StatusType;
   className?: string;
 }
 
-const statusConfig: Record<PostStatus, { label: string, className: string }> = {
+const statusConfig: Record<string, { label: string, className: string }> = {
+  // V2 Post statuses (internal workflow)
   draft: { label: 'Rascunho', className: 'bg-draft text-text-inverse border-transparent' },
-  copy_review: { label: 'Revisão de Copy', className: 'bg-pending text-text-inverse border-transparent' },
-  copy_rejected: { label: 'Copy Rejeitada', className: 'bg-danger text-text-inverse border-transparent' },
-  design_draft: { label: 'Design em Produção', className: 'bg-info text-text-inverse border-transparent' },
-  design_review: { label: 'Aguardando Cliente', className: 'bg-warning text-text-inverse border-transparent' },
-  design_rejected: { label: 'Design Rejeitado', className: 'bg-danger text-text-inverse border-transparent' },
+  in_production: { label: 'Em Produção', className: 'bg-info text-text-inverse border-transparent' },
+  awaiting_review: { label: 'Aguardando Revisão', className: 'bg-warning text-text-inverse border-transparent' },
   approved: { label: 'Aprovado', className: 'bg-success text-text-inverse border-transparent' },
+  rejected: { label: 'Rejeitado', className: 'bg-danger text-text-inverse border-transparent' },
+
+  // Client approval statuses (portal)
+  pending: { label: 'Pendente', className: 'bg-pending text-text-inverse border-transparent' },
+  revision_requested: { label: 'Revisão Solicitada', className: 'bg-warning text-text-inverse border-transparent' },
 };
 
 export function StatusPill({ status, className }: StatusPillProps) {

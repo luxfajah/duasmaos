@@ -108,7 +108,7 @@ export function PostCard({ post, onClick, onDuplicate, onDelete }: PostCardProps
              <MessageSquare className="w-3 h-3" /> {post.hashtags?.length || 0} Tags
            </span>
            <span className="flex items-center gap-1 text-text-primary">
-              Post #{post.order_index + 1}
+              Post #{post.order + 1}
            </span>
         </div>
       </div>

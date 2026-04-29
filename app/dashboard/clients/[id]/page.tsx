@@ -1,7 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import { getClientById, getClientStats } from '../actions'
+import { getClientPortalSettings } from '@/app/dashboard/clients/actions'
 import { getV2ProjectsByClient } from '@/app/dashboard/v2/actions'
+import { PortalConfigModal } from '@/components/clients/PortalConfigModal'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 import { Badge } from '@/components/ui/badge'
 import { MetricCard } from '@/components/dashboard/MetricCard'
@@ -64,12 +66,13 @@ export default async function ClientDetailPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  let client: any, stats, projects
+  let client: any, stats, projects, portalSettings
   try {
-    ;[client, stats, projects] = await Promise.all([
+    ;[client, stats, projects, portalSettings] = await Promise.all([
       getClientById(params.id),
       getClientStats(params.id),
       getV2ProjectsByClient(params.id),
+      getClientPortalSettings(params.id)
     ])
   } catch {
     notFound()
@@ -106,6 +109,11 @@ export default async function ClientDetailPage({ params }: Props) {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <PortalConfigModal 
+            clientId={client.id} 
+            clientName={isPJ ? (client.company || client.name) : client.name} 
+            existingSettings={portalSettings} 
+          />
           <Button variant="outline" size="sm" className="h-9">Exportar PDF</Button>
           <Button size="sm" className="h-9">Editar CRM</Button>
         </div>

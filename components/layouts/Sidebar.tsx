@@ -19,8 +19,6 @@ const navGroups = [
       { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', exact: true },
       { href: '/dashboard/projects', label: 'Projetos', icon: 'projects' },
       { href: '/dashboard/clients', label: 'Clientes', icon: 'clients', exact: true },
-      { href: '/dashboard/financials', label: 'Financeiro', icon: 'financials' },
-      { href: '/dashboard/team', label: 'Equipe', icon: 'team' },
     ],
   },
   {
@@ -37,13 +35,6 @@ const navGroups = [
       { href: '/dashboard/files', label: 'Arquivos', icon: 'files' },
     ],
   },
-  {
-    label: 'Sistema',
-    items: [
-      { href: '/dashboard/support', label: 'Suporte', icon: 'support' },
-      { href: '/dashboard/archive', label: 'Arquivados', icon: 'archive' },
-    ],
-  }
 ]
 
 /* ─────────────────────────────────────────

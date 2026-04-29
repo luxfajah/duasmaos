@@ -205,3 +205,56 @@ export async function uploadClientDocument(clientId: string, file: File, type: s
   
   revalidatePath(`/dashboard/clients/${clientId}`)
 }
+
+// ── Approval Portal ──────────────────────────────────────────────────────────
+
+export async function getClientPortalSettings(clientId: string) {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('client_portal_settings')
+    .select('*')
+    .eq('client_id', clientId)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error // Ignore not found
+  return data
+}
+
+export async function upsertClientPortalSettings(settings: any) {
+  const supabase = createClient()
+  
+  // Verify current user is admin or gestor
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Não autenticado')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile || !['admin', 'gestor'].includes(profile.role)) {
+    throw new Error('Apenas administradores e gestores podem configurar o portal.')
+  }
+
+  // Ensure slug uniqueness (except for self)
+  const { data: existingSlug } = await supabase
+    .from('client_portal_settings')
+    .select('client_id')
+    .eq('slug', settings.slug)
+    .single()
+
+  if (existingSlug && existingSlug.client_id !== settings.client_id) {
+    throw new Error('Esta URL já está sendo usada por outro portal. Escolha outro nome.')
+  }
+
+  const { error } = await supabase
+    .from('client_portal_settings')
+    .upsert({
+      ...settings,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'client_id' })
+
+  if (error) throw error
+  revalidatePath(`/dashboard/clients/${settings.client_id}`)
+}

@@ -3,8 +3,9 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
-import { Bell, Search, Settings, LogOut, Moon, Sun } from 'lucide-react'
+import { Settings, LogOut } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import Link from 'next/link'
 import {
   DropdownMenu,
@@ -20,9 +21,18 @@ interface TopBarProps {
   userName?: string | null
   userEmail?: string | null
   userAvatar?: string | null
+  tasks?: Array<{
+    id: string
+    title: string
+    status: string
+    due_date?: string | null
+    deadline?: string | null
+    v2_projects?: { name: string } | null
+    projects?: { name: string } | null
+  }>
 }
 
-export function TopBar({ className, userName, userEmail, userAvatar }: TopBarProps) {
+export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] }: TopBarProps) {
   const displayName = userName ?? userEmail?.split('@')[0] ?? 'Usuário'
 
   return (
@@ -34,36 +44,19 @@ export function TopBar({ className, userName, userEmail, userAvatar }: TopBarPro
         className
       )}
     >
-      {/* Spacer para equilibrar o flex */}
       <div className="flex-1" />
 
-      {/* Controladores Direitos */}
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
-        
-        {/* Aparência (Theme) */}
         <ThemeToggle className="text-text-muted hover:text-text-primary" />
 
-        {/* Configurações */}
         <Link href="/dashboard/settings" title="Configurações" className="p-2 text-text-muted hover:bg-sand-warm hover:text-text-primary rounded-xl transition-all duration-150 hover:scale-105">
           <Settings size={17} strokeWidth={1.75} />
         </Link>
-        
-        {/* Notificações */}
-        <button
-          className={cn(
-            'relative rounded-xl p-2',
-            'text-text-muted hover:bg-sand-warm hover:text-text-primary',
-            'transition-all duration-150 hover:scale-105'
-          )}
-          aria-label="Notificações"
-        >
-          <Bell size={17} strokeWidth={1.75} />
-          <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-brand-primary ring-2 ring-background animate-pulse" />
-        </button>
+
+        <NotificationCenter tasks={tasks} />
 
         <div className="h-5 w-px bg-sand-dark/40 mx-1" />
 
-        {/* Avatar com Dropdown (CRUD) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-2 cursor-pointer group outline-none">
@@ -101,14 +94,13 @@ export function TopBar({ className, userName, userEmail, userAvatar }: TopBarPro
             </form>
           </DropdownMenuContent>
         </DropdownMenu>
-
       </div>
     </header>
   )
 }
 
 /* ─────────────────────────────────────────
-   CONTENT WRAPPER — unchanged, kept for compat
+   CONTENT WRAPPER
 ───────────────────────────────────────── */
 
 export function ContentWrapper({

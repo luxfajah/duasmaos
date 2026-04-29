@@ -1,13 +1,8 @@
 export type UserRole = 'admin' | 'gestor' | 'writer' | 'designer' | 'client';
 
-export type PostStatus =
-  | 'draft'
-  | 'copy_review'
-  | 'copy_rejected'
-  | 'design_draft'
-  | 'design_review'
-  | 'design_rejected'
-  | 'approved';
+// ── Client Approval (Portal) ────────────────────────────────────────────────
+export type ClientApprovalStatus = 'pending' | 'approved' | 'rejected' | 'revision_requested';
+export type CommentType = 'general' | 'rejection_reason' | 'revision_request';
 
 export type ProjectStatus = 'draft' | 'copy' | 'review' | 'approved' | 'delayed' | 'completed';
 export type ProjectType = 'redes_sociais' | 'branding' | 'site';
@@ -99,6 +94,26 @@ export interface ClientDocument {
   created_at: string;
 }
 
+export interface ClientPortalSettings {
+  client_id: string;
+  slug: string;
+  logo_url: string | null;
+  wallpaper_url: string | null;
+  theme_color_primary: string;
+  theme_color_secondary: string;
+  ig_username: string;
+  ig_name: string;
+  ig_bio: string | null;
+  ig_avatar_url: string | null;
+  ig_stats_posts: number;
+  ig_stats_followers: string;
+  ig_stats_following: string;
+  ig_highlights: any; // jsonb array of { title: string, image_url: string }
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -150,6 +165,7 @@ export interface TaskComment {
 export interface ProjectFile {
   id: string;
   project_id: string;
+  task_id?: string | null;
   name: string;
   file_path: string;
   file_type: string | null;
@@ -158,35 +174,13 @@ export interface ProjectFile {
   created_at: string;
 }
 
-export interface Post {
+// ── Approval Sessions (Client Portal) ────────────────────────────────────────
+export interface ApprovalSession {
   id: string;
   client_id: string;
-  title: string;
-  status: PostStatus;
-  publish_date: string | null;
-  copy_content: string | null;
-  design_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PostVersion {
-  id: string;
-  post_id: string;
-  stage: 'copy' | 'design';
-  content: string;
+  token: string;
+  expires_at: string;
   created_by: string | null;
-  created_at: string;
-}
-
-export interface Comment {
-  id: string;
-  post_id: string;
-  user_id: string | null;
-  stage: 'copy' | 'design';
-  text: string;
-  pos_x: number | null;
-  pos_y: number | null;
   created_at: string;
 }
 
@@ -322,6 +316,9 @@ export interface V2Task {
   offset_type: 'stage_start' | 'stage_end';
   social_post_count?: number;
   parent_task_id?: string | null;
+  html_content?: string | null;
+  delivery_content?: string | null;
+  delivery_link?: string | null;
   /** Populated via v2_task_assignees join or direct column if migrated */
   /** @deprecated use task_assignees for multiple members */
   assigned_to?: string | null;
@@ -333,7 +330,7 @@ export interface V2Task {
 export interface V2SocialPost {
   id: string;
   task_id: string;
-  order_index: number;
+  order: number;
   post_type: PostTypeV2;
   
   status: PostStatusV2;
@@ -341,8 +338,14 @@ export interface V2SocialPost {
   approved_at: string | null;
   rejected_at: string | null;
 
+  // Client approval (portal)
+  client_approval_status: ClientApprovalStatus;
+  client_approved_at: string | null;
+  client_rejected_at: string | null;
+
   caption: string | null;
   art_text: string | null;
+  carousel_slides?: number;
   script: string | null;
   hashtags: string[];
   

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useEffect, useTransition } from 'react'
 import { V2Task, TaskStatusV2, TaskWithRelations } from '@/types/database'
 import { updateTaskStatus } from '@/app/dashboard/tasks/actions'
 import { cn } from '@/lib/utils'
@@ -45,9 +45,9 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
   const [optimisticTasks, setOptimisticTasks] = useState(tasks)
 
   // Keep in sync with parent prop changes
-  if (tasks !== optimisticTasks && tasks.length !== optimisticTasks.length) {
+  useEffect(() => {
     setOptimisticTasks(tasks)
-  }
+  }, [tasks])
 
   function handleDrop(e: React.DragEvent, newStatus: TaskStatusV2) {
     e.preventDefault()
@@ -141,12 +141,13 @@ function TaskCard({
       draggable={!isLocked}
       onDragStart={!isLocked ? onDragStart : undefined}
       onClick={isLocked ? () => alert('Aguardando conclusão da etapa anterior da qual esta tarefa depende.') : onClick}
+      title={isLocked ? 'Tarefa bloqueada. Aguardando conclusão da etapa anterior.' : undefined}
       className={cn(
         'bg-background border border-border rounded-lg p-3 space-y-2 transition-all duration-150 relative overflow-hidden',
         !isLocked && 'cursor-grab active:cursor-grabbing hover:border-brand-primary/40 hover:shadow-sm',
         !isLocked && onClick && 'hover:bg-sand-light/10',
         isLocked && 'cursor-not-allowed opacity-60 border-dashed bg-surface-muted/30 grayscale-[50%]',
-        isOverdue && !isLocked && 'border-status-danger/40 bg-status-danger/5',
+        isOverdue && !isLocked && 'border-status-danger/40 bg-status-danger/5 text-status-danger',
       )}
     >
       {/* Priority + grip */}
@@ -164,6 +165,7 @@ function TaskCard({
       {/* Title */}
       <p className="text-sm font-semibold text-text-primary leading-snug relative z-10 flex flex-col gap-1">
         {isLocked && <span className="text-[9px] font-black uppercase tracking-widest text-text-muted flex items-center gap-1"><AlertCircle size={10} /> Dependência Ativa</span>}
+        {isOverdue && !isLocked && <span className="text-[9px] font-black uppercase tracking-widest text-status-danger flex items-center gap-1">⚠ Atrasada</span>}
         {task.title}
       </p>
 
