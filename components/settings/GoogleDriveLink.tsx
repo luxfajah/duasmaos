@@ -116,7 +116,7 @@ export function GoogleDriveLink() {
           </Button>
         ) : isLinked ? (
           <Button 
-            variant="destructive" 
+            variant="danger" 
             onClick={handleUnlinkGoogle} 
             disabled={loading}
             className="w-full sm:w-auto"
