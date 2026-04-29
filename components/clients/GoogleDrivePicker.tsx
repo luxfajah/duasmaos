@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import Script from 'next/script'
 import { Button } from '@/components/ui/button'
-import { Loader2, HardDrive } from 'lucide-react'
+import { Loader2, HardDrive, Link as LinkIcon } from 'lucide-react'
 import { toast } from 'sonner'
+import { createClient } from '@/utils/supabase/client'
 
 declare global {
   interface Window {
@@ -23,12 +24,29 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
   const [gisLoaded, setGisLoaded] = useState(false)
   const [tokenClient, setTokenClient] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const [isLinked, setIsLinked] = useState(false)
+  const [checkingLink, setCheckingLink] = useState(true)
 
   const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY
   const APP_ID = process.env.NEXT_PUBLIC_GOOGLE_APP_ID
 
   const isConfigured = !!(CLIENT_ID && API_KEY && APP_ID && CLIENT_ID !== 'PREENCHER_AQUI')
+
+  useEffect(() => {
+    checkLinkedStatus()
+  }, [])
+
+  const checkLinkedStatus = async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user && user.identities) {
+      const googleId = user.identities.find(id => id.provider === 'google')
+      setIsLinked(!!googleId)
+    }
+    setCheckingLink(false)
+  }
 
   // Initialize gapi.client
   const gapiLoad = () => {
@@ -58,11 +76,42 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
     }
   }
 
+  const handleLinkGoogle = async () => {
+    setLoading(true)
+    const supabase = createClient()
+    
+    // Redirect back to current page
+    const redirectUrl = new URL('/auth/callback', window.location.origin)
+    redirectUrl.searchParams.set('next', window.location.pathname + window.location.search)
+
+    const { error } = await supabase.auth.linkIdentity({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl.toString(),
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+        scopes: 'https://www.googleapis.com/auth/drive.readonly'
+      }
+    })
+
+    if (error) {
+      toast.error('Erro ao iniciar vinculação: ' + error.message)
+      setLoading(false)
+    }
+  }
+
   const handleAuthClick = async () => {
     if (!isConfigured) {
       toast.error('Faltam credenciais do Google Cloud (.env.local).')
       return
     }
+
+    if (!isLinked) {
+      return handleLinkGoogle()
+    }
+
     if (!gapiLoaded) {
       toast.error('Scripts do Google ainda carregando...')
       return
@@ -80,7 +129,7 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
         }
       }
 
-      // 2. Fallback: Se não tem conta vinculada, pede o login nativo do navegador
+      // 2. Fallback: Se não tem conta vinculada no banco (mas está no auth), pede o login nativo do navegador
       if (!gisLoaded || !tokenClient) {
         toast.error('Módulo de login do Google não carregado.')
         setLoading(false)
@@ -134,12 +183,29 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
       <Button 
         type="button" 
         onClick={handleAuthClick} 
-        disabled={loading || !isConfigured}
-        variant="outline" 
-        className="w-full flex gap-2 items-center justify-center bg-white border-gray-300 text-gray-700 hover:bg-gray-50 h-8 text-xs font-medium"
+        disabled={loading || !isConfigured || checkingLink}
+        variant={!isLinked ? "primary" : "outline"} 
+        className={`w-full flex gap-2 items-center justify-center h-8 text-xs font-medium ${
+          isLinked 
+            ? 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50' 
+            : 'shadow-lg shadow-brand-primary/20'
+        }`}
       >
-        {loading ? <Loader2 className="animate-spin" size={14} /> : <HardDrive size={14} className="text-[#4285F4]" />}
-        {isConfigured ? label : 'Google API não configurada'}
+        {loading || checkingLink ? (
+          <Loader2 className="animate-spin" size={14} />
+        ) : isLinked ? (
+          <HardDrive size={14} className="text-[#4285F4]" />
+        ) : (
+          <LinkIcon size={14} />
+        )}
+        
+        {!isConfigured 
+          ? 'Google API não configurada' 
+          : checkingLink 
+            ? 'Verificando...' 
+            : isLinked 
+              ? label 
+              : 'Vincular ao Google Drive'}
       </Button>
     </>
   )
