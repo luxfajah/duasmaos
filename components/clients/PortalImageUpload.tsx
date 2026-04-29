@@ -5,6 +5,7 @@ import { X, Link as LinkIcon } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { GoogleDrivePicker } from './GoogleDrivePicker'
 
 interface Props {
   clientId: string
@@ -26,13 +27,11 @@ export function PortalImageUpload({ label, value, onChange }: Props) {
     let finalUrl = linkInput.trim()
     
     // Integração com Google Drive: converte link de compartilhamento em link direto de imagem
-    // Exemplo: https://drive.google.com/file/d/1XYZ.../view?usp=sharing -> https://drive.google.com/uc?export=view&id=1XYZ...
     const driveMatch = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
     if (driveMatch && driveMatch[1]) {
       finalUrl = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`
       toast.success('Link do Google Drive convertido com sucesso!')
     } else if (finalUrl.includes('drive.google.com')) {
-      // Tenta extrair ID de outro formato de link do Drive
       const idMatch = finalUrl.match(/id=([a-zA-Z0-9_-]+)/)
       if (idMatch && idMatch[1]) {
         finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
@@ -66,10 +65,10 @@ export function PortalImageUpload({ label, value, onChange }: Props) {
           <img src={value} alt={label} className="max-w-full max-h-full object-contain" />
         </div>
       ) : (
-        <div className="flex flex-col gap-2 p-3 border border-border rounded-xl bg-surface-muted/30">
+        <div className="flex flex-col gap-3 p-3 border border-border rounded-xl bg-surface-muted/30">
           <div className="flex gap-2">
             <Input 
-              placeholder="Cole o link do Google Drive..." 
+              placeholder="Cole o link de compartilhamento..." 
               value={linkInput}
               onChange={e => setLinkInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleLinkAdd())}
@@ -79,9 +78,14 @@ export function PortalImageUpload({ label, value, onChange }: Props) {
               <LinkIcon size={14} /> Add
             </Button>
           </div>
-          <p className="text-[10px] text-text-muted leading-tight">
-            Cole o link de compartilhamento do <strong>Google Drive</strong> (precisa estar "Qualquer pessoa com o link").
-          </p>
+          
+          <div className="flex items-center gap-2">
+            <div className="flex-1 h-px bg-border"></div>
+            <span className="text-[10px] text-text-muted font-medium uppercase">OU</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+          
+          <GoogleDrivePicker onPick={onChange} label="Navegar no Meu Drive..." />
         </div>
       )}
     </div>
