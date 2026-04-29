@@ -64,13 +64,14 @@ export function GoogleDriveLink() {
     const { data, error } = await supabase.auth.linkIdentity({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl.toString(),
+        redirectTo: `${window.location.origin}/auth/callback?next=/auth/close-popup`,
         skipBrowserRedirect: true,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
+          include_granted_scopes: 'true'
         },
-        scopes: 'https://www.googleapis.com/auth/drive.readonly'
+        scopes: 'openid email profile https://www.googleapis.com/auth/drive.readonly'
       }
     })
 
