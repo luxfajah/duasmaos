@@ -39,7 +39,7 @@ export function GoogleDriveLink() {
     const supabase = createClient()
     
     const redirectUrl = new URL('/auth/callback', window.location.origin)
-    redirectUrl.searchParams.set('next', '/dashboard/settings?section=profile')
+    redirectUrl.searchParams.set('next', window.location.pathname + window.location.search)
 
     const { error } = await supabase.auth.linkIdentity({
       provider: 'google',
