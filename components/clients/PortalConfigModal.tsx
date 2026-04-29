@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Globe, Plus, Trash2, Key, MessageSquare, RefreshCw, Copy, Upload } from 'lucide-react'
-import { upsertClientPortalSettings } from '@/app/dashboard/clients/actions'
+import { Globe, Plus, Trash2, Key, MessageSquare, RefreshCw, Copy, Search, Instagram } from 'lucide-react'
+import { upsertClientPortalSettings, fetchInstagramData } from '@/app/dashboard/clients/actions'
 import { PortalImageUpload } from './PortalImageUpload'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { ClientPortalSettings } from '@/types/database'
+import { format, parseISO } from 'date-fns'
 
 interface PortalConfigModalProps {
   clientId: string
@@ -23,6 +24,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [extracting, setExtracting] = useState(false)
   
   const [formData, setFormData] = useState({
     slug: existingSettings?.slug || clientName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -41,7 +43,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
     portal_password: existingSettings?.portal_password || '',
     focus_of_month: existingSettings?.focus_of_month || 'Apresentação da marca, autoridade e engajamento.',
     planning_period: existingSettings?.planning_period || '',
-    deadline_description: existingSettings?.deadline_description || 'Aguardamos seu feedback para iniciar a produção.'
+    deadline_description: existingSettings?.deadline_description || ''
   })
 
   const [highlights, setHighlights] = useState<{title: string, image_url: string}[]>(
@@ -57,10 +59,46 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
     setFormData({ ...formData, portal_password: pass })
   }
 
+  const handleExtractIG = async () => {
+    if (!formData.ig_username) {
+      toast.error('Informe o @ ou link do perfil para extrair.')
+      return
+    }
+
+    try {
+      setExtracting(true)
+      toast.loading('Extraindo dados do Instagram...', { id: 'ig-extract' })
+      const res = await fetchInstagramData(formData.ig_username)
+      
+      if (res.success) {
+        const d = res.data
+        setFormData(prev => ({
+          ...prev,
+          ig_username: d.username,
+          ig_name: d.full_name,
+          ig_bio: d.biography,
+          ig_stats_posts: d.edge_owner_to_timeline_media.count,
+          ig_stats_followers: String(d.edge_followed_by.count),
+          ig_stats_following: String(d.edge_follow.count),
+          ig_avatar_url: d.profile_pic_url_hd
+        }))
+        
+        if (d.highlights) {
+          setHighlights(d.highlights)
+        }
+        
+        toast.success('Dados extraídos com sucesso!', { id: 'ig-extract' })
+      }
+    } catch (err: any) {
+      toast.error(err.message, { id: 'ig-extract' })
+    } finally {
+      setExtracting(false)
+    }
+  }
+
   const handleSave = async () => {
     try {
       setLoading(true)
-      // Extract only the fields we want to save to avoid persistence issues with extra properties
       const payload = {
         client_id: clientId,
         slug: formData.slug,
@@ -170,39 +208,72 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Período das Postagens</Label>
-                  <Input value={formData.planning_period} onChange={e => setFormData({...formData, planning_period: e.target.value})} placeholder="Ex: Maio de 2024" />
+                  <Input type="month" value={formData.planning_period} onChange={e => setFormData({...formData, planning_period: e.target.value})} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Prazo de Aprovação</Label>
-                  <Input value={formData.deadline_description} onChange={e => setFormData({...formData, deadline_description: e.target.value})} />
+                  <Label>Prazo para Aprovação</Label>
+                  <Input type="date" value={formData.deadline_description} onChange={e => setFormData({...formData, deadline_description: e.target.value})} />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Cores e Identidade */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase text-text-muted">Cores e Identidade</h4>
-            <div className="grid grid-cols-2 gap-6">
+          {/* Perfil Instagram e Automação */}
+          <div className="space-y-4 border-t border-border pt-6">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase text-brand-primary flex items-center gap-2">
+                <Instagram size={14} /> Simulação Perfil IG
+              </h4>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 text-[10px] gap-2 border-brand-primary/30 text-brand-primary"
+                onClick={handleExtractIG}
+                disabled={extracting}
+              >
+                {extracting ? <Loader2 size={12} className="animate-spin" /> : <Search size={12} />}
+                Extrair do Instagram
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Cor Primária</Label>
-                <div className="flex gap-2">
-                  <Input type="color" value={formData.theme_color_primary} onChange={e => setFormData({...formData, theme_color_primary: e.target.value})} className="w-12 p-1 h-10" />
-                  <Input value={formData.theme_color_primary} onChange={e => setFormData({...formData, theme_color_primary: e.target.value})} />
-                </div>
+                <Label>@ ou Link do Perfil</Label>
+                <Input 
+                  value={formData.ig_username} 
+                  onChange={e => setFormData({...formData, ig_username: e.target.value})} 
+                  placeholder="@usuario ou link"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Cor Secundária</Label>
-                <div className="flex gap-2">
-                  <Input type="color" value={formData.theme_color_secondary} onChange={e => setFormData({...formData, theme_color_secondary: e.target.value})} className="w-12 p-1 h-10" />
-                  <Input value={formData.theme_color_secondary} onChange={e => setFormData({...formData, theme_color_secondary: e.target.value})} />
-                </div>
+                <Label>Nome de Exibição</Label>
+                <Input value={formData.ig_name} onChange={e => setFormData({...formData, ig_name: e.target.value})} />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Biografia</Label>
+              <Textarea rows={3} value={formData.ig_bio} onChange={e => setFormData({...formData, ig_bio: e.target.value})} placeholder="Escreva a bio aqui..." />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Posts</Label>
+                <Input type="number" value={formData.ig_stats_posts} onChange={e => setFormData({...formData, ig_stats_posts: parseInt(e.target.value)})} />
+              </div>
+              <div className="space-y-2">
+                <Label>Seguidores</Label>
+                <Input value={formData.ig_stats_followers} onChange={e => setFormData({...formData, ig_stats_followers: e.target.value})} placeholder="ex: 10.5K" />
+              </div>
+              <div className="space-y-2">
+                <Label>Seguindo</Label>
+                <Input value={formData.ig_stats_following} onChange={e => setFormData({...formData, ig_stats_following: e.target.value})} placeholder="ex: 800" />
               </div>
             </div>
           </div>
 
-          {/* Imagens */}
-          <div className="space-y-4">
+          {/* Imagens do Portal */}
+          <div className="space-y-4 border-t border-border pt-6">
             <h4 className="text-xs font-bold uppercase text-text-muted">Imagens do Portal</h4>
             <div className="grid grid-cols-2 gap-6">
               <PortalImageUpload 
@@ -228,41 +299,8 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
             </div>
           </div>
 
-          {/* Perfil Instagram */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase text-text-muted">Simulação Perfil IG</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Username (@)</Label>
-                <Input value={formData.ig_username} onChange={e => setFormData({...formData, ig_username: e.target.value})} />
-              </div>
-              <div className="space-y-2">
-                <Label>Nome de Exibição</Label>
-                <Input value={formData.ig_name} onChange={e => setFormData({...formData, ig_name: e.target.value})} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Biografia</Label>
-              <Textarea rows={3} value={formData.ig_bio} onChange={e => setFormData({...formData, ig_bio: e.target.value})} placeholder="Escreva a bio aqui..." />
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Posts</Label>
-                <Input type="number" value={formData.ig_stats_posts} onChange={e => setFormData({...formData, ig_stats_posts: parseInt(e.target.value)})} />
-              </div>
-              <div className="space-y-2">
-                <Label>Seguidores</Label>
-                <Input value={formData.ig_stats_followers} onChange={e => setFormData({...formData, ig_stats_followers: e.target.value})} placeholder="ex: 10.5K" />
-              </div>
-              <div className="space-y-2">
-                <Label>Seguindo</Label>
-                <Input value={formData.ig_stats_following} onChange={e => setFormData({...formData, ig_stats_following: e.target.value})} placeholder="ex: 800" />
-              </div>
-            </div>
-          </div>
-
           {/* Destaques */}
-          <div className="space-y-4">
+          <div className="space-y-4 border-t border-border pt-6">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase text-text-muted">Destaques (Highlights)</h4>
               <Button type="button" variant="outline" size="sm" onClick={() => setHighlights([...highlights, {title: '', image_url: ''}])}>
@@ -315,5 +353,24 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
         </div>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function Loader2(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
   )
 }

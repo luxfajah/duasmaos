@@ -25,12 +25,21 @@ export function PortalImageUpload({ clientId, label, value, onChange, aspect = '
 
     try {
       setUploading(true)
-      toast.loading('Convertendo para WebP...', { id: 'upload-img' })
+      let uploadBlob: Blob = file
       
-      const webpBlob = await convertToWebP(file)
+      if (file.type !== 'image/webp') {
+        toast.loading('Convertendo para WebP...', { id: 'upload-img' })
+        uploadBlob = await convertToWebP(file)
+      }
       
       toast.loading('Enviando...', { id: 'upload-img' })
-      const publicUrl = await uploadPortalImage(clientId, webpBlob, file.name)
+      
+      const formData = new FormData()
+      formData.append('clientId', clientId)
+      formData.append('file', uploadBlob)
+      formData.append('fileName', file.name)
+
+      const publicUrl = await uploadPortalImage(formData)
       
       onChange(publicUrl)
       toast.success('Imagem enviada!', { id: 'upload-img' })
@@ -63,7 +72,7 @@ export function PortalImageUpload({ clientId, label, value, onChange, aspect = '
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <label className="cursor-pointer bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-xs font-medium border border-white/30 hover:bg-white/30 transition-all">
               Alterar
-              <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} disabled={uploading} />
+              <input type="file" className="hidden" accept="image/*,image/webp" onChange={handleFileChange} disabled={uploading} />
             </label>
           </div>
         </div>

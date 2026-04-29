@@ -272,14 +272,22 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                 <div className="info-icon">📅</div>
                 <div>
                   <div className="info-label">Período das postagens</div>
-                  <div className="info-value">{settings.planning_period || format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
+                  <div className="info-value">
+                    {settings.planning_period 
+                      ? format(parseISO(settings.planning_period + '-01'), 'MMMM yyyy', { locale: ptBR }) 
+                      : format(new Date(), 'MMMM yyyy', { locale: ptBR })}
+                  </div>
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-icon">⏰</div>
                 <div>
                   <div className="info-label">Prazo para aprovação</div>
-                  <div className="info-value">{settings.deadline_description || 'Aguardamos seu feedback para iniciar a produção.'}</div>
+                  <div className="info-value">
+                    {settings.deadline_description 
+                      ? format(parseISO(settings.deadline_description), "dd 'de' MMMM", { locale: ptBR })
+                      : 'Aguardamos seu feedback para iniciar a produção.'}
+                  </div>
                 </div>
               </div>
               <div className="info-row">
