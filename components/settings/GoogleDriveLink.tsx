@@ -21,14 +21,22 @@ export function GoogleDriveLink() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     
-    if (user && user.identities) {
-      const googleId = user.identities.find(id => id.provider === 'google')
-      if (googleId) {
+    if (user) {
+      const googleId = user.identities?.find(id => id.provider === 'google')
+      
+      // Verifica se temos o token no banco para garantir que a integração está funcional
+      const { data: integration } = await supabase
+        .from('user_integrations')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .maybeSingle()
+
+      if (googleId && integration) {
         setIsLinked(true)
         setGoogleIdentity(googleId)
       } else {
         setIsLinked(false)
-        setGoogleIdentity(null)
+        setGoogleIdentity(googleId || null) // Mantém a identidade para o desvincular se necessário
       }
     }
     setFetchingStatus(false)
