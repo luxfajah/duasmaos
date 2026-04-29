@@ -70,12 +70,15 @@ export function GoogleDriveLink() {
       if (unlinkError) throw unlinkError
 
       // Remove refresh token from our database
-      const { error: dbError } = await supabase
-        .from('user_integrations')
-        .delete()
-        .eq('provider', 'google')
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { error: dbError } = await supabase
+          .from('user_integrations')
+          .delete()
+          .eq('user_id', user.id)
 
-      if (dbError) throw dbError
+        if (dbError) throw dbError
+      }
 
       toast.success('Conta do Google desvinculada com sucesso!')
       await checkLinkedStatus()
