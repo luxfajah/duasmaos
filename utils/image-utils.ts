@@ -1,34 +1,61 @@
 /**
- * Converts an image file to a WebP blob.
+ * Converts an image Blob/File to WebP, resizing if larger than maxDimension.
+ * Falls back to the original blob if conversion fails (e.g. environment limitation).
  */
-export async function convertToWebP(file: File, quality = 0.8): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const img = new Image()
-      img.onload = () => {
+export async function convertToWebP(
+  file: Blob | File,
+  quality = 0.85,
+  maxDimension = 2400
+): Promise<Blob> {
+  return new Promise((resolve) => {
+    const objectUrl = URL.createObjectURL(file)
+    const img = new Image()
+
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl)
+      try {
+        let { width, height } = img
+
+        // Downscale very large images to save bandwidth
+        if (width > maxDimension || height > maxDimension) {
+          const ratio = Math.min(maxDimension / width, maxDimension / height)
+          width  = Math.round(width  * ratio)
+          height = Math.round(height * ratio)
+        }
+
         const canvas = document.createElement('canvas')
-        canvas.width = img.width
-        canvas.height = img.height
+        canvas.width  = width
+        canvas.height = height
+
         const ctx = canvas.getContext('2d')
         if (!ctx) {
-          reject(new Error('Could not get canvas context'))
+          resolve(file) // fallback: return original
           return
         }
-        ctx.drawImage(img, 0, 0)
+
+        // Fill white background (handles transparent PNGs)
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, width, height)
+        ctx.drawImage(img, 0, 0, width, height)
+
         canvas.toBlob(
           (blob) => {
             if (blob) resolve(blob)
-            else reject(new Error('WebP conversion failed'))
+            else resolve(file) // fallback if browser doesn't support WebP
           },
           'image/webp',
           quality
         )
+      } catch {
+        resolve(file) // always resolve, never reject
       }
-      img.onerror = () => reject(new Error('Image load failed'))
-      img.src = e.target?.result as string
     }
-    reader.onerror = () => reject(new Error('File read failed'))
-    reader.readAsDataURL(file)
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl)
+      resolve(file) // fallback: return original
+    }
+
+    img.src = objectUrl
   })
 }

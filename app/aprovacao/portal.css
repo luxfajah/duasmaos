@@ -55,7 +55,8 @@
     .hero-bg {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
-      background-color: var(--bg); /* Removed hardcoded wallpaper path */
+      background: var(--wallpaper, var(--bg)) center center / cover no-repeat;
+      background-color: var(--bg);
       z-index: 0;
       pointer-events: none;
       filter: saturate(.85) contrast(1.05) blur(3px);
@@ -1215,10 +1216,11 @@
     }
     .login-screen::before {
       content: ""; position: absolute; inset: 0;
-      background: var(--bg) center center / cover no-repeat;
+      background: var(--wallpaper, var(--bg)) center center / cover no-repeat;
+      background-color: var(--bg);
       filter: blur(12px) saturate(1.1);
       z-index: 1;
-      transform: scale(1.1); /* Prevent blurred edges */
+      transform: scale(1.1);
     }
     .login-screen::after {
       content: ""; position: absolute; inset: 0;

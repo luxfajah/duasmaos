@@ -83,7 +83,12 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
     // Inject Colors
     document.documentElement.style.setProperty('--purple', settings.theme_color_primary || '#BE4B00')
     document.documentElement.style.setProperty('--rose', settings.theme_color_secondary || '#B4053C')
-    document.documentElement.style.setProperty('--bg', settings.wallpaper_url ? `url(${settings.wallpaper_url})` : '#FAF7F5')
+    document.documentElement.style.setProperty('--bg', '#FAF7F5')
+    if (settings.wallpaper_url) {
+      document.documentElement.style.setProperty('--wallpaper', `url(${settings.wallpaper_url})`)
+    } else {
+      document.documentElement.style.removeProperty('--wallpaper')
+    }
 
     // Handle Mobile Resize
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)

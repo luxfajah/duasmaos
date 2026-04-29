@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { loginPortal } from './actions'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -17,6 +17,16 @@ export function PortalLoginForm({ slug, logoUrl, wallpaperUrl }: Props) {
   const [pass, setPass] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Inject wallpaper via CSS variable — avoids styled-jsx dependency
+  useEffect(() => {
+    if (wallpaperUrl) {
+      document.documentElement.style.setProperty('--wallpaper', `url(${wallpaperUrl})`)
+    }
+    return () => {
+      document.documentElement.style.removeProperty('--wallpaper')
+    }
+  }, [wallpaperUrl])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,7 +45,7 @@ export function PortalLoginForm({ slug, logoUrl, wallpaperUrl }: Props) {
       } else {
         setError(res.error || 'Erro ao entrar.')
       }
-    } catch (err: any) {
+    } catch {
       setError('Ocorreu um erro inesperado.')
     } finally {
       setLoading(false)
@@ -44,12 +54,6 @@ export function PortalLoginForm({ slug, logoUrl, wallpaperUrl }: Props) {
 
   return (
     <div className="login-screen">
-      <style jsx global>{`
-        .login-screen::before {
-          background-image: url('${wallpaperUrl || ''}') !important;
-        }
-      `}</style>
-      
       <form className="login-box" onSubmit={handleLogin}>
         {logoUrl && <img src={logoUrl} alt="Logo" />}
         <h2>Acesso ao Painel</h2>
@@ -59,6 +63,7 @@ export function PortalLoginForm({ slug, logoUrl, wallpaperUrl }: Props) {
           placeholder="Usuário" 
           value={user} 
           onChange={e => setUser(e.target.value)}
+          autoComplete="username"
           disabled={loading}
         />
         <input 
@@ -66,6 +71,7 @@ export function PortalLoginForm({ slug, logoUrl, wallpaperUrl }: Props) {
           placeholder="Senha" 
           value={pass} 
           onChange={e => setPass(e.target.value)}
+          autoComplete="current-password"
           disabled={loading}
         />
         
