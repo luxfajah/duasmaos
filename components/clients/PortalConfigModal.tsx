@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Globe, Plus, Trash2, Key, MessageSquare, RefreshCw, Copy, Search, Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { upsertClientPortalSettings } from '@/app/dashboard/clients/actions'
-import { PortalImageUpload } from './PortalImageUpload'
+import { DriveImageField } from './DriveImageField'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { ClientPortalSettings } from '@/types/database'
@@ -61,14 +61,12 @@ function MonthYearPicker({ value, onChange }: { value: string; onChange: (v: str
           </button>
         ))}
       </div>
-      {value && (
-        <p className="text-[11px] text-center text-brand-primary font-semibold">{value}</p>
-      )}
+      {value && <p className="text-[11px] text-center text-brand-primary font-semibold">{value}</p>}
     </div>
   )
 }
 
-// ── Date Picker (simple) ─────────────────────────────────────────────────────
+// ── Date Picker ──────────────────────────────────────────────────────────────
 function SimpleDatePicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div className="space-y-1">
@@ -94,7 +92,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
   const [loading, setLoading] = useState(false)
   const [igHandle, setIgHandle] = useState('')
   const [igLoading, setIgLoading] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     slug: existingSettings?.slug || clientName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     theme_color_primary: existingSettings?.theme_color_primary || '#BE4B00',
@@ -122,30 +120,19 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
   const generatePassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+'
     let pass = ''
-    for (let i = 0; i < 12; i++) {
-      pass += chars.charAt(Math.floor(Math.random() * chars.length))
-    }
+    for (let i = 0; i < 12; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length))
     setFormData(prev => ({ ...prev, portal_password: pass }))
   }
 
-  // ── Instagram profile fetch via server-side scraper ───────────────────────
   const extractIgProfile = async () => {
     const handle = igHandle.replace('@', '').replace(/.*instagram\.com\//, '').split('/')[0].trim()
     if (!handle) { toast.error('Informe um @ ou link válido.'); return }
-
     try {
       setIgLoading(true)
       toast.loading('Buscando perfil @' + handle + '...', { id: 'ig-fetch' })
-
       const res = await fetch(`/api/ig-scrape?handle=${encodeURIComponent(handle)}`)
       const data = await res.json()
-
-      if (!res.ok || data.error) {
-        toast.error(data.error || 'Perfil não encontrado.', { id: 'ig-fetch' })
-        return
-      }
-
-      // Apply scraped fields
+      if (!res.ok || data.error) { toast.error(data.error || 'Perfil não encontrado.', { id: 'ig-fetch' }); return }
       setFormData(prev => ({
         ...prev,
         ig_username: data.username || handle,
@@ -154,33 +141,10 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
         ig_stats_posts: parseInt(data.posts) || prev.ig_stats_posts,
         ig_stats_followers: data.followers || prev.ig_stats_followers,
         ig_stats_following: data.following || prev.ig_stats_following,
+        ig_avatar_url: data.avatar_url || prev.ig_avatar_url,
       }))
-
-      // Auto-upload avatar if found
-      if (data.avatar_url) {
-        toast.loading('Salvando foto de perfil...', { id: 'ig-fetch' })
-        try {
-          const proxyRes = await fetch(`/api/ig-proxy?url=${encodeURIComponent(data.avatar_url)}`)
-          if (proxyRes.ok) {
-            const blob = await proxyRes.blob()
-            const { convertToWebP } = await import('@/utils/image-utils')
-            const { uploadPortalImage } = await import('@/app/dashboard/clients/actions')
-            const webpBlob = await convertToWebP(blob as File)
-            const fd = new FormData()
-            fd.append('file', webpBlob, `${handle}_avatar.webp`)
-            fd.append('clientId', clientId)
-            const avatarUrl = await uploadPortalImage(fd)
-            setFormData(prev => ({ ...prev, ig_avatar_url: avatarUrl }))
-          }
-        } catch { /* skip avatar upload silently */ }
-      }
-
-      // Auto-import highlights if found
-      if (data.highlights?.length > 0) {
-        setHighlights(prev => data.highlights.length > 0 ? data.highlights : prev)
-      }
-
-      toast.success(`Perfil @${handle} importado com sucesso!`, { id: 'ig-fetch' })
+      if (data.highlights?.length > 0) setHighlights(data.highlights)
+      toast.success(`Perfil @${handle} importado!`, { id: 'ig-fetch' })
     } catch (err: any) {
       toast.error('Erro: ' + err.message, { id: 'ig-fetch' })
     } finally {
@@ -211,9 +175,8 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
         planning_period: formData.planning_period,
         deadline_description: formData.deadline_description,
         ig_highlights: highlights,
-        is_active: true
+        is_active: true,
       }
-
       await upsertClientPortalSettings(payload)
       toast.success('Portal configurado com sucesso!')
       setOpen(false)
@@ -302,17 +265,11 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Período das Postagens</Label>
-                <MonthYearPicker
-                  value={formData.planning_period}
-                  onChange={v => setFormData(p => ({...p, planning_period: v}))}
-                />
+                <MonthYearPicker value={formData.planning_period} onChange={v => setFormData(p => ({...p, planning_period: v}))} />
               </div>
               <div className="space-y-2">
                 <Label>Prazo de Aprovação</Label>
-                <SimpleDatePicker
-                  value={formData.deadline_description}
-                  onChange={v => setFormData(p => ({...p, deadline_description: v}))}
-                />
+                <SimpleDatePicker value={formData.deadline_description} onChange={v => setFormData(p => ({...p, deadline_description: v}))} />
               </div>
             </div>
           </div>
@@ -338,35 +295,33 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
             </div>
           </div>
 
-          {/* ── Imagens ── */}
+          {/* ── Imagens via Drive ── */}
           <div className="space-y-4">
-            <h4 className="text-xs font-bold uppercase text-text-muted">Imagens do Portal</h4>
+            <h4 className="text-xs font-bold uppercase text-text-muted flex items-center gap-2">
+              🗂️ Imagens via Google Drive
+            </h4>
+            <p className="text-[11px] text-text-muted bg-blue-50 border border-blue-100 rounded-xl px-3 py-2">
+              Compartilhe a imagem no Drive como <strong>"Qualquer pessoa com o link"</strong> e cole o link abaixo. Não é necessário fazer upload.
+            </p>
             <div className="grid grid-cols-2 gap-6">
-              <PortalImageUpload clientId={clientId} label="Logo do Cliente" value={formData.logo_url} onChange={url => setFormData(p => ({...p, logo_url: url}))} />
-              <PortalImageUpload clientId={clientId} label="Wallpaper de Fundo" value={formData.wallpaper_url} onChange={url => setFormData(p => ({...p, wallpaper_url: url}))} convertWebP />
+              <DriveImageField label="Logo do Cliente" value={formData.logo_url} onChange={url => setFormData(p => ({...p, logo_url: url}))} />
+              <DriveImageField label="Wallpaper de Fundo" value={formData.wallpaper_url} onChange={url => setFormData(p => ({...p, wallpaper_url: url}))} />
             </div>
           </div>
 
           {/* ── Perfil Instagram ── */}
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase text-text-muted">Simulação Perfil IG</h4>
-
-            {/* IG Extractor */}
             <div className="p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-border rounded-xl space-y-2">
               <Label className="text-xs">Importar dados do Instagram</Label>
               <div className="flex gap-2">
-                <Input
-                  value={igHandle}
-                  onChange={e => setIgHandle(e.target.value)}
-                  placeholder="@usuario ou link do perfil"
-                  onKeyDown={e => e.key === 'Enter' && extractIgProfile()}
-                />
+                <Input value={igHandle} onChange={e => setIgHandle(e.target.value)} placeholder="@usuario ou link do perfil" onKeyDown={e => e.key === 'Enter' && extractIgProfile()} />
                 <Button type="button" variant="outline" onClick={extractIgProfile} disabled={igLoading} className="gap-2 shrink-0">
                   {igLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
                   Importar
                 </Button>
               </div>
-              <p className="text-[10px] text-text-muted">Importa o nome e foto. Bio e stats devem ser preenchidos manualmente.</p>
+              <p className="text-[10px] text-text-muted">Importa nome, bio e estatísticas. Preencha manualmente se não funcionar.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -397,9 +352,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
                 <Input value={formData.ig_stats_following} onChange={e => setFormData(p => ({...p, ig_stats_following: e.target.value}))} placeholder="ex: 800" />
               </div>
             </div>
-
-            {/* Avatar Upload */}
-            <PortalImageUpload clientId={clientId} label="Foto de Perfil Instagram" value={formData.ig_avatar_url} onChange={url => setFormData(p => ({...p, ig_avatar_url: url}))} />
+            <DriveImageField label="Foto de Perfil Instagram" value={formData.ig_avatar_url} onChange={url => setFormData(p => ({...p, ig_avatar_url: url}))} hint="Link do Drive ou URL direta da foto de perfil." />
           </div>
 
           {/* ── Destaques ── */}
@@ -417,8 +370,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
                     <Input placeholder="Título" value={h.title} onChange={e => {
                       const n = [...highlights]; n[i] = {...n[i], title: e.target.value}; setHighlights(n)
                     }} className="h-8 text-xs" />
-                    <PortalImageUpload
-                      clientId={clientId}
+                    <DriveImageField
                       label="Capa do Destaque"
                       value={h.image_url}
                       onChange={url => {
