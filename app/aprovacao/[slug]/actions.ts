@@ -34,8 +34,9 @@ export async function getClientApprovalPosts(clientId: string) {
     .from('v2_social_posts')
     .select(`
       *,
+      task_comments(*, profiles(full_name, role)),
       v2_tasks!inner(
-        id, title, project_id,
+        id, title, project_id, description,
         v2_projects!inner(
           id, name, client_id
         )
