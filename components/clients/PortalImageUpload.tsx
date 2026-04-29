@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, X, Loader2 } from 'lucide-react'
-import { convertToWebP } from '@/utils/image-utils'
-import { uploadPortalImage } from '@/app/dashboard/clients/actions'
+import { X, Link as LinkIcon } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
 interface Props {
@@ -11,46 +11,37 @@ interface Props {
   label: string
   value: string
   onChange: (url: string) => void
-  /** If true, converts the image to WebP before uploading. Default: false */
-  convertWebP?: boolean
+  convertWebP?: boolean // Kept for compatibility, but not used for links
 }
 
-export function PortalImageUpload({ clientId, label, value, onChange, convertWebP = false }: Props) {
-  const [uploading, setUploading] = useState(false)
+export function PortalImageUpload({ label, value, onChange }: Props) {
+  const [linkInput, setLinkInput] = useState('')
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    try {
-      setUploading(true)
-
-      let blobToUpload: Blob = file
-      let fileName = file.name
-
-      if (convertWebP && file.type !== 'image/webp') {
-        toast.loading('Convertendo para WebP...', { id: 'upload-img' })
-        blobToUpload = await convertToWebP(file)
-        fileName = file.name.replace(/\.[^/.]+$/, '') + '.webp'
-      } else {
-        toast.loading('Enviando...', { id: 'upload-img' })
-      }
-
-      toast.loading('Enviando...', { id: 'upload-img' })
-
-      const fd = new FormData()
-      fd.append('file', blobToUpload, fileName)
-      fd.append('clientId', clientId)
-
-      const publicUrl = await uploadPortalImage(fd)
-      onChange(publicUrl)
-      toast.success('Imagem enviada!', { id: 'upload-img' })
-    } catch (err: any) {
-      toast.error('Erro no upload: ' + err.message, { id: 'upload-img' })
-    } finally {
-      setUploading(false)
-      e.target.value = ''
+  const handleLinkAdd = () => {
+    if (!linkInput.trim()) {
+      toast.error('Cole um link válido.')
+      return
     }
+    
+    let finalUrl = linkInput.trim()
+    
+    // Integração com Google Drive: converte link de compartilhamento em link direto de imagem
+    // Exemplo: https://drive.google.com/file/d/1XYZ.../view?usp=sharing -> https://drive.google.com/uc?export=view&id=1XYZ...
+    const driveMatch = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/)
+    if (driveMatch && driveMatch[1]) {
+      finalUrl = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`
+      toast.success('Link do Google Drive convertido com sucesso!')
+    } else if (finalUrl.includes('drive.google.com')) {
+      // Tenta extrair ID de outro formato de link do Drive
+      const idMatch = finalUrl.match(/id=([a-zA-Z0-9_-]+)/)
+      if (idMatch && idMatch[1]) {
+        finalUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`
+        toast.success('Link do Google Drive convertido com sucesso!')
+      }
+    }
+
+    onChange(finalUrl)
+    setLinkInput('')
   }
 
   return (
@@ -58,7 +49,6 @@ export function PortalImageUpload({ clientId, label, value, onChange, convertWeb
       <div className="flex items-center justify-between">
         <label className="text-xs font-medium text-text-muted">
           {label}
-          {convertWebP && <span className="ml-1 text-[10px] opacity-50">→ WebP</span>}
         </label>
         {value && (
           <button
@@ -74,34 +64,25 @@ export function PortalImageUpload({ clientId, label, value, onChange, convertWeb
       {value ? (
         <div className="relative group rounded-lg overflow-hidden border border-border bg-surface-muted aspect-video flex items-center justify-center">
           <img src={value} alt={label} className="max-w-full max-h-full object-contain" />
-          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <label className="cursor-pointer bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-xs font-medium border border-white/30 hover:bg-white/30 transition-all">
-              Alterar
-              <input type="file" className="hidden" accept="image/*,image/webp" onChange={handleFileChange} disabled={uploading} />
-            </label>
-          </div>
         </div>
       ) : (
-        <label className={`
-          flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl p-4
-          hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all cursor-pointer
-          ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
-        `}>
-          {uploading ? (
-            <Loader2 className="animate-spin text-brand-primary" size={20} />
-          ) : (
-            <Upload className="text-text-muted" size={20} />
-          )}
-          <div className="text-center">
-            <p className="text-xs font-medium text-text-primary">
-              {uploading ? 'Enviando...' : 'Clique para subir'}
-            </p>
-            <p className="text-[10px] text-text-muted">
-              {convertWebP ? 'Convertido para WebP' : 'PNG, JPG, WebP, etc.'}
-            </p>
+        <div className="flex flex-col gap-2 p-3 border border-border rounded-xl bg-surface-muted/30">
+          <div className="flex gap-2">
+            <Input 
+              placeholder="Cole o link do Google Drive..." 
+              value={linkInput}
+              onChange={e => setLinkInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleLinkAdd())}
+              className="text-xs h-8"
+            />
+            <Button type="button" onClick={handleLinkAdd} size="sm" variant="secondary" className="h-8 px-3 gap-1 shrink-0">
+              <LinkIcon size={14} /> Add
+            </Button>
           </div>
-          <input type="file" className="hidden" accept="image/*,image/webp" onChange={handleFileChange} disabled={uploading} />
-        </label>
+          <p className="text-[10px] text-text-muted leading-tight">
+            Cole o link de compartilhamento do <strong>Google Drive</strong> (precisa estar "Qualquer pessoa com o link").
+          </p>
+        </div>
       )}
     </div>
   )
