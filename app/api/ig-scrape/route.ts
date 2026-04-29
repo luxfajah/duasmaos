@@ -1,28 +1,98 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-function decodeHTMLEntities(str: string): string {
-  return str
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code)))
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function fmtCount(n: number | undefined | null): string {
+  if (!n) return '0'
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.0', '') + 'M'
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace('.0', '') + 'K'
+  return String(n)
 }
 
-function parseCount(raw: string | undefined): string {
-  if (!raw) return '0'
-  return raw.replace(/,/g, '.').trim()
+// ── Strategy 1: Instagram internal mobile API ─────────────────────────────────
+// Uses the same App-ID that the Instagram web app uses (publicly known constant).
+// No token required for public profiles.
+async function fetchViaInternalAPI(username: string) {
+  const res = await fetch(
+    `https://i.instagram.com/api/v1/users/web_profile_info/?username=${username}`,
+    {
+      headers: {
+        'User-Agent':
+          'Instagram 219.0.0.12.117 Android (28/9; 420dpi; 1080x2148; samsung; SM-A720F; jackpotlte; exynos7880; en_IN; 301084525)',
+        'X-IG-App-ID': '936619743392459', // Instagram web App-ID (public constant)
+        Accept: '*/*',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Connection: 'keep-alive',
+      },
+      cache: 'no-store',
+    }
+  )
+  if (!res.ok) return null
+  const json = await res.json()
+  return json?.data?.user ?? null
 }
 
+// ── Strategy 2: GraphQL endpoint (web) ────────────────────────────────────────
+async function fetchViaGraphQL(username: string) {
+  const variables = JSON.stringify({
+    username,
+    include_reel: false,
+    fetch_mutual: false,
+    first: 12,
+  })
+  const res = await fetch(
+    `https://www.instagram.com/graphql/query/?query_hash=c9100bf9110dd6361671f113dd02e7d&variables=${encodeURIComponent(variables)}`,
+    {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
+          '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'X-IG-App-ID': '936619743392459',
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        Referer: `https://www.instagram.com/${username}/`,
+      },
+      cache: 'no-store',
+    }
+  )
+  if (!res.ok) return null
+  const json = await res.json()
+  return json?.data?.user ?? null
+}
+
+// ── Strategy 3: ?__a=1 JSON shortcut ─────────────────────────────────────────
+async function fetchViaA1(username: string) {
+  const res = await fetch(
+    `https://www.instagram.com/${username}/?__a=1&__d=dis`,
+    {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) ' +
+          'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+        Accept: 'application/json, text/plain, */*',
+        'X-IG-App-ID': '936619743392459',
+        Referer: `https://www.instagram.com/${username}/`,
+      },
+      cache: 'no-store',
+    }
+  )
+  if (!res.ok) return null
+  try {
+    const json = await res.json()
+    return json?.graphql?.user ?? json?.user ?? null
+  } catch {
+    return null
+  }
+}
+
+// ── Main handler ──────────────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   const handle = req.nextUrl.searchParams.get('handle')
   if (!handle) {
     return NextResponse.json({ error: 'Informe um @usuario.' }, { status: 400 })
   }
 
-  // Normalize: remove @, extract from URL if needed
   const username = handle
     .replace(/^@/, '')
     .replace(/^https?:\/\/(www\.)?instagram\.com\//, '')
@@ -34,114 +104,79 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Handle inválido.' }, { status: 400 })
   }
 
-  const url = `https://www.instagram.com/${username}/`
-
   try {
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ' +
-          '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        Accept:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        Connection: 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Cache-Control': 'max-age=0',
-      },
-      cache: 'no-store',
-    })
+    // Try all three strategies, use the first that succeeds
+    let user: any = null
 
-    if (!res.ok) {
+    user = await fetchViaInternalAPI(username).catch(() => null)
+    if (!user) user = await fetchViaA1(username).catch(() => null)
+    if (!user) user = await fetchViaGraphQL(username).catch(() => null)
+
+    if (!user) {
       return NextResponse.json(
-        { error: `Perfil @${username} não encontrado ou privado (HTTP ${res.status}).` },
+        {
+          error: `Perfil @${username} não encontrado, privado ou temporariamente indisponível. Preencha os campos manualmente.`,
+        },
         { status: 404 }
       )
     }
 
-    const html = await res.text()
+    // ── Normalize field names across strategies ────────────────────────────
+    const name: string =
+      user.full_name || user.biography_with_entities?.raw_text || username
 
-    // ── Helper: extract <meta> content ───────────────────────────────────────
-    const getMeta = (prop: string): string => {
-      // property="…" content="…" or name="…" content="…"
-      const patterns = [
-        new RegExp(`<meta[^>]+(?:property|name)=["']${prop}["'][^>]+content=["']([^"']*?)["']`, 'i'),
-        new RegExp(`<meta[^>]+content=["']([^"']*?)["'][^>]+(?:property|name)=["']${prop}["']`, 'i'),
-      ]
-      for (const re of patterns) {
-        const m = html.match(re)
-        if (m?.[1]) return decodeHTMLEntities(m[1])
-      }
-      return ''
-    }
+    const bio: string =
+      user.biography ||
+      user.biography_with_entities?.raw_text ||
+      ''
 
-    // ── og:title → "Name (@username) • Instagram photos and videos" ──────────
-    const ogTitle = getMeta('og:title')
-    // og:description → "X Followers, Y Following, Z Posts - See Instagram…"
-    const ogDesc = getMeta('og:description')
-    // og:image → profile picture CDN URL
-    const ogImage = getMeta('og:image')
+    const avatarUrl: string =
+      user.profile_pic_url_hd ||
+      user.profile_pic_url ||
+      ''
 
-    // ── Parse name ────────────────────────────────────────────────────────────
-    const nameMatch = ogTitle.match(/^(.+?)\s*\(@/)
-    const name = nameMatch?.[1]?.trim() || ogTitle.split('•')[0].split('(')[0].trim() || username
+    const followers: string = fmtCount(
+      user.follower_count ?? user.edge_followed_by?.count
+    )
+    const following: string = fmtCount(
+      user.following_count ?? user.edge_follow?.count
+    )
+    const posts: string = fmtCount(
+      user.media_count ?? user.edge_owner_to_timeline_media?.count
+    )
 
-    // ── Parse stats from og:description ──────────────────────────────────────
-    // pt-BR format: "1.234 seguidores, 456 seguindo, 78 publicações"
-    // en format:    "1,234 Followers, 456 Following, 78 Posts"
-    const followersMatch =
-      ogDesc.match(/([\d.,]+[KMkm]?)\s*(?:seguidores|[Ff]ollowers?)/) ||
-      ogDesc.match(/([\d.,]+[KMkm]?)/)
-    const followingMatch =
-      ogDesc.match(/([\d.,]+[KMkm]?)\s*(?:seguindo|[Ff]ollowing)/)
-    const postsMatch =
-      ogDesc.match(/([\d.,]+[KMkm]?)\s*(?:publicações?|[Pp]osts?)/)
-
-    // ── Bio from JSON-LD ──────────────────────────────────────────────────────
-    let bio = ''
-    const ldMatch = html.match(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i)
-    if (ldMatch) {
-      try {
-        const ld = JSON.parse(ldMatch[1])
-        bio = ld?.description || ld?.mainEntity?.description || ''
-      } catch { /* ignore parse errors */ }
-    }
-
-    // Fallback: extract bio from "description" meta
-    if (!bio) {
-      bio = getMeta('description')
-        .replace(/^[\d.,]+[KMkm]?\s*(?:seguidores?|[Ff]ollowers?)[^-]*-\s*/i, '')
-        .replace(/^See.*?photos.*?videos[^.]*\.\s*/i, '')
-        .trim()
-    }
-
-    // ── Highlights ────────────────────────────────────────────────────────────
-    // Instagram doesn't expose highlights in public HTML — return empty
+    // ── Highlights ────────────────────────────────────────────────────────
     const highlights: { title: string; image_url: string }[] = []
+    const rawHl: any[] =
+      user.highlight_reel_count
+        ? [] // count only, no data
+        : (user.edge_highlight_reels?.edges ?? [])
 
-    // Extract highlight covers from structured data if available
-    const hlRe = /"highlight_title":"([^"]+)"[^}]*"thumbnail_src":"([^"]+)"/g
-    let hlMatch: RegExpExecArray | null
-    while ((hlMatch = hlRe.exec(html)) !== null) {
-      highlights.push({ title: hlMatch[1], image_url: hlMatch[2].replace(/\\u0026/g, '&') })
+    for (const edge of rawHl) {
+      const node = edge?.node
+      if (node?.title) {
+        highlights.push({
+          title: node.title,
+          image_url: node.cover_media?.thumbnail_src || node.cover_media_cropped_thumbnail?.url || '',
+        })
+      }
     }
 
     return NextResponse.json({
       username,
       name,
       bio,
-      avatar_url: ogImage,
-      followers: parseCount(followersMatch?.[1]),
-      following: parseCount(followingMatch?.[1]),
-      posts: parseCount(postsMatch?.[1]),
+      avatar_url: avatarUrl,
+      followers,
+      following,
+      posts,
       highlights,
     })
   } catch (err: any) {
-    console.error('[ig-scrape] Error:', err)
-    return NextResponse.json({ error: err.message || 'Erro interno ao buscar perfil.' }, { status: 500 })
+    console.error('[ig-scrape]', err)
+    return NextResponse.json(
+      { error: err.message || 'Erro interno ao buscar perfil.' },
+      { status: 500 }
+    )
   }
 }
