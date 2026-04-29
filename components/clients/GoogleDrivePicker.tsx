@@ -58,18 +58,40 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
     }
   }
 
-  const handleAuthClick = () => {
+  const handleAuthClick = async () => {
     if (!isConfigured) {
       toast.error('Faltam credenciais do Google Cloud (.env.local).')
       return
     }
-    if (!gapiLoaded || !gisLoaded || !tokenClient) {
+    if (!gapiLoaded) {
       toast.error('Scripts do Google ainda carregando...')
       return
     }
     setLoading(true)
-    // Request access token (prompts user if not already authorized)
-    tokenClient.requestAccessToken({ prompt: '' })
+
+    try {
+      // 1. Tentar buscar o token silencioso via nossa API (Contas Vinculadas)
+      const res = await fetch('/api/google/token')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.access_token) {
+          createPicker(data.access_token)
+          return
+        }
+      }
+
+      // 2. Fallback: Se não tem conta vinculada, pede o login nativo do navegador
+      if (!gisLoaded || !tokenClient) {
+        toast.error('Módulo de login do Google não carregado.')
+        setLoading(false)
+        return
+      }
+      tokenClient.requestAccessToken({ prompt: '' })
+    } catch (err) {
+      console.error(err)
+      toast.error('Erro ao inicializar o Google Drive')
+      setLoading(false)
+    }
   }
 
   const createPicker = (accessToken: string) => {

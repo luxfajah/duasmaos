@@ -8,6 +8,7 @@ import { Camera, Loader2, Calendar } from 'lucide-react'
 import { updateProfile } from '@/app/dashboard/settings/actions'
 import { createClient } from '@/utils/supabase/client'
 import { AvatarPicker } from '@/components/settings/AvatarPicker'
+import { GoogleDriveLink } from '@/components/settings/GoogleDriveLink'
 import { toast } from 'sonner'
 
 interface ProfileSectionProps {
@@ -121,6 +122,8 @@ export function ProfileSection({ profile }: ProfileSectionProps) {
           </Button>
         </div>
       </form>
+
+      <GoogleDriveLink />
     </div>
   )
 }
