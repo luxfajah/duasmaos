@@ -148,18 +148,30 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
 
     const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
     view.setMimeTypes('image/png,image/jpeg,image/webp,image/gif')
+    view.setIncludeFolders(true) // Mostrar pastas
+    view.setSelectFolderEnabled(false) // Permitir apenas selecionar arquivos
     
     const picker = new window.google.picker.PickerBuilder()
       .enableFeature(window.google.picker.Feature.NAV_HIDDEN)
+      .enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED)
       .setAppId(APP_ID)
       .setOAuthToken(accessToken)
       .addView(view)
-      .addView(new window.google.picker.DocsUploadView()) // Permite fazer upload direto do PC pro Drive na hora
+      .addView(new window.google.picker.DocsUploadView()) 
       .setDeveloperKey(API_KEY)
       .setCallback(pickerCallback)
       .build()
       
     picker.setVisible(true)
+    
+    // Garantir que o Picker fique acima de qualquer modal (z-index)
+    // O Picker do Google é injetado no final do body. Vamos procurar o elemento e forçar o z-index.
+    setTimeout(() => {
+      const pickerElements = document.querySelectorAll('.picker-dialog, .picker-dialog-bg');
+      pickerElements.forEach((el: any) => {
+        el.style.zIndex = '999999';
+      });
+    }, 100);
   }
 
   const pickerCallback = (data: any) => {

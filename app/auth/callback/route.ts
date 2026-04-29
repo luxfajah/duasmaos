@@ -11,19 +11,30 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error && data.session) {
-      // Se o login incluiu o provedor Google e retornou um refresh token, nós o salvamos
-      if (data.session.provider_refresh_token && data.session.user) {
-        // Upsert na tabela user_integrations
+      const { user, provider_refresh_token, provider_token } = data.session
+      
+      console.log('OAuth Callback Session:', { 
+        userId: user?.id, 
+        hasRefreshToken: !!provider_refresh_token,
+        hasAccessToken: !!provider_token 
+      })
+
+      if (provider_refresh_token && user) {
         const { error: dbError } = await supabase.from('user_integrations').upsert({
-          user_id: data.session.user.id,
-          google_refresh_token: data.session.provider_refresh_token,
+          user_id: user.id,
+          google_refresh_token: provider_refresh_token,
           updated_at: new Date().toISOString()
         })
         
         if (dbError) {
-          console.error('Erro ao salvar refresh token:', dbError)
+          console.error('Erro ao salvar refresh token no banco:', dbError)
+        } else {
+          console.log('Refresh token salvo com sucesso para o usuário:', user.id)
         }
+      } else if (user) {
+        console.warn('Callback concluído mas provider_refresh_token está ausente. Persistence não funcionará.')
       }
+      
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
