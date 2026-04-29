@@ -147,16 +147,35 @@ export function GoogleDriveLink() {
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             Verificando status...
           </Button>
-        ) : isLinked ? (
-          <Button 
-            variant="danger" 
-            onClick={handleUnlinkGoogle} 
-            disabled={loading}
-            className="w-full sm:w-auto"
-          >
-            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
-            Desvincular Conta
-          </Button>
+        ) : googleIdentity ? (
+          <div className="space-y-3">
+            {!isLinked && (
+              <p className="text-xs text-amber-500 font-medium">
+                ⚠️ A conta está vinculada mas o acesso ao Drive não foi autorizado corretamente. 
+                Por favor, desvincule e vincule novamente.
+              </p>
+            )}
+            <Button 
+              variant="danger" 
+              onClick={handleUnlinkGoogle} 
+              disabled={loading}
+              className="w-full sm:w-auto"
+            >
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+              Desvincular Conta
+            </Button>
+            
+            {!isLinked && (
+              <Button 
+                variant="primary" 
+                onClick={handleLinkGoogle} 
+                disabled={loading}
+                className="w-full sm:w-auto ml-0 sm:ml-2"
+              >
+                Tentar Vincular Novamente
+              </Button>
+            )}
+          </div>
         ) : (
           <Button 
             variant="outline" 
