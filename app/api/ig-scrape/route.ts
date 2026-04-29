@@ -124,9 +124,10 @@ export async function GET(req: NextRequest) {
     const highlights: { title: string; image_url: string }[] = []
 
     // Extract highlight covers from structured data if available
-    const hlMatches = html.matchAll(/"highlight_title":"([^"]+)"[^}]*"thumbnail_src":"([^"]+)"/g)
-    for (const m of hlMatches) {
-      highlights.push({ title: m[1], image_url: m[2].replace(/\\u0026/g, '&') })
+    const hlRe = /"highlight_title":"([^"]+)"[^}]*"thumbnail_src":"([^"]+)"/g
+    let hlMatch: RegExpExecArray | null
+    while ((hlMatch = hlRe.exec(html)) !== null) {
+      highlights.push({ title: hlMatch[1], image_url: hlMatch[2].replace(/\\u0026/g, '&') })
     }
 
     return NextResponse.json({
