@@ -343,7 +343,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
             <h4 className="text-xs font-bold uppercase text-text-muted">Imagens do Portal</h4>
             <div className="grid grid-cols-2 gap-6">
               <PortalImageUpload clientId={clientId} label="Logo do Cliente" value={formData.logo_url} onChange={url => setFormData(p => ({...p, logo_url: url}))} />
-              <PortalImageUpload clientId={clientId} label="Wallpaper de Fundo" value={formData.wallpaper_url} onChange={url => setFormData(p => ({...p, wallpaper_url: url}))} />
+              <PortalImageUpload clientId={clientId} label="Wallpaper de Fundo" value={formData.wallpaper_url} onChange={url => setFormData(p => ({...p, wallpaper_url: url}))} convertWebP />
             </div>
           </div>
 

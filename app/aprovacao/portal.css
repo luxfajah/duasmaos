@@ -55,8 +55,10 @@
     .hero-bg {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
-      background: var(--wallpaper, var(--bg)) center center / cover no-repeat;
-      background-color: var(--bg);
+      background-color: #FAF7F5;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
       z-index: 0;
       pointer-events: none;
       filter: saturate(.85) contrast(1.05) blur(3px);

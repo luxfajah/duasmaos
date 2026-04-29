@@ -11,9 +11,11 @@ interface Props {
   label: string
   value: string
   onChange: (url: string) => void
+  /** If true, converts the image to WebP before uploading. Default: false */
+  convertWebP?: boolean
 }
 
-export function PortalImageUpload({ clientId, label, value, onChange }: Props) {
+export function PortalImageUpload({ clientId, label, value, onChange, convertWebP = false }: Props) {
   const [uploading, setUploading] = useState(false)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,23 +24,24 @@ export function PortalImageUpload({ clientId, label, value, onChange }: Props) {
 
     try {
       setUploading(true)
-      toast.loading('Convertendo para WebP...', { id: 'upload-img' })
-      
-      // If already webp, skip conversion
-      let webpBlob: Blob
-      if (file.type === 'image/webp') {
-        webpBlob = file
+
+      let blobToUpload: Blob = file
+      let fileName = file.name
+
+      if (convertWebP && file.type !== 'image/webp') {
+        toast.loading('Convertendo para WebP...', { id: 'upload-img' })
+        blobToUpload = await convertToWebP(file)
+        fileName = file.name.replace(/\.[^/.]+$/, '') + '.webp'
       } else {
-        webpBlob = await convertToWebP(file)
+        toast.loading('Enviando...', { id: 'upload-img' })
       }
-      
+
       toast.loading('Enviando...', { id: 'upload-img' })
-      
-      // Pass via FormData to avoid Server Action serialization error
+
       const fd = new FormData()
-      fd.append('file', webpBlob, file.name.replace(/\.[^/.]+$/, '') + '.webp')
+      fd.append('file', blobToUpload, fileName)
       fd.append('clientId', clientId)
-      
+
       const publicUrl = await uploadPortalImage(fd)
       onChange(publicUrl)
       toast.success('Imagem enviada!', { id: 'upload-img' })
@@ -53,9 +56,12 @@ export function PortalImageUpload({ clientId, label, value, onChange }: Props) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-text-muted">{label}</label>
+        <label className="text-xs font-medium text-text-muted">
+          {label}
+          {convertWebP && <span className="ml-1 text-[10px] opacity-50">→ WebP</span>}
+        </label>
         {value && (
-          <button 
+          <button
             type="button"
             onClick={() => onChange('')}
             className="text-[10px] text-status-danger flex items-center gap-1 hover:underline"
@@ -77,7 +83,7 @@ export function PortalImageUpload({ clientId, label, value, onChange }: Props) {
         </div>
       ) : (
         <label className={`
-          flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl p-4 
+          flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border rounded-xl p-4
           hover:border-brand-primary/50 hover:bg-brand-primary/5 transition-all cursor-pointer
           ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
         `}>
@@ -88,9 +94,11 @@ export function PortalImageUpload({ clientId, label, value, onChange }: Props) {
           )}
           <div className="text-center">
             <p className="text-xs font-medium text-text-primary">
-              {uploading ? 'Processando...' : 'Clique para subir'}
+              {uploading ? 'Enviando...' : 'Clique para subir'}
             </p>
-            <p className="text-[10px] text-text-muted">Qualquer formato → WebP</p>
+            <p className="text-[10px] text-text-muted">
+              {convertWebP ? 'Convertido para WebP' : 'PNG, JPG, WebP, etc.'}
+            </p>
           </div>
           <input type="file" className="hidden" accept="image/*,image/webp" onChange={handleFileChange} disabled={uploading} />
         </label>

@@ -213,13 +213,15 @@ export async function uploadPortalImage(formData: FormData) {
   const clientId = formData.get('clientId') as string
   if (!file || !clientId) throw new Error('Dados inválidos para upload.')
 
-  const cleanFileName = file.name.replace(/\.[^/.]+$/, '')
-  const path = `${clientId}/${Date.now()}_${cleanFileName}.webp`
+  // Use the file name as-is (client sets the correct name/extension)
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+  const path = `${clientId}/${Date.now()}_${safeName}`
+  const contentType = file.type || 'application/octet-stream'
 
   const { error: uploadError } = await supabase.storage
     .from('portal-assets')
     .upload(path, file, {
-      contentType: 'image/webp',
+      contentType,
       cacheControl: '3600',
       upsert: true
     })
