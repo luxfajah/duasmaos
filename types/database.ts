@@ -109,6 +109,11 @@ export interface ClientPortalSettings {
   ig_stats_followers: string;
   ig_stats_following: string;
   ig_highlights: any; // jsonb array of { title: string, image_url: string }
+  portal_user: string | null;
+  portal_password: string | null;
+  focus_of_month: string | null;
+  planning_period: string | null;
+  deadline_description: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { validatePortalSlug, getClientApprovalPosts } from './actions'
 import { ClientPortalUI } from './ClientPortalUI'
+import { PortalLoginForm } from './PortalLoginForm'
 import '../portal.css'
 
 interface Props {
@@ -15,8 +16,21 @@ export default async function ApprovalPortalPage({ params }: Props) {
     notFound()
   }
 
+  // Check if session is valid
+  const { checkPortalSession } = await import('./actions')
+  const isAuthorized = await checkPortalSession(params.slug)
+
+  if (!isAuthorized) {
+    return (
+      <PortalLoginForm 
+        slug={params.slug} 
+        logoUrl={portalSession.settings.logo_url} 
+        wallpaperUrl={portalSession.settings.wallpaper_url} 
+      />
+    )
+  }
+
   // Fetch all posts for this client that need approval or are approved/rejected
-  // Note: getClientApprovalPosts fetches all `v2_social_posts` linked to projects of this client.
   const posts = await getClientApprovalPosts(portalSession.clientId)
 
   return (

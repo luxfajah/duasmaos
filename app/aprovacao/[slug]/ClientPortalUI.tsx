@@ -227,6 +227,20 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
             </div>
             <div className="pb-label"><strong>{approvedCount}</strong> de {posts.length} aprovados</div>
           </div>
+
+          <div style={{ marginTop: '32px' }}>
+            <button 
+              onClick={async () => {
+                const { logoutPortal } = await import('./actions')
+                await logoutPortal(slug)
+                window.location.reload()
+              }}
+              className="abtn btn-lt"
+              style={{ fontSize: '10px', padding: '8px 16px', opacity: 0.7 }}
+            >
+              Sair do Portal
+            </button>
+          </div>
         </div>
         <div className="hero-scroll" onClick={() => document.getElementById('infoPanelSection')?.scrollIntoView({ behavior: 'smooth' })}>
           <div className="scroll-line"></div>Rolar
@@ -251,21 +265,21 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                 <div className="info-icon">📋</div>
                 <div>
                   <div className="info-label">Foco do mês</div>
-                  <div className="info-value">Apresentação da marca, autoridade e engajamento.</div>
+                  <div className="info-value">{settings.focus_of_month || 'Apresentação da marca, autoridade e engajamento.'}</div>
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-icon">📅</div>
                 <div>
                   <div className="info-label">Período das postagens</div>
-                  <div className="info-value">{format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
+                  <div className="info-value">{settings.planning_period || format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-icon">⏰</div>
                 <div>
                   <div className="info-label">Prazo para aprovação</div>
-                  <div className="info-value">Aguardamos seu feedback para iniciar a produção.</div>
+                  <div className="info-value">{settings.deadline_description || 'Aguardamos seu feedback para iniciar a produção.'}</div>
                 </div>
               </div>
               <div className="info-row">

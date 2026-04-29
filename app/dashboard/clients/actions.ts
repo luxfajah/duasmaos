@@ -206,6 +206,29 @@ export async function uploadClientDocument(clientId: string, file: File, type: s
   revalidatePath(`/dashboard/clients/${clientId}`)
 }
 
+export async function uploadPortalImage(clientId: string, file: Blob, fileName: string) {
+  const supabase = createClient()
+  
+  const cleanFileName = fileName.replace(/\.[^/.]+$/, "") // remove extension
+  const path = `${clientId}/${Date.now()}_${cleanFileName}.webp`
+
+  const { error: uploadError } = await supabase.storage
+    .from('portal-assets') // Ensure this bucket exists
+    .upload(path, file, {
+      contentType: 'image/webp',
+      cacheControl: '3600',
+      upsert: true
+    })
+
+  if (uploadError) throw uploadError
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('portal-assets')
+    .getPublicUrl(path)
+
+  return publicUrl
+}
+
 // ── Approval Portal ──────────────────────────────────────────────────────────
 
 export async function getClientPortalSettings(clientId: string) {

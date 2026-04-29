@@ -2,6 +2,8 @@
 
 import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
+import { ClientPortalSettings } from '@/types/database'
 
 // ── Slug Validation ──────────────────────────────────────────────────────────
 
@@ -20,8 +22,42 @@ export async function validatePortalSlug(slug: string) {
   return {
     clientId: data.client_id as string,
     clientName: (data.clients as any)?.company || (data.clients as any)?.name || 'Cliente',
-    settings: data
+    settings: data as ClientPortalSettings
   }
+}
+
+export async function loginPortal(slug: string, user: string, pass: string) {
+  const portal = await validatePortalSlug(slug)
+  if (!portal) return { error: 'Portal inválido.' }
+
+  if (portal.settings.portal_user === user && portal.settings.portal_password === pass) {
+    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    cookies().set(`portal_session_${slug}`, 'true', { 
+      expires, 
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    })
+    return { success: true }
+  }
+
+  return { error: 'Usuário ou senha incorretos.' }
+}
+
+export async function checkPortalSession(slug: string) {
+  const portal = await validatePortalSlug(slug)
+  if (!portal) return false
+  
+  // If no password is set, it's public
+  if (!portal.settings.portal_user && !portal.settings.portal_password) return true
+
+  const session = cookies().get(`portal_session_${slug}`)
+  return !!session
+}
+
+export async function logoutPortal(slug: string) {
+  cookies().delete(`portal_session_${slug}`)
+  revalidatePath(`/aprovacao/${slug}`)
 }
 
 // ── Client Posts ──────────────────────────────────────────────────────────────
