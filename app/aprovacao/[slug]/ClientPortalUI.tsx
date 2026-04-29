@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { ClientPortalSettings } from '@/types/database'
 import { clientApprovePost, clientRejectPost, clientRequestRevision } from './actions'
 import { toast } from 'sonner'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, getDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
 // --- Types ---
@@ -83,7 +83,7 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
     // Inject Colors
     document.documentElement.style.setProperty('--purple', settings.theme_color_primary || '#BE4B00')
     document.documentElement.style.setProperty('--rose', settings.theme_color_secondary || '#B4053C')
-    document.documentElement.style.setProperty('--bg', settings.wallpaper_url ? `url(${settings.wallpaper_url})` : '#FFFAE6')
+    document.documentElement.style.setProperty('--bg', settings.wallpaper_url ? `url(${settings.wallpaper_url})` : '#FAF7F5')
 
     // Handle Mobile Resize
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)
@@ -91,7 +91,7 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
     window.addEventListener('resize', checkMobile)
 
     // Preloader timeout
-    const timer = setTimeout(() => setLoading(false), 3200)
+    const timer = setTimeout(() => setLoading(false), 2000)
 
     return () => {
       window.removeEventListener('resize', checkMobile)
@@ -146,15 +146,11 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
     })
   }
 
-  const scrollToPanel = () => {
-    document.getElementById('infoPanel')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   const goToPost = (idx: number) => {
     setCurrentPostIdx(idx)
     const el = document.getElementById(`post-section-${idx}`)
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
     }
   }
 
@@ -165,12 +161,22 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
 
     const handleScroll = () => {
       const idx = Math.round(track.scrollLeft / track.offsetWidth)
-      if (idx !== currentPostIdx) setCurrentPostIdx(idx)
+      if (idx !== currentPostIdx && !isNaN(idx)) setCurrentPostIdx(idx)
     }
 
     track.addEventListener('scroll', handleScroll, { passive: true })
     return () => track.removeEventListener('scroll', handleScroll)
   }, [currentPostIdx])
+
+  // Calendar Logic
+  const calendarDays = useMemo(() => {
+    const now = new Date()
+    const start = startOfMonth(now)
+    const end = endOfMonth(now)
+    const days = eachDayOfInterval({ start, end })
+    const prefix = Array(getDay(start)).fill(null)
+    return [...prefix, ...days]
+  }, [])
 
   // Statistics
   const approvedCount = posts.filter(p => p.client_approval_status === 'approved').length
@@ -204,17 +210,17 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
       <div className="hero-bg" style={{ backgroundImage: `url('${settings.wallpaper_url || ''}')` }}></div>
       <div className="hero-grain"></div>
 
-      {/* Hero Section */}
+      {/* Hero Section (SEC 1) */}
       <section className="hero">
         <div className="hero-content">
           <div className="hero-eyebrow">
-            <span className="dot"></span>Portal de Aprovação
+            <span className="dot"></span>Planejamento de conteúdo · {format(new Date(), 'MMMM yyyy', { locale: ptBR })}
           </div>
           {settings.logo_url && (
             <img src={settings.logo_url} className="hero-logo-img" alt={clientName} />
           )}
           <div className="hero-divider"></div>
-          <p className="hero-tagline">Revise, comente e aprove<br />os conteúdos da sua marca</p>
+          <p className="hero-tagline">Revise, comente e aprove<br />os conteúdos abaixo</p>
           <div className="hero-progress">
             <div className="pb-wrap">
               <div className="pb-fill" style={{ width: `${progressPercent}%` }}></div>
@@ -222,18 +228,102 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
             <div className="pb-label"><strong>{approvedCount}</strong> de {posts.length} aprovados</div>
           </div>
         </div>
-        <div className="hero-scroll" onClick={scrollToPanel}>
+        <div className="hero-scroll" onClick={() => document.getElementById('infoPanelSection')?.scrollIntoView({ behavior: 'smooth' })}>
           <div className="scroll-line"></div>Rolar
         </div>
       </section>
 
-      {/* Info Panel / Instagram Profile */}
-      <section id="infoPanel" className="info-container">
+      {/* Info Panel (SEC 2: Summary + Calendar) */}
+      <section id="infoPanelSection" className="info-container">
         <div className="info-panel reveal">
-          <div className="info-eyebrow">Visualização do Perfil</div>
-          <h2 className="info-title">Sua presença em<br /><em>{settings.ig_username || clientName}</em></h2>
+          <a href="#" className="download-all-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar Todos os Posts
+          </a>
+          <div className="info-eyebrow">Planejamento · {format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
+          <h2 className="info-title">Conteúdo para<br /><em>revisão e aprovação</em></h2>
           <div className="info-divider"></div>
 
+          <div className="info-grid-content">
+            {/* Left: Summary */}
+            <div className="info-summary-col">
+              <div className="info-row">
+                <div className="info-icon">📋</div>
+                <div>
+                  <div className="info-label">Foco do mês</div>
+                  <div className="info-value">Apresentação da marca, autoridade e engajamento.</div>
+                </div>
+              </div>
+              <div className="info-row">
+                <div className="info-icon">📅</div>
+                <div>
+                  <div className="info-label">Período das postagens</div>
+                  <div className="info-value">{format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
+                </div>
+              </div>
+              <div className="info-row">
+                <div className="info-icon">⏰</div>
+                <div>
+                  <div className="info-label">Prazo para aprovação</div>
+                  <div className="info-value">Aguardamos seu feedback para iniciar a produção.</div>
+                </div>
+              </div>
+              <div className="info-row">
+                <div className="info-icon">🎯</div>
+                <div>
+                  <div className="info-label">Funil de conteúdo</div>
+                  <div className="info-value">{posts.length} publicações estratégicas programadas.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Calendar */}
+            <div className="info-calendar-col">
+              <div className="calendar-wrapper">
+                <div className="calendar-header">
+                  {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map(d => <div key={d} className="calendar-day-name">{d}</div>)}
+                </div>
+                <div className="calendar-grid">
+                  {calendarDays.map((day, i) => {
+                    if (!day) return <div key={`empty-${i}`} className="calendar-day empty"></div>
+                    
+                    const dayPosts = posts.filter(p => p.publish_date && isSameDay(parseISO(p.publish_date), day))
+                    const postIdx = posts.findIndex(p => p.publish_date && isSameDay(parseISO(p.publish_date), day))
+
+                    return (
+                      <div 
+                        key={day.toISOString()} 
+                        className={`calendar-day ${dayPosts.length > 0 ? 'has-post' : ''}`}
+                        onClick={() => dayPosts.length > 0 && goToPost(postIdx)}
+                      >
+                        {dayPosts.length > 0 && (
+                          <img src={dayPosts[0].media?.[0]?.url || ''} alt="" />
+                        )}
+                        <div className="day-number">{format(day, 'd')}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="info-progress">
+            <div className="info-label">Progresso de aprovação</div>
+            <div className="info-progress-bar">
+              <div className="info-progress-fill" style={{ width: `${progressPercent}%` }}></div>
+            </div>
+            <div className="info-progress-label">
+              <span>{approvedCount} de {posts.length} aprovados</span>
+              <span>{Math.round(progressPercent)}%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Overview (SEC 3: IG Profile Full Simulation) */}
+      <section id="overview" className="overview-section">
+        <div className="overview-split reveal">
           <div className="igp">
             <div className="igp-top">
               <div className="igp-header-main">
@@ -245,17 +335,29 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                     <span className="igp-username">{settings.ig_username}</span>
                     <span className="igp-dots">···</span>
                   </div>
+                  
+                  <div className="igp-bio-name">{settings.ig_name}</div>
+                  
                   <div className="igp-stats">
                     <div className="igp-stat"><span className="igp-stat-num">{settings.ig_stats_posts || 0}</span> <span className="igp-stat-lbl">posts</span></div>
                     <div className="igp-stat"><span className="igp-stat-num">{settings.ig_stats_followers || '0'}</span> <span className="igp-stat-lbl">seguidores</span></div>
                     <div className="igp-stat"><span className="igp-stat-num">{settings.ig_stats_following || '0'}</span> <span className="igp-stat-lbl">seguindo</span></div>
                   </div>
-                  <div className="igp-bio-name">{settings.ig_name}</div>
+
                   <div className="igp-bio" dangerouslySetInnerHTML={{ __html: settings.ig_bio?.replace(/\n/g, '<br/>') || '' }}></div>
+                  
+                  <div className="igp-followed" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#999', marginTop: '12px' }}>
+                    <div className="igp-followed-pics" style={{ display: 'flex' }}>
+                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#ccc', border: '1.5px solid #fff' }}></div>
+                      <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#bbb', border: '1.5px solid #fff', marginLeft: '-8px' }}></div>
+                    </div>
+                    <span>Seguido por <strong>duasmaos</strong> e outras pessoas</span>
+                  </div>
+                  
                   <div className="igp-actions">
                     <button className="igp-btn">Seguindo ▾</button>
-                    <button className="igp-btn">Mensagem</button>
-                    <button className="igp-btn-add">👤</button>
+                    <button className="igp-btn">Enviar mensagem</button>
+                    <button className="igp-btn-add">👤⁺</button>
                   </div>
                 </div>
               </div>
@@ -276,10 +378,16 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
               <div className="igp-tab active">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
               </div>
+              <div className="igp-tab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M10 8l6 4-6 4V8z"/></svg>
+              </div>
+              <div className="igp-tab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2.5 2v6h6M21.5 22v-6h-6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.3"/></svg>
+              </div>
             </div>
 
             <div className="igp-grid">
-              {posts.slice(0, 8).map((post, idx) => (
+              {posts.map((post, idx) => (
                 <div key={post.id} className="igp-grid-item" onClick={() => goToPost(idx)}>
                   <img src={post.media?.[0]?.url || ''} alt="" />
                   <span className="grid-num">{String(idx + 1).padStart(2, '0')}</span>
@@ -288,21 +396,10 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
               ))}
             </div>
           </div>
-
-          <div className="info-progress">
-            <div className="info-label">Progresso Geral</div>
-            <div className="info-progress-bar">
-              <div className="info-progress-fill" style={{ width: `${progressPercent}%` }}></div>
-            </div>
-            <div className="info-progress-label">
-              <span>{approvedCount} de {posts.length} aprovados</span>
-              <span>{Math.round(progressPercent)}%</span>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Main Posts Carousel */}
+      {/* Main Posts Carousel (Individual Details) */}
       <section className="posts-carousel-main" id="mainPostsCarousel">
         {/* Navigation Arrows */}
         <button className="pc-nav pc-prev" onClick={() => setCurrentPostIdx(prev => Math.max(0, prev - 1))}>‹</button>
@@ -317,10 +414,7 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
           ))}
         </div>
 
-        <div 
-          className="posts-horizontal-track" 
-          ref={carouselRef}
-        >
+        <div className="posts-horizontal-track" ref={carouselRef}>
           {posts.map((post, idx) => {
             const currentSlide = slideIndices[post.id] || 0
             const mediaCount = post.media?.length || 0
@@ -343,9 +437,14 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                   {/* Left: Phone Mockup */}
                   <div>
                     {!isMobile && (
-                      <div className="post-num-badge">
-                        <div className="pnb-dot">{idx + 1}</div> 
-                        {post.publish_date ? format(parseISO(post.publish_date), 'dd/MM') : 'Sem data'}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div className="post-num-badge" style={{ marginBottom: 0 }}>
+                          <div className="pnb-dot">{idx + 1}</div> 
+                          {post.publish_date ? format(parseISO(post.publish_date), 'dd/MM') : 'Sem data'}
+                        </div>
+                        <a href="#" className="download-post-btn" style={{ float: 'none', margin: 0 }}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </a>
                       </div>
                     )}
                     
@@ -395,7 +494,6 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                     <div className="blk-label">Objetivo e Instruções</div>
                     <div className="caption-blk" dangerouslySetInnerHTML={{ __html: post.v2_tasks?.description || 'Conteúdo em fase de aprovação.' }}></div>
 
-                    {/* Cards grid if available (optional in V2) */}
                     <div className="blk-label">Legenda Final</div>
                     <div className="caption-blk" style={{ background: '#fcfcfc', borderStyle: 'dashed' }}>
                       {post.caption}
@@ -403,7 +501,6 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                   </div>
                 </div>
 
-                {/* Actions Below */}
                 <div className="post-actions-below reveal">
                   <div className="actions">
                     <div className="actions-left">
@@ -490,7 +587,6 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
         <div className="modal-overlay open" style={{ background: 'rgba(0,0,0,0.95)', zIndex: 3000 }}>
           <div className="lb-backdrop" onClick={() => setLightboxPost(null)}></div>
           <div className="lb-split">
-            {/* Left Image Area */}
             <div className="lb-left">
               <div className="lb-slice-container">
                 <div className="lb-track" style={{ transform: `translateX(-${lightboxIdx * 100}%)` }}>
@@ -514,7 +610,6 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
               </div>
             </div>
 
-            {/* Right Info Area */}
             <div className="lb-right">
               <div className="lb-rh">
                 <div className="lb-rh-ava"><img src={settings.ig_avatar_url || ''} alt="" /></div>
@@ -544,7 +639,6 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                 </div>
               </div>
 
-              {/* Quick Actions in Lightbox */}
               <div className="lb-raction-row">
                  <button className="lb-abtn lb-abtn-ap" onClick={() => { handleApprove(lightboxPost.id); setLightboxPost(null); }}>✓ Aprovar</button>
                  <button className="lb-abtn lb-abtn-rj" onClick={() => { setActionPostId(lightboxPost.id); setActionType('reject'); setActionModalOpen(true); setLightboxPost(null); }}>✎ Reprovar</button>
