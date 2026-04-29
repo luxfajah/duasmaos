@@ -57,6 +57,7 @@ export function GoogleDriveLink() {
       provider: 'google',
       options: {
         redirectTo: redirectUrl.toString(),
+        skipBrowserRedirect: true,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',

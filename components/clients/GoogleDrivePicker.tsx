@@ -108,6 +108,7 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
       provider: 'google',
       options: {
         redirectTo: redirectUrl.toString(),
+        skipBrowserRedirect: true,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',

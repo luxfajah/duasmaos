@@ -6,7 +6,9 @@ export default function ClosePopupPage() {
   useEffect(() => {
     if (window.opener) {
       window.opener.postMessage('auth-success', window.location.origin)
-      window.close()
+      setTimeout(() => {
+        window.close()
+      }, 500)
     } else {
       // Fallback se não for popup
       window.location.href = '/dashboard/settings?section=profile'
