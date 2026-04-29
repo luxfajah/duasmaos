@@ -128,38 +128,61 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
     setFormData(prev => ({ ...prev, portal_password: pass }))
   }
 
-  // ── Instagram profile fetch via oEmbed ─────────────────────────────────────
+  // ── Instagram profile fetch via server-side scraper ───────────────────────
   const extractIgProfile = async () => {
     const handle = igHandle.replace('@', '').replace(/.*instagram\.com\//, '').split('/')[0].trim()
     if (!handle) { toast.error('Informe um @ ou link válido.'); return }
 
     try {
       setIgLoading(true)
-      toast.loading('Buscando perfil...', { id: 'ig-fetch' })
+      toast.loading('Buscando perfil @' + handle + '...', { id: 'ig-fetch' })
 
-      // Use Instagram oEmbed for basic info (name + thumbnail)
-      const oembed = await fetch(
-        `https://graph.facebook.com/v18.0/instagram_oembed?url=https://www.instagram.com/${handle}/&access_token=&maxwidth=320`,
-        { cache: 'no-store' }
-      ).then(r => r.json()).catch(() => null)
+      const res = await fetch(`/api/ig-scrape?handle=${encodeURIComponent(handle)}`)
+      const data = await res.json()
 
-      // Apply what we got
+      if (!res.ok || data.error) {
+        toast.error(data.error || 'Perfil não encontrado.', { id: 'ig-fetch' })
+        return
+      }
+
+      // Apply scraped fields
       setFormData(prev => ({
         ...prev,
-        ig_username: handle,
-        ig_name: oembed?.author_name || prev.ig_name,
-        ig_avatar_url: oembed?.thumbnail_url || prev.ig_avatar_url,
+        ig_username: data.username || handle,
+        ig_name: data.name || prev.ig_name,
+        ig_bio: data.bio || prev.ig_bio,
+        ig_stats_posts: parseInt(data.posts) || prev.ig_stats_posts,
+        ig_stats_followers: data.followers || prev.ig_stats_followers,
+        ig_stats_following: data.following || prev.ig_stats_following,
       }))
 
-      toast.success(
-        oembed?.author_name
-          ? `Dados de @${handle} importados! Edite bio e stats manualmente.`
-          : `@${handle} definido. Complete os campos manualmente.`,
-        { id: 'ig-fetch' }
-      )
-    } catch {
-      toast.error('Não foi possível importar automaticamente. Preencha manualmente.', { id: 'ig-fetch' })
-      setFormData(prev => ({ ...prev, ig_username: handle }))
+      // Auto-upload avatar if found
+      if (data.avatar_url) {
+        toast.loading('Salvando foto de perfil...', { id: 'ig-fetch' })
+        try {
+          const proxyRes = await fetch(`/api/ig-proxy?url=${encodeURIComponent(data.avatar_url)}`)
+          if (proxyRes.ok) {
+            const blob = await proxyRes.blob()
+            const { convertToWebP } = await import('@/utils/image-utils')
+            const { uploadPortalImage } = await import('@/app/dashboard/clients/actions')
+            const webpBlob = await convertToWebP(blob as File)
+            const fd = new FormData()
+            fd.append('file', webpBlob, `${handle}_avatar.webp`)
+            fd.append('clientId', clientId)
+            const avatarUrl = await uploadPortalImage(fd)
+            setFormData(prev => ({ ...prev, ig_avatar_url: avatarUrl }))
+          }
+        } catch { /* skip avatar upload silently */ }
+      }
+
+      // Auto-import highlights if found
+      if (data.highlights?.length > 0) {
+        setHighlights(prev => data.highlights.length > 0 ? data.highlights : prev)
+      }
+
+      toast.success(`Perfil @${handle} importado com sucesso!`, { id: 'ig-fetch' })
+    } catch (err: any) {
+      toast.error('Erro: ' + err.message, { id: 'ig-fetch' })
     } finally {
       setIgLoading(false)
     }
