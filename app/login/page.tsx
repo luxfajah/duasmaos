@@ -1,5 +1,6 @@
 import { login } from './actions'
 import { Button } from '@/components/ui/button'
+import { GoogleLoginButton } from '@/components/auth/GoogleLoginButton'
 
 export default function LoginPage({ searchParams }: { searchParams: { message: string } }) {
   return (
@@ -51,6 +52,17 @@ export default function LoginPage({ searchParams }: { searchParams: { message: s
               Entrar na plataforma
             </Button>
           </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border"></div>
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
+              <span className="bg-surface px-4 text-text-muted">Ou</span>
+            </div>
+          </div>
+
+          <GoogleLoginButton />
         </div>
       </div>
     </div>
