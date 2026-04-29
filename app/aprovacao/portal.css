@@ -55,7 +55,7 @@
     .hero-bg {
       position: fixed; inset: 0;
       width: 100%; height: 100%;
-      background: url('logos/wallpaper.webp') center center / cover no-repeat;
+      background-color: var(--bg); /* Removed hardcoded wallpaper path */
       z-index: 0;
       pointer-events: none;
       filter: saturate(.85) contrast(1.05) blur(3px);
@@ -631,10 +631,6 @@
     .actions { margin-top: 16px; display: flex; gap: 10px; }
     .abtn { flex: 1; padding: 10px; font-size: 11px; white-space: nowrap; }
 
-
-      font-size: 10px; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--muted);
-    }
     .post-num-badge .pnb-dot {
       width: 28px; height: 28px; border-radius: 50%;
       background: var(--text); color: var(--white);
@@ -1309,7 +1305,7 @@
 }
 .login-screen::before {
   content: ""; position: absolute; inset: 0;
-  background: url('logos/wallpaper.webp') center center / cover no-repeat;
+  background-color: var(--bg); /* Removed hardcoded wallpaper path */
   filter: blur(12px) saturate(1.1);
   z-index: -1;
   transform: scale(1.1); /* Prevent blurred edges */
@@ -1440,7 +1436,7 @@ body.locked {
 }
 .preloader::before {
   content: ""; position: absolute; inset: -5%;
-  background: url('logos/wallpaper.webp') center center / cover no-repeat;
+  background-color: var(--bg); /* Removed hardcoded wallpaper path */
   filter: saturate(.85) contrast(1.05) blur(8px);
   z-index: -1;
 }
