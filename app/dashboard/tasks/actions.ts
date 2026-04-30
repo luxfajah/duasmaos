@@ -113,7 +113,7 @@ export async function createTask(formData: {
   }
 
   // 5. Create Google Calendar event for meeting tasks (non-blocking)
-  if (formData.deliverable_type === 'meeting' || (formData as any).task_type === 'meeting') {
+  if ((formData as any).deliverable_type === 'meeting' || formData.task_type === 'meeting') {
     if (formData.meeting_start_at && formData.meeting_end_at && task?.id) {
       try {
         const { createMeetingEvent } = await import('@/lib/google/calendar')
