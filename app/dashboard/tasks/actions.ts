@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { V2Task, TaskStatusV2, TaskPriorityV2, DeliverableTypeV2 } from '@/types/database'
+import { V2Task, TaskStatusV2, TaskPriorityV2, DeliverableTypeV2, TaskTypeV2 } from '@/types/database'
 import { revalidatePath } from 'next/cache'
 
 /** Logic to reconcile social posts with the desired count */
