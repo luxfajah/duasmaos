@@ -60,8 +60,20 @@ export function GoogleDrivePicker({ onPick, label = 'Google Drive' }: Props) {
     // Escutar mensagem do popup de callback
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return
-      if (event.data === 'auth-success') {
+      
+      const { type, error } = event.data || {}
+      
+      if (type === 'auth-success') {
+        toast.success('Google Drive vinculado com sucesso!')
         checkLinkedStatus()
+        setLoading(false)
+      } else if (type === 'auth-error') {
+        if (error === 'identity_already_exists') {
+          toast.error('Esta conta já está vinculada, mas precisamos atualizar suas permissões. Por favor, desvincule a conta no seu Perfil e vincule novamente.')
+        } else {
+          toast.error('Erro na vinculação: ' + error)
+        }
+        setLoading(false)
       }
     }
     window.addEventListener('message', handleMessage)

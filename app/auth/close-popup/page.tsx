@@ -4,13 +4,20 @@ import { useEffect } from 'react'
 
 export default function ClosePopupPage() {
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    const error = searchParams.get('error')
+    
     if (window.opener) {
-      window.opener.postMessage('auth-success', window.location.origin)
+      if (error) {
+        window.opener.postMessage({ type: 'auth-error', error }, window.location.origin)
+      } else {
+        window.opener.postMessage({ type: 'auth-success' }, window.location.origin)
+      }
+      
       setTimeout(() => {
         window.close()
       }, 500)
     } else {
-      // Fallback se não for popup
       window.location.href = '/dashboard/settings?section=profile'
     }
   }, [])

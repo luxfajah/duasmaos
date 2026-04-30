@@ -6,39 +6,39 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard/profile'
 
+  const error = searchParams.get('error')
+  const errorCode = searchParams.get('error_code')
+  const errorDescription = searchParams.get('error_description')
+
+  if (error || errorCode) {
+    console.error('OAuth Callback Error:', { error, errorCode, errorDescription })
+    
+    // Se estávamos em um popup, precisamos fechar ele mesmo com erro
+    if (next === '/auth/close-popup') {
+      return NextResponse.redirect(`${origin}/auth/close-popup?error=${errorCode || error}&description=${errorDescription}`)
+    }
+    
+    return NextResponse.redirect(`${origin}/?error=${errorCode || error}`)
+  }
+
   if (code) {
     const supabase = createClient()
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data, error: authError } = await supabase.auth.exchangeCodeForSession(code)
     
-    if (!error && data.session) {
-      const { user, provider_refresh_token, provider_token } = data.session
+    if (!authError && data.session) {
+      const { user, provider_refresh_token } = data.session
       
-      console.log('OAuth Callback Session:', { 
-        userId: user?.id, 
-        hasRefreshToken: !!provider_refresh_token,
-        hasAccessToken: !!provider_token 
-      })
-
       if (provider_refresh_token && user) {
-        const { error: dbError } = await supabase.from('user_integrations').upsert({
+        await supabase.from('user_integrations').upsert({
           user_id: user.id,
           google_refresh_token: provider_refresh_token,
           updated_at: new Date().toISOString()
         })
-        
-        if (dbError) {
-          console.error('Erro ao salvar refresh token no banco:', dbError)
-        } else {
-          console.log('Refresh token salvo com sucesso para o usuário:', user.id)
-        }
-      } else if (user) {
-        console.warn('Callback concluído mas provider_refresh_token está ausente. Persistence não funcionará.')
       }
       
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // Se deu erro, redireciona para a home
   return NextResponse.redirect(`${origin}/?error=auth_callback_failed`)
 }

@@ -45,8 +45,19 @@ export function GoogleDriveLink() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== window.location.origin) return
-      if (event.data === 'auth-success') {
+      
+      const { type, error } = event.data || {}
+      
+      if (type === 'auth-success') {
+        toast.success('Google Drive vinculado com sucesso!')
         checkLinkedStatus()
+        setLoading(false)
+      } else if (type === 'auth-error') {
+        if (error === 'identity_already_exists') {
+          toast.error('Esta conta já está vinculada no Supabase, mas o token de acesso sumiu. Por favor, desvincule a conta aqui mesmo e vincule novamente.')
+        } else {
+          toast.error('Erro na vinculação: ' + error)
+        }
         setLoading(false)
       }
     }
