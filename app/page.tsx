@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
-
 import Link from 'next/link'
+import { PopupHashDetector } from '@/components/auth/PopupHashDetector'
 
 export default async function Page() {
   const supabase = createClient()
@@ -9,6 +9,7 @@ export default async function Page() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+      <PopupHashDetector />
       <div className="max-w-md w-full space-y-8 text-center animate-in fade-in zoom-in duration-500">
         <h1 className="font-playfair text-4xl md:text-5xl font-semibold tracking-tight text-text-primary">
           Duas Mãos

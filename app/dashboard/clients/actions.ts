@@ -92,6 +92,19 @@ export async function createClient_(formData: Partial<Client & { address?: Parti
     if (addressError) console.error('Error inserting address:', addressError)
   }
 
+  // 3. Create Google Drive folder structure (non-blocking)
+  if (client) {
+    try {
+      const { createClientFolderStructure } = await import('@/lib/google/drive')
+      const folderId = await createClientFolderStructure(
+        formData.company || formData.name || 'Cliente'
+      )
+      await supabase.from('clients').update({ drive_folder_id: folderId }).eq('id', client.id)
+    } catch (driveError: any) {
+      console.error('Aviso: Não foi possível criar pasta no Drive:', driveError.message)
+    }
+  }
+
   revalidatePath('/dashboard/clients')
 }
 

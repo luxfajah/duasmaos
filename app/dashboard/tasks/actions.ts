@@ -65,6 +65,11 @@ export async function createTask(formData: {
   assigned_to?: string
   deliverable_type?: DeliverableTypeV2
   social_post_count?: number
+  task_type?: TaskTypeV2
+  // Meeting fields
+  meeting_start_at?: string
+  meeting_end_at?: string
+  meeting_participants?: { email: string; displayName?: string }[]
 }) {
   const supabase = createClient()
 
@@ -105,6 +110,26 @@ export async function createTask(formData: {
   // 4. Sync social posts if count provided
   if (formData.social_post_count && formData.social_post_count > 0 && task?.id) {
     await syncSocialPosts(task.id, formData.social_post_count)
+  }
+
+  // 5. Create Google Calendar event for meeting tasks (non-blocking)
+  if (formData.deliverable_type === 'meeting' || (formData as any).task_type === 'meeting') {
+    if (formData.meeting_start_at && formData.meeting_end_at && task?.id) {
+      try {
+        const { createMeetingEvent } = await import('@/lib/google/calendar')
+        const participants = (formData.meeting_participants || []) as { email: string; displayName?: string }[]
+        const calendarEventId = await createMeetingEvent({
+          title: formData.title,
+          description: formData.description,
+          startDateTime: formData.meeting_start_at,
+          endDateTime: formData.meeting_end_at,
+          participants,
+        })
+        await supabase.from('v2_tasks').update({ calendar_event_id: calendarEventId }).eq('id', task.id)
+      } catch (calError: any) {
+        console.error('Aviso: Não foi possível criar evento no Google Calendar:', calError.message)
+      }
+    }
   }
 
   revalidatePath('/dashboard/tasks')
