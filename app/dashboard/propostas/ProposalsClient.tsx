@@ -22,28 +22,29 @@ import Link from 'next/link'
 
 interface Proposal {
   id: string
+  client_id?: string
   client_name: string
   created_at: string
   status: string
 }
 
-export function ProposalsClient({ initialProposals }: { initialProposals: Proposal[] }) {
+export function ProposalsClient({ initialProposals, clients }: { initialProposals: Proposal[], clients: { id: string, name: string }[] }) {
   const router = useRouter()
   const [proposals, setProposals] = useState(initialProposals)
   const [isCreating, setIsCreating] = useState(false)
-  const [newClientName, setNewClientName] = useState('')
+  const [selectedClientId, setSelectedClientId] = useState('')
 
   const handleCreate = async () => {
-    if (!newClientName.trim()) {
-      toast.error('Informe o nome do cliente')
+    if (!selectedClientId) {
+      toast.error('Selecione um cliente para a proposta')
       return
     }
     
     setIsCreating(true)
     try {
-      const newProposal = await createProposal(newClientName)
+      const newProposal = await createProposal(selectedClientId)
       setProposals([newProposal, ...proposals])
-      setNewClientName('')
+      setSelectedClientId('')
       toast.success('Proposta criada com sucesso!')
       router.push(`/dashboard/propostas/${newProposal.id}`)
     } catch (error: any) {
@@ -56,14 +57,17 @@ export function ProposalsClient({ initialProposals }: { initialProposals: Propos
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 bg-surface-muted/50 p-4 rounded-xl border border-border">
-        <Input
-          placeholder="Nome do cliente (ex: Apple Inc.)"
-          value={newClientName}
-          onChange={(e) => setNewClientName(e.target.value)}
-          className="max-w-sm bg-background"
-          onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-        />
-        <Button onClick={handleCreate} disabled={isCreating} className="bg-brand-primary text-white">
+        <select
+          value={selectedClientId}
+          onChange={(e) => setSelectedClientId(e.target.value)}
+          className="flex h-10 w-full max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <option value="" disabled>Selecione o Cliente</option>
+          {clients.map(client => (
+            <option key={client.id} value={client.id}>{client.name}</option>
+          ))}
+        </select>
+        <Button onClick={handleCreate} disabled={isCreating || !selectedClientId} className="bg-brand-primary text-white">
           <SlIcon name="plus" size={16} className="mr-2" />
           {isCreating ? 'Criando...' : 'Nova Proposta'}
         </Button>

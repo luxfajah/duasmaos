@@ -7,7 +7,7 @@ export async function getProposals() {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('proposals')
-    .select('id, client_name, created_at, status')
+    .select('id, client_id, client_name, created_at, status, clients(name)')
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -17,11 +17,15 @@ export async function getProposals() {
   return data || []
 }
 
-export async function createProposal(clientName: string) {
+export async function createProposal(clientId: string) {
   const supabase = createClient()
+  
+  const { data: clientData } = await supabase.from('clients').select('name').eq('id', clientId).single()
+  const clientName = clientData?.name || 'Cliente'
+
   const { data, error } = await supabase
     .from('proposals')
-    .insert([{ client_name: clientName, content: {} }])
+    .insert([{ client_id: clientId, client_name: clientName, content: {} }])
     .select()
     .single()
 

@@ -10,6 +10,7 @@ export default async function ProposalsPage() {
   if (!user) redirect('/login')
 
   const proposals = await getProposals()
+  const { data: clients } = await supabase.from('clients').select('id, name').order('name')
 
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">
@@ -17,7 +18,7 @@ export default async function ProposalsPage() {
         title="Propostas Comerciais"
         subtitle={`${proposals.length} proposta${proposals.length !== 1 ? 's' : ''} criada${proposals.length !== 1 ? 's' : ''}`}
       />
-      <ProposalsClient initialProposals={proposals} />
+      <ProposalsClient initialProposals={proposals} clients={clients || []} />
     </div>
   )
 }
