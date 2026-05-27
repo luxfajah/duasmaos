@@ -56,3 +56,4 @@ yarn-error.log*
 .vercel
 supabase_skills_tmp/  
 .vercel
+.env*

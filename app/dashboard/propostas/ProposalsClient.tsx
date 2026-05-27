@@ -91,7 +91,7 @@ export function ProposalsClient({ initialProposals }: { initialProposals: Propos
                 <TableRow key={proposal.id} className="group hover:bg-surface-muted/20">
                   <TableCell className="font-medium">{proposal.client_name}</TableCell>
                   <TableCell>
-                    <StatusBadge status={proposal.status} />
+                    <StatusBadge label={proposal.status} variant={proposal.status === 'draft' ? 'warning' : 'success'} />
                   </TableCell>
                   <TableCell className="text-text-muted text-sm">
                     {format(new Date(proposal.created_at), "d 'de' MMMM, yyyy", { locale: ptBR })}
