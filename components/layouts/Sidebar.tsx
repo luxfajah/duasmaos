@@ -25,6 +25,7 @@ const navGroups = [
     label: 'Produtos',
     items: [
       { href: '/dashboard/products', label: 'Produtos', icon: 'projects' },
+      { href: '/dashboard/propostas', label: 'Propostas', icon: 'files' },
     ],
   },
   {
