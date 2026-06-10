@@ -221,12 +221,16 @@ export async function createProjectV3(data: {
         for (const t of sortedTasks) {
           const taskId = crypto.randomUUID()
           const isFirstTask = (tasksToInsert.length === 0)
+          const rawType = t.task_type || 'task'
+          const ALLOWED_TASK_TYPES = ['task', 'meeting', 'review', 'approval', 'deliverable', 'operational', 'content_post', 'document']
+          const taskType = ALLOWED_TASK_TYPES.includes(rawType) ? rawType : 'task'
           tasksToInsert.push({
             id: taskId,
             project_id: project.id,
             stage_id: projectStageId,
             title: t.title,
-            type: t.task_type || 'task',
+            type: taskType,
+            task_type: taskType,
             status: isFirstTask ? 'pending' : 'locked',
             priority: 'medium',
             depends_on_task_id: previousTaskId,
