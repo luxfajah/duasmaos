@@ -23,6 +23,7 @@ import { PostCard } from '@/components/tasks/PostCard'
 import { PostEditorPopup } from '@/components/tasks/PostEditorPopup'
 import { TaskDeliveryFileUploader } from '@/components/tasks/TaskDeliveryFileUploader'
 import { syncSocialPosts, updateV2Task, getTaskFiles } from '@/app/dashboard/v2/task-actions'
+import { updateTaskStatus } from '@/app/dashboard/tasks/actions'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
@@ -43,6 +44,7 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
   const [deliveryContent, setDeliveryContent] = useState(task.delivery_content || '')
   const [deliveryLink, setDeliveryLink] = useState(task.delivery_link || '')
   const [isSavingDelivery, setIsSavingDelivery] = useState(false)
+  const [isFinalizing, setIsFinalizing] = useState(false)
 
   const router = useRouter()
 
@@ -98,6 +100,18 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
     }
   }
 
+  const handleFinalizeTask = async () => {
+    setIsFinalizing(true)
+    try {
+      await updateTaskStatus(task.id, 'done')
+      router.refresh()
+    } catch (err: any) {
+      alert('Erro ao finalizar tarefa: ' + err.message)
+    } finally {
+      setIsFinalizing(false)
+    }
+  }
+
   const sortedPosts = [...(task.posts || [])].sort((a, b) => a.order - b.order)
 
   return (
@@ -147,9 +161,15 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
           >
             <Plus className="w-4 h-4 text-brand-primary" /> Adicionar Posts
           </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-bold text-sm hover:bg-brand-secondary transition-all shadow-brand">
-            <CheckCircle className="w-4 h-4" /> Finalizar Task
-          </button>
+          {task.status !== 'done' && (
+            <button 
+              onClick={handleFinalizeTask}
+              disabled={isFinalizing}
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-bold text-sm hover:bg-brand-secondary transition-all shadow-brand disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <CheckCircle className="w-4 h-4" /> {isFinalizing ? 'Finalizando...' : 'Finalizar Task'}
+            </button>
+          )}
         </div>
       </div>
 

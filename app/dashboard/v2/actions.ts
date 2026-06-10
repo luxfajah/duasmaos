@@ -229,6 +229,23 @@ export async function updateV2TaskStatus(taskId: string, status: TaskStatusV2) {
 
   if (updateError) throw updateError
 
+  // Unlocking/re-locking next tasks sequentially
+  if (status === 'done') {
+    const { error: unlockError } = await supabase
+      .from('v2_tasks')
+      .update({ status: 'pending' })
+      .eq('depends_on_task_id', taskId)
+      .eq('status', 'locked')
+    if (unlockError) throw unlockError
+  } else {
+    const { error: lockError } = await supabase
+      .from('v2_tasks')
+      .update({ status: 'locked' })
+      .eq('depends_on_task_id', taskId)
+      .eq('status', 'pending')
+    if (lockError) throw lockError
+  }
+
   const { data: task } = await supabase
     .from('v2_tasks')
     .select('*, v2_project_stages(*)')
