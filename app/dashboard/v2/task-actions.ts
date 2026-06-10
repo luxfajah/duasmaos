@@ -322,7 +322,10 @@ export async function createDesignTaskFromCopy(copyTaskId: string) {
       art_text: p.art_text,
       script: p.script,
       status: 'draft',
-      order: p.order
+      order: p.order,
+      carousel_slides: p.carousel_slides,
+      media: p.media,
+      inherits_from_post_id: p.id
     }))
 
     const { error: insertPostsError } = await supabase
