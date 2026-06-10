@@ -185,6 +185,7 @@ export async function createProjectV3(data: {
     .order('order_index', { ascending: true })
 
   if (stages) {
+    const stageIdMap = new Map<string, string>()
     for (const stage of stages) {
       const stageKey = slugify(stage.name)
       const { data: projectStage, error: psError } = await supabase
@@ -192,7 +193,7 @@ export async function createProjectV3(data: {
         .insert({
           project_id: project.id,
           name: stage.name,
-          stage_key: stageKey, // Added required stage_key
+          stage_key: stageKey,
           order: stage.order_index,
           status: stage.order_index === 0 ? 'in_progress' : 'pending',
           requires_approval: stage.requires_approval
@@ -201,19 +202,44 @@ export async function createProjectV3(data: {
         .single()
 
       if (psError) throw psError
+      stageIdMap.set(stage.id, projectStage.id)
+    }
+
+    let previousTaskId: string | null = null
+    let globalOrder = 1
+    const tasksToInsert: any[] = []
+
+    for (const stage of stages) {
+      const projectStageId = stageIdMap.get(stage.id)
+      if (!projectStageId) continue
 
       if (stage.product_template_tasks) {
-        await supabase.from('v2_tasks').insert(
-          stage.product_template_tasks.map((t: any) => ({
+        const sortedTasks = [...stage.product_template_tasks].sort(
+          (a, b) => (a.order_index || 0) - (b.order_index || 0)
+        )
+
+        for (const t of sortedTasks) {
+          const taskId = crypto.randomUUID()
+          const isFirstTask = (tasksToInsert.length === 0)
+          tasksToInsert.push({
+            id: taskId,
             project_id: project.id,
-            stage_id: projectStage.id,
+            stage_id: projectStageId,
             title: t.title,
             type: t.task_type || 'task',
-            status: stage.order_index === 0 ? 'pending' : 'locked', // Unlock if first stage
-            priority: 'medium'
-          }))
-        )
+            status: isFirstTask ? 'pending' : 'locked',
+            priority: 'medium',
+            depends_on_task_id: previousTaskId,
+            stage_order: globalOrder++
+          })
+          previousTaskId = taskId
+        }
       }
+    }
+
+    if (tasksToInsert.length > 0) {
+      const { error: tasksInsertError } = await supabase.from('v2_tasks').insert(tasksToInsert)
+      if (tasksInsertError) throw tasksInsertError
     }
   }
 
