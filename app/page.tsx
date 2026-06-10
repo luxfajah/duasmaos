@@ -13,8 +13,9 @@ export default async function Page() {
       {/* Supabase OAuth Popup Redirect Detector */}
       <PopupHashDetector />
 
-      {/* Repeating subtle background pattern */}
-      <div className="absolute inset-0 bg-[url('/brand/patterns-02.webp')] bg-[size:280px_auto] bg-repeat opacity-[0.03] dark:opacity-[0.015] pointer-events-none z-0" />
+      {/* Repeating subtle background patterns */}
+      <div className="absolute inset-0 bg-[url('/brand/patterns-02.webp')] bg-[size:280px_auto] bg-repeat opacity-[0.03] pointer-events-none z-0 dark:hidden" />
+      <div className="absolute inset-0 bg-[url('/brand/patterns-02-dark.png')] bg-[size:280px_auto] bg-repeat opacity-[0.15] pointer-events-none z-0 hidden dark:block" />
 
       {/* Atmospheric organic background blobs */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[450px] h-[350px] sm:h-[450px] rounded-full bg-brand-primary/10 dark:bg-brand-primary/5 blur-[100px] sm:blur-[130px] pointer-events-none z-0 animate-blob-drift" />

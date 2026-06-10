@@ -20,8 +20,8 @@
        MARCA — Duas Mãos Palette
     ───────────────────────────────────────── */
     /* Terracotta — primary accent, energy, expression */
-    --brand-primary: 13 55% 50%;
-    --brand-primary-hover: 13 55% 43%;
+    --brand-primary: 3 94% 60%;
+    --brand-primary-hover: 3 94% 52%;
     /* Olive — secondary, maturity, balance */
     --brand-secondary: 68 28% 32%;
     --brand-secondary-light: 68 28% 42%;
@@ -29,10 +29,10 @@
     --brand-accent: 43 90% 58%;
     --brand-accent-soft: 43 90% 88%;
     /* Deep Blue — trust, depth, immersive blocks */
-    --brand-deep-blue: 222 55% 22%;
-    --brand-deep-blue-light: 222 45% 30%;
+    --brand-deep-blue: 240 36% 22%;
+    --brand-deep-blue-light: 240 36% 30%;
     /* Highlight alias (used by Tailwind shadow-brand etc.) */
-    --brand-highlight: 13 55% 50%;
+    --brand-highlight: 3 94% 60%;
 
     /* ─────────────────────────────────────────
        TEXTO
@@ -112,24 +112,24 @@
      DARK MODE
   ───────────────────────────────────────── */
   .dark {
-    --background: 222 28% 7%;
+    --background: 240 36% 8%;
     --foreground: 35 30% 95%;
-    --surface: 222 30% 10%;
-    --surface-muted: 222 22% 14%;
-    --surface-elevated: 222 25% 12%;
-    --surface-deep-blue: 222 30% 8%;
-    --border: 222 18% 22%;
-    --border-strong: 222 18% 30%;
+    --surface: 240 36% 12%;
+    --surface-muted: 240 22% 17%;
+    --surface-elevated: 240 30% 15%;
+    --surface-deep-blue: 240 36% 10%;
+    --border: 240 20% 20%;
+    --border-strong: 240 20% 28%;
 
-    --brand-primary: 13 52% 56%;
-    --brand-primary-hover: 13 52% 62%;
+    --brand-primary: 3 94% 60%;
+    --brand-primary-hover: 3 94% 66%;
     --brand-secondary: 68 28% 42%;
     --brand-secondary-light: 68 28% 52%;
     --brand-accent: 43 85% 65%;
     --brand-accent-soft: 43 60% 22%;
-    --brand-deep-blue: 222 50% 35%;
-    --brand-deep-blue-light: 222 45% 45%;
-    --brand-highlight: 13 52% 56%;
+    --brand-deep-blue: 240 36% 22%;
+    --brand-deep-blue-light: 240 30% 32%;
+    --brand-highlight: 3 94% 60%;
 
     --text-primary: 0 0% 100%;          /* Pure white for max contrast */
     --text-secondary: 220 14% 85%;      /* Was 75% — boosted to 85% */
@@ -162,9 +162,9 @@
     --glass-inner-highlight: 255 255 255 / 0.05;
     --shadow-glass: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
     --shadow-card-hover: 0 16px 52px -8px rgb(0 0 0 / 0.55), 0 4px 12px 0 rgb(0 0 0 / 0.35);
-    --shadow-brand: 0 6px 28px 0 hsl(13 52% 56% / 0.32);
-    --shadow-terracotta: 0 6px 28px 0 hsl(13 52% 56% / 0.32);
-    --shadow-deep-blue: 0 8px 32px 0 hsl(222 50% 35% / 0.35);
+    --shadow-brand: 0 6px 28px 0 hsl(3 94% 60% / 0.32);
+    --shadow-terracotta: 0 6px 28px 0 hsl(3 94% 60% / 0.32);
+    --shadow-deep-blue: 0 8px 32px 0 hsl(240 36% 22% / 0.35);
   }
 
   /* ── Fix for Select contrast in various browsers ── */
