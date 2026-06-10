@@ -42,9 +42,15 @@ export function TaskGroupGrid({ tasks, onTaskClick }: TaskGroupGridProps) {
     deliverable: tasks.filter(t => t.type === 'deliverable'),
   }
 
+  const activeTypes = (Object.keys(groups) as TaskTypeV2[]).filter(
+    (type) => groups[type].length > 0
+  )
+
+  const typesToRender = activeTypes.length > 0 ? activeTypes : (['task'] as const)
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {(['task', 'meeting', 'review'] as const).map((type) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {typesToRender.map((type) => (
         <div key={type} className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h3 className={cn("text-xs font-bold uppercase tracking-widest", TYPE_CONFIG[type].color)}>

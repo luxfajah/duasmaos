@@ -56,6 +56,7 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
     setDeletingId(id)
     try {
       await deleteTask(id)
+      router.refresh()
     } catch {
       alert('Erro ao excluir tarefa.')
     } finally {
@@ -66,6 +67,7 @@ export function TasksTable({ tasks, onEdit }: TasksTableProps) {
   async function handleStatusChange(id: string, status: TaskStatusV2) {
     try {
       await updateTaskStatus(id, status)
+      router.refresh()
     } catch {
       alert('Erro ao atualizar status.')
     }

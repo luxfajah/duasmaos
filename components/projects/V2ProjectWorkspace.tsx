@@ -14,8 +14,11 @@ import {
   SheetDescription 
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Clock, CheckCircle, AlertCircle, Building2, User2, MessageSquare } from "lucide-react"
+import { Clock, CheckCircle, AlertCircle, Building2, User2, MessageSquare, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+import { updateTaskStatus } from "@/app/dashboard/tasks/actions"
+import Link from "next/link"
 
 interface V2ProjectWorkspaceProps {
   project: any // V2Project + clients + stages + tasks + progress
@@ -34,6 +37,22 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
   const canApprove = ['admin', 'gestor'].includes(profile?.role)
 
   const isBlocked = activeStage?.status === 'waiting_approval'
+
+  const router = useRouter()
+  const [isUpdatingTask, setIsUpdatingTask] = useState(false)
+
+  const handleUpdateTaskStatus = async (taskId: string, newStatus: any) => {
+    setIsUpdatingTask(true)
+    try {
+      await updateTaskStatus(taskId, newStatus)
+      setSelectedTask(null)
+      router.refresh()
+    } catch (err: any) {
+      alert('Erro ao atualizar tarefa: ' + err.message)
+    } finally {
+      setIsUpdatingTask(false)
+    }
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-700">
@@ -95,7 +114,7 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
       {/* 4. Main Execution Area (Tasks) */}
       <main className={cn(
         "transition-all duration-500",
-        isBlocked ? "opacity-40 pointer-events-none scale-[0.99] translate-y-1 blur-[1px]" : "opacity-100"
+        isBlocked ? "opacity-60 scale-[0.99] translate-y-1 blur-[0.5px]" : "opacity-100"
       )}>
         <TaskGroupGrid 
           tasks={filteredTasks} 
@@ -109,13 +128,21 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
           {selectedTask && (
             <div className="h-full flex flex-col gap-6 pt-10">
               <SheetHeader className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-brand-primary/10 text-brand-primary border-transparent">
-                    {activeStage?.name}
-                  </Badge>
-                  <span className="text-xs text-text-muted uppercase font-bold tracking-widest">
-                    ID: {selectedTask.id.slice(0, 8)}
-                  </span>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-brand-primary/10 text-brand-primary border-transparent">
+                      {activeStage?.name}
+                    </Badge>
+                    <span className="text-xs text-text-muted uppercase font-bold tracking-widest">
+                      ID: {selectedTask.id.slice(0, 8)}
+                    </span>
+                  </div>
+                  <Link 
+                    href={`/dashboard/tasks/${selectedTask.id}`}
+                    className="flex items-center gap-1 text-xs text-brand-primary hover:underline font-bold"
+                  >
+                    Abrir Studio <ExternalLink size={12} />
+                  </Link>
                 </div>
                 <SheetTitle className="text-2xl font-bold tracking-tight">
                   {selectedTask.title}
@@ -163,11 +190,20 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
 
               {/* Action Bar */}
               <div className="pt-6 border-t border-border flex items-center justify-between gap-4">
-                <Button variant="outline" className="rounded-xl flex-1">
+                <Button 
+                  variant="outline" 
+                  className="rounded-xl flex-1"
+                  disabled={isUpdatingTask}
+                  onClick={() => handleUpdateTaskStatus(selectedTask.id, 'blocked')}
+                >
                   Marcar como Impedido
                 </Button>
-                <Button className="bg-brand-primary shadow-brand rounded-xl flex-1">
-                  Concluir Tarefa
+                <Button 
+                  className="bg-brand-primary shadow-brand rounded-xl flex-1"
+                  disabled={isUpdatingTask}
+                  onClick={() => handleUpdateTaskStatus(selectedTask.id, 'done')}
+                >
+                  {isUpdatingTask ? 'Atualizando...' : 'Concluir Tarefa'}
                 </Button>
               </div>
             </div>

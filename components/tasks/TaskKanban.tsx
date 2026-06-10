@@ -68,6 +68,7 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
     startTransition(async () => {
       try {
         await updateTaskStatus(taskId, newStatus)
+        router.refresh()
       } catch (err: any) {
         alert(err.message)
         // Refresh component state somehow or rely on revalidation
