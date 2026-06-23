@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Amaranth, Lato } from "next/font/google";
+import { Plus_Jakarta_Sans, Amaranth, Lato, Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
@@ -9,7 +9,9 @@ import { Toaster } from "sonner";
    - Plus Jakarta Sans  → headings (expressive, editorial)
    - Amaranth           → subheadings (warm, approachable)
    - Lato               → body (highly readable)
-───────────────────────────────────────── */
+   - Outfit             → modern UI elements
+   - Playfair Display   → serif highlights and titles
+   ───────────────────────────────────────── */
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -32,6 +34,21 @@ const lato = Lato({
   display: "swap",
 });
 
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const playfairDisplay = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Duas Mãos | Plataforma Criativa",
   description: "Plataforma de gestão de projetos e colaboração criativa da Duas Mãos",
@@ -45,7 +62,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${plusJakartaSans.variable} ${amaranth.variable} ${lato.variable} font-body`}
+        className={`${plusJakartaSans.variable} ${amaranth.variable} ${lato.variable} ${outfit.variable} ${playfairDisplay.variable} font-body`}
       >
         <ThemeProvider
           attribute="class"

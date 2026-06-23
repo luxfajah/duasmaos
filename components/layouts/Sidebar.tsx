@@ -19,6 +19,8 @@ const navGroups = [
       { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', exact: true },
       { href: '/dashboard/projects', label: 'Projetos', icon: 'projects' },
       { href: '/dashboard/clients', label: 'Clientes', icon: 'clients', exact: true },
+      { href: '/dashboard/financeiro', label: 'Financeiro', icon: 'financials' },
+      { href: '/dashboard/configuracoes', label: 'Configurações', icon: 'settings' },
     ],
   },
   {

@@ -243,3 +243,31 @@ export async function clientRequestRevision(postId: string, slug: string, notes:
   revalidatePath(`/aprovacao/${slug}`)
   return { success: true }
 }
+
+export async function clientAddPostComment(postId: string, slug: string, body: string) {
+  if (!body || body.trim().length === 0) {
+    throw new Error('O comentário não pode ser vazio.')
+  }
+
+  const session = await validateSlugAndGetClient(slug)
+  const supabase = createAdminClient()
+
+  // Verify post belongs to client
+  const detail = await getClientPostDetail(postId, session.clientId)
+  if (!detail) throw new Error('Post não encontrado.')
+
+  const taskId = (detail as any).task_id
+  const { error: commentError } = await supabase
+    .from('task_comments')
+    .insert({
+      task_id: taskId,
+      social_post_id: postId,
+      body: body.trim(),
+      comment_type: 'general',
+    })
+
+  if (commentError) throw commentError
+
+  revalidatePath(`/aprovacao/${slug}`)
+  return { success: true }
+}

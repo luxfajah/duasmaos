@@ -958,4 +958,43 @@
     border-color: rgba(255, 255, 255, 0.25);
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
   }
+
+  /* ── Glassmorphism Glow Helper ── */
+  .glass-glow {
+    position: relative;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+  .dark .glass-glow {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .glass-glow::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    z-index: -1;
+    background: linear-gradient(135deg, hsl(var(--brand-primary) / 0.2), hsl(var(--brand-accent) / 0.2));
+    border-radius: inherit;
+    filter: blur(12px);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .glass-glow:hover::before {
+    opacity: 1;
+  }
+
+  /* ── Card Micro-Animations ── */
+  .card-hover-animate {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .card-hover-animate:hover {
+    transform: translateY(-4px) scale(1.015);
+    box-shadow: var(--shadow-card-hover);
+    border-color: hsl(var(--brand-primary) / 0.35);
+  }
 }

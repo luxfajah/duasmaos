@@ -33,6 +33,7 @@ interface TaskDetailsClientProps {
 }
 
 export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps) {
+  const isEditorialGrid = task.project?.workflow_type !== 'social_media'
   const [selectedPost, setSelectedPost] = useState<V2SocialPost | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [isEditingBriefing, setIsEditingBriefing] = useState(false)
@@ -155,12 +156,14 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
         </div>
 
         <div className="flex gap-3">
-          <button 
-            onClick={handleAddPost}
-            className="flex items-center gap-2 px-4 py-2 bg-surface text-text-primary border border-border rounded-lg font-bold text-sm hover:border-text-muted transition-all shadow-sm"
-          >
-            <Plus className="w-4 h-4 text-brand-primary" /> Adicionar Posts
-          </button>
+          {isEditorialGrid && (
+            <button 
+              onClick={handleAddPost}
+              className="flex items-center gap-2 px-4 py-2 bg-surface text-text-primary border border-border rounded-lg font-bold text-sm hover:border-text-muted transition-all shadow-sm"
+            >
+              <Plus className="w-4 h-4 text-brand-primary" /> Adicionar Posts
+            </button>
+          )}
           {task.status !== 'done' && (
             <button 
               onClick={handleFinalizeTask}
@@ -180,7 +183,10 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
         <div className="flex-1 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-2">
           
           {/* Entrega Module */}
-          <div className="shrink-0 bg-surface border border-border rounded-2xl overflow-hidden flex flex-col max-w-full">
+          <div className={cn(
+            "bg-surface border border-border rounded-2xl overflow-hidden flex flex-col max-w-full",
+            isEditorialGrid ? "shrink-0" : "flex-1 min-h-0"
+          )}>
             <div className="px-6 py-4 border-b border-border bg-surface-muted/10 flex items-center justify-between">
               <h2 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-500" /> Entrega da Tarefa
@@ -249,50 +255,52 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
             </div>
           </div>
 
-          <div className="flex flex-col bg-surface-muted/10 border border-border rounded-2xl overflow-hidden relative shrink-0">
-            <div className="h-14 py-3 shrink-0 border-b border-border bg-surface flex items-center px-6 justify-between">
-            <div className="flex items-center gap-3">
-               <h2 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
-                 <LayoutGrid className="w-4 h-4 text-brand-primary" /> Grade Editorial
-               </h2>
-               <div className="w-px h-4 bg-border mx-1" />
-               <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
-                 {sortedPosts.length} Posts encontrados
-               </span>
-            </div>
-            
-            <div className="flex gap-1.5 bg-surface-muted/50 p-1 rounded-lg border border-border/50">
-               <button className="p-1.5 bg-surface rounded-md shadow-sm text-brand-primary"><LayoutGrid size={14}/></button>
-               <button className="p-1.5 text-text-muted hover:text-text-primary"><List size={14}/></button>
-            </div>
-          </div>
+          {isEditorialGrid && (
+            <div className="flex flex-col bg-surface-muted/10 border border-border rounded-2xl overflow-hidden relative shrink-0">
+              <div className="h-14 py-3 shrink-0 border-b border-border bg-surface flex items-center px-6 justify-between">
+                <div className="flex items-center gap-3">
+                   <h2 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
+                     <LayoutGrid className="w-4 h-4 text-brand-primary" /> Grade Editorial
+                   </h2>
+                   <div className="w-px h-4 bg-border mx-1" />
+                   <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">
+                     {sortedPosts.length} Posts encontrados
+                   </span>
+                </div>
+                
+                <div className="flex gap-1.5 bg-surface-muted/50 p-1 rounded-lg border border-border/50">
+                   <button className="p-1.5 bg-surface rounded-md shadow-sm text-brand-primary"><LayoutGrid size={14}/></button>
+                   <button className="p-1.5 text-text-muted hover:text-text-primary"><List size={14}/></button>
+                </div>
+              </div>
 
-          <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {sortedPosts.map(post => (
-                 <PostCard 
-                   key={post.id} 
-                   post={post} 
-                   onClick={handleOpenPost} 
-                 />
-              ))}
+              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {sortedPosts.map(post => (
+                     <PostCard 
+                       key={post.id} 
+                       post={post} 
+                       onClick={handleOpenPost} 
+                     />
+                  ))}
 
-              {sortedPosts.length === 0 && (
-                 <div className="col-span-full py-24 flex flex-col items-center justify-center text-center space-y-4">
-                    <div className="w-20 h-20 bg-surface border border-border rounded-3xl flex items-center justify-center shadow-sm">
-                       <Plus size={32} className="text-text-muted" />
-                    </div>
-                    <div className="max-w-xs">
-                       <h3 className="text-lg font-serif font-bold text-text-primary">Container Editorial Vazio</h3>
-                       <p className="text-sm text-text-muted mt-1 leading-relaxed">
-                         Esta tarefa ainda não possui posts. Use o botão <b>Adicionar Posts</b> para gerar a grade base.
-                       </p>
-                    </div>
-                 </div>
-              )}
+                  {sortedPosts.length === 0 && (
+                     <div className="col-span-full py-24 flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="w-20 h-20 bg-surface border border-border rounded-3xl flex items-center justify-center shadow-sm">
+                           <Plus size={32} className="text-text-muted" />
+                        </div>
+                        <div className="max-w-xs">
+                           <h3 className="text-lg font-serif font-bold text-text-primary">Container Editorial Vazio</h3>
+                           <p className="text-sm text-text-muted mt-1 leading-relaxed">
+                             Esta tarefa ainda não possui posts. Use o botão <b>Adicionar Posts</b> para gerar a grade base.
+                           </p>
+                        </div>
+                     </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
         </div>
 
         {/* Sidebar: Briefing & Revisions */}

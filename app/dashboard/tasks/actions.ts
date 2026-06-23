@@ -38,7 +38,7 @@ export async function getTasks(projectId?: string) {
   const supabase = createClient()
   let query = supabase
     .from('v2_tasks')
-    .select('*, v2_projects(name, client_id, clients(name)), v2_task_assignees(user_id, profiles(full_name))')
+    .select('*, v2_projects(name, workflow_type, client_id, clients(name)), v2_task_assignees(user_id, profiles(full_name))')
     .order('due_date', { ascending: true, nullsFirst: false })
 
   if (projectId) query = query.eq('project_id', projectId)

@@ -98,7 +98,7 @@ export function TaskDetailModal({ task, open, onClose }: TaskDetailModalProps) {
               </section>
 
               {/* Social Media Production Grid Replacement */}
-              {(task.deliverable_type === 'social_copy' || task.deliverable_type === 'social_design' || (task as any).task_type === 'content_post') && (
+              {((task as any).projects?.workflow_type !== 'social_media' && (task as any).v2_projects?.workflow_type !== 'social_media' && (task as any).project?.workflow_type !== 'social_media') && (
                 <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="flex items-center gap-3 mb-8">
                     <div className="w-10 h-10 rounded-xl bg-brand-primary shadow-brand flex items-center justify-center text-white">

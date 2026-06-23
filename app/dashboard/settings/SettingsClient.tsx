@@ -3,9 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { SettingsSidebar } from '@/components/settings/SettingsSidebar'
 import { ProfileSection } from '@/components/settings/sections/ProfileSection'
-import { UsersSection } from '@/components/settings/sections/UsersSection'
 import { SecuritySection } from '@/components/settings/sections/SecuritySection'
-import { InvitationsSection } from '@/components/settings/sections/InvitationsSection'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { ShieldAlert } from 'lucide-react'
 
@@ -71,8 +69,6 @@ export function SettingsClient({ profile, users, clients, invitations }: Setting
       {/* Main Content Area */}
       <main className="flex-1">
         {activeSection === 'profile' && <ProfileSection profile={profile} />}
-        {activeSection === 'users' && isAdmin && <UsersSection users={users} clients={clients} />}
-        {activeSection === 'invitations' && isAdmin && <InvitationsSection clients={clients} invitations={invitations} />}
         {activeSection === 'security' && <SecuritySection profile={profile} />}
       </main>
     </div>

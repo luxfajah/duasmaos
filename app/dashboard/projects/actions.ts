@@ -252,10 +252,23 @@ export async function createProjectV3(data: {
     await supabase.from('revenues').insert({
       project_id: project.id,
       amount: data.amount,
-      due_date: data.start_date,
+      due_date: data.start_date || new Date().toISOString(),
       status: 'pending',
-      type: data.payment_type
+      type: data.payment_type || 'one_time'
     })
+
+    if (data.payment_type === 'recurring') {
+      const nextDue = new Date(data.start_date || new Date())
+      nextDue.setMonth(nextDue.getMonth() + 1)
+
+      await supabase.from('revenue_recurrences').insert({
+        project_id: project.id,
+        amount: data.amount,
+        frequency: 'monthly',
+        billing_day: data.billing_day || new Date().getDate(),
+        next_due_date: nextDue.toISOString()
+      })
+    }
   }
 
   revalidatePath('/dashboard/projects')

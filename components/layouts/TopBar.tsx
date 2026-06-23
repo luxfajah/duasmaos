@@ -49,7 +49,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
         <ThemeToggle className="text-text-muted hover:text-text-primary" />
 
-        <Link href="/dashboard/settings" title="Configurações" className="p-2 text-text-muted hover:bg-sand-warm hover:text-text-primary rounded-xl transition-all duration-150 hover:scale-105">
+        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-sand-warm hover:text-text-primary rounded-xl transition-all duration-150 hover:scale-105">
           <Settings size={17} strokeWidth={1.75} />
         </Link>
 
@@ -80,7 +80,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
             <Link href="/dashboard/settings">
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Configurações</span>
+                <span>Meu Perfil</span>
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />

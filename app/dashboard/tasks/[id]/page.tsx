@@ -14,6 +14,7 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
       *,
       project:v2_projects(
         name, 
+        workflow_type,
         client:clients(name)
       ),
       stage:v2_project_stages(name),

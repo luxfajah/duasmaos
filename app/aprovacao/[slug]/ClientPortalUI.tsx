@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { ClientPortalSettings } from '@/types/database'
-import { clientApprovePost, clientRejectPost, clientRequestRevision } from './actions'
+import { clientApprovePost, clientRejectPost, clientRequestRevision, clientAddPostComment } from './actions'
 import { toast } from 'sonner'
 import { format, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, getDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -73,6 +73,7 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
   const [actionModalOpen, setActionModalOpen] = useState(false)
   const [actionType, setActionType] = useState<'reject' | 'revision' | null>(null)
   const [actionNote, setActionNote] = useState('')
+  const [lightboxComment, setLightboxComment] = useState('')
   const [actionPostId, setActionPostId] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -134,6 +135,39 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
       }
       setActionModalOpen(false)
       setActionNote('')
+    } catch (err: any) {
+      toast.error(err.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleAddComment = async (postId: string) => {
+    if (!lightboxComment.trim()) {
+      toast.error('O comentário não pode ser vazio.')
+      return
+    }
+
+    try {
+      setIsSubmitting(true)
+      await clientAddPostComment(postId, slug, lightboxComment)
+      toast.success('Comentário enviado!')
+      setLightboxComment('')
+
+      setLightboxPost(prev => {
+        if (!prev) return null
+        const newComments = [
+          ...(prev.task_comments || []),
+          {
+            id: Math.random().toString(),
+            body: lightboxComment.trim(),
+            created_at: new Date().toISOString(),
+            comment_type: 'general',
+            profiles: null
+          }
+        ]
+        return { ...prev, task_comments: newComments }
+      })
     } catch (err: any) {
       toast.error(err.message)
     } finally {
@@ -678,10 +712,10 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
               <div className="lb-rcomment-input">
                 <textarea 
                   placeholder="Adicionar um comentário..." 
-                  value={actionNote} 
-                  onChange={e => setActionNote(e.target.value)}
+                  value={lightboxComment} 
+                  onChange={e => setLightboxComment(e.target.value)}
                 />
-                <button className="lb-rpost-btn" onClick={handleActionSubmit}>Publicar</button>
+                <button className="lb-rpost-btn" disabled={isSubmitting} onClick={() => handleAddComment(lightboxPost.id)}>Publicar</button>
               </div>
             </div>
           </div>
