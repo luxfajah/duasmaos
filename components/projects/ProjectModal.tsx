@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ProjectTypeSelect } from '@/components/projects/ProjectTypeSelect'
 
 interface ProjectModalProps {
   project?: V2Project | null
@@ -52,7 +51,68 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
   }, [])
 
   function handleChange(field: keyof typeof form, value: any) {
-    setForm((prev) => ({ ...prev, [field]: value }))
+    setForm((prev) => {
+      const updated = { ...prev, [field]: value }
+
+      // When template_id, client_id, or start_date changes, execute smart auto-fills
+      if (field === 'template_id' || field === 'client_id' || field === 'start_date') {
+        const templateIdVal = field === 'template_id' ? value : prev.template_id
+        const clientIdVal = field === 'client_id' ? value : prev.client_id
+        
+        const selectedTemplate = templates.find(t => t.id === templateIdVal)
+        const selectedClient = clients.find(c => c.id === clientIdVal)
+
+        // 1. Auto-fill project name if it follows the default pattern
+        if (selectedTemplate && selectedClient) {
+          const currentName = prev.name.trim()
+          // Check if name is empty or matches an existing template name pattern
+          const isDefaultOrEmpty = !currentName || 
+            currentName === '' || 
+            templates.some(t => currentName.startsWith(`${t.name} -`))
+          
+          if (isDefaultOrEmpty) {
+            updated.name = `${selectedTemplate.name} - ${selectedClient.name}`
+          }
+        }
+
+        // 2. Auto-fill project_type and payment_type based on template attributes
+        if (selectedTemplate && field === 'template_id') {
+          const templateNameLower = selectedTemplate.name.toLowerCase()
+          const isRecurring = templateNameLower.includes('recorrente') || templateNameLower.includes('social media')
+          
+          updated.project_type = isRecurring ? 'recurring' : 'one_time'
+          updated.payment_type = isRecurring ? 'recurring' : 'one_time'
+          
+          if (selectedTemplate.base_price && Number(selectedTemplate.base_price) > 0) {
+            updated.amount = Number(selectedTemplate.base_price)
+          }
+        }
+
+        // 3. Auto-calculate deadline based on template duration
+        if (selectedTemplate) {
+          const templateNameLower = selectedTemplate.name.toLowerCase()
+          let durationDays = 30 // default
+          
+          const match = selectedTemplate.name.match(/(\d+)\s*(Dias|dias|Days|days)/)
+          if (match) {
+            durationDays = parseInt(match[1], 10)
+          } else if (templateNameLower.includes('site') || templateNameLower.includes('website')) {
+            durationDays = 60
+          } else if (templateNameLower.includes('consultoria')) {
+            durationDays = 30
+          }
+
+          const baseStartDate = updated.start_date ? new Date(updated.start_date) : new Date()
+          if (!isNaN(baseStartDate.getTime())) {
+            const deadlineDate = new Date(baseStartDate.getTime())
+            deadlineDate.setDate(deadlineDate.getDate() + durationDays)
+            updated.deadline = deadlineDate.toISOString().split('T')[0]
+          }
+        }
+      }
+
+      return updated
+    })
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -95,21 +155,21 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-none shadow-2xl">
+      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-none shadow-2xl bg-surface">
         <DialogHeader className="border-b border-border p-6 pt-8 bg-surface">
           <DialogTitle className="flex items-center gap-2 text-xl font-black font-heading">
             {isEdit ? 'Editar Projeto' : 'Configurar Novo Projeto'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh] overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-thin">
+        <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh] overflow-hidden bg-surface">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
             
             {/* Secção 1: Dados Básicos */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-brand-primary mb-2">
                 <Info size={16} />
-                <h3 className="text-sm font-bold uppercase tracking-wider">Informações Básicas</h3>
+                <h3 className="text-xs font-black uppercase tracking-wider">Informações Básicas</h3>
               </div>
               
               <div className="grid grid-cols-1 gap-4">
@@ -120,7 +180,7 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                       value={form.name}
                       onChange={(e) => handleChange('name', e.target.value)}
                       placeholder="Ex: Branding Duas Mãos"
-                      className="h-11 bg-surface-muted/30"
+                      className="h-11"
                       disabled={isPending}
                     />
                   </div>
@@ -129,7 +189,7 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                     <select
                       value={form.status}
                       onChange={(e) => handleChange('status', e.target.value)}
-                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface-muted/30 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 font-medium"
                       disabled={isPending}
                     >
                       <option value="active">Ativo / Em Andamento</option>
@@ -146,7 +206,7 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                     <select
                       value={form.client_id}
                       onChange={(e) => handleChange('client_id', e.target.value)}
-                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface-muted/30 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                     >
                       <option value="">Selecionar cliente</option>
                       {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -157,21 +217,72 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                     <select
                       value={form.template_id}
                       onChange={(e) => handleChange('template_id', e.target.value)}
-                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface-muted/30 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
                     >
                       <option value="">Selecionar template</option>
-                      {templates.map(t => <option key={t.id} value={t.id}>{t.name} ({t.type === 'recurring' ? '🔁' : '👤'})</option>)}
+                      {templates.map(t => {
+                        const templateNameLower = t.name.toLowerCase()
+                        const isRecurring = templateNameLower.includes('recorrente') || templateNameLower.includes('social media')
+                        return (
+                          <option key={t.id} value={t.id}>
+                            {t.name} {isRecurring ? '🔁' : '👤'}
+                          </option>
+                        )
+                      })}
                     </select>
                   </div>
                 </div>
+
+                {/* Template Preview Panel */}
+                {form.template_id && (() => {
+                  const selectedTemplate = templates.find(t => t.id === form.template_id)
+                  if (!selectedTemplate) return null
+                  
+                  const templateNameLower = selectedTemplate.name.toLowerCase()
+                  const isRecurring = templateNameLower.includes('recorrente') || templateNameLower.includes('social media')
+                  let estimatedDuration = 30
+                  
+                  const match = selectedTemplate.name.match(/(\d+)\s*(Dias|dias|Days|days)/)
+                  if (match) {
+                    estimatedDuration = parseInt(match[1], 10)
+                  } else if (templateNameLower.includes('site') || templateNameLower.includes('website')) {
+                    estimatedDuration = 60
+                  }
+
+                  return (
+                    <div className="p-4 rounded-2xl border border-brand-primary/20 bg-brand-primary/5 text-xs text-text-secondary space-y-3 animate-in fade-in duration-200">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-brand-primary uppercase tracking-wider text-[10px]">Visualização do Produto</span>
+                        <span className="px-2 py-0.5 rounded-md bg-brand-primary/10 text-brand-primary font-black uppercase text-[9px] tracking-tight">
+                          {selectedTemplate.category || 'Geral'}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 pt-1">
+                        <div>
+                          <span className="text-[10px] text-text-muted uppercase font-bold block mb-0.5">Duração Estimada</span>
+                          <span className="font-black text-text-primary text-sm">{estimatedDuration} dias</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-text-muted uppercase font-bold block mb-0.5">Faturamento</span>
+                          <span className="font-black text-text-primary text-sm">
+                            {isRecurring ? 'Recorrente (Mensal)' : 'Projeto Único'}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-text-muted italic pt-2 border-t border-brand-primary/10">
+                        * Ao criar, as etapas e tarefas com seus respectivos prazos sequenciais serão gerados automaticamente.
+                      </p>
+                    </div>
+                  )
+                })()}
               </div>
             </section>
 
             {/* Secção 2: Financeiro e Recorrência */}
-            <section className="space-y-4 p-4 bg-surface-muted/20 rounded-2xl border border-border/50">
+            <section className="space-y-4 p-5 bg-surface-muted/30 rounded-2xl border border-border/60">
               <div className="flex items-center gap-2 text-brand-primary mb-2">
                 <DollarSign size={16} />
-                <h3 className="text-sm font-bold uppercase tracking-wider">Configuração Financeira</h3>
+                <h3 className="text-xs font-black uppercase tracking-wider">Configuração Financeira</h3>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -230,11 +341,11 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
               )}
             </section>
 
-            {/* Secção 3: Equipe e Documentos */}
+            {/* Secção 3: Equipe e Prazos */}
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-brand-primary mb-2">
                 <FileText size={16} />
-                <h3 className="text-sm font-bold uppercase tracking-wider">Time e Documentação</h3>
+                <h3 className="text-xs font-black uppercase tracking-wider">Time e Prazos</h3>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -269,12 +380,6 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                     {team.map(m => <option key={m.id} value={m.id}>{m.full_name}</option>)}
                   </select>
                 </div>
-              </div>
-
-              <div className="p-4 border-2 border-dashed border-border rounded-2xl flex flex-col items-center justify-center gap-2 bg-surface-muted/10 group hover:border-brand-primary/50 transition-colors cursor-pointer">
-                <span className="text-2xl opacity-50">📄</span>
-                <span className="text-xs font-bold text-text-secondary group-hover:text-brand-primary">Anexar Contrato ou Briefing</span>
-                <span className="text-[10px] text-text-muted">PDF, DOCX ou Imagens (Max 10MB)</span>
               </div>
             </section>
 
