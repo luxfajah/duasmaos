@@ -156,14 +156,14 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-5xl p-0 overflow-hidden border-none shadow-2xl bg-surface">
-        <DialogHeader className="border-b border-border p-6 pt-8 bg-surface">
+      <DialogContent className="sm:max-w-5xl p-0 overflow-hidden border border-border/50 shadow-xl glass depth-modal">
+        <DialogHeader className="border-b border-border/40 p-6 pt-8">
           <DialogTitle className="flex items-center gap-2 text-xl font-black font-heading">
             {isEdit ? 'Editar Projeto' : 'Configurar Novo Projeto'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col max-h-[85vh] overflow-hidden bg-surface">
+        <form onSubmit={handleSubmit} className="flex flex-col max-h-[85vh] overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
             
             {/* Split layout: Horizontal side-by-side columns */}
