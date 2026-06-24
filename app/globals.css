@@ -184,6 +184,14 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
     @apply antialiased font-body;
+    
+    /* Apple HIG Subtle Mesh Gradient Background */
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(var(--brand-primary)/0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(var(--brand-primary)/0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(var(--brand-primary)/0.04) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(var(--brand-primary)/0.02) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 
   /* Seleção — Creme sobre Terracotta */

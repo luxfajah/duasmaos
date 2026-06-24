@@ -41,36 +41,20 @@ export function MetricCard({
   featured = false,
 }: MetricCardProps) {
 
-  /* ── Featured — Terracotta highlight + expressive tilt (only this block rotates) ── */
+  /* ── Featured — Accent Highlight (Glass) ── */
   if (featured) {
     return (
       <div
         className={cn(
-          'group relative overflow-hidden rounded-2xl p-6',
-          'card-terracotta glow-ring-terracotta',
-          'expressive-tilt-right',
-          'cursor-default',
+          'group relative overflow-hidden rounded-[2rem] p-6',
+          'bg-gradient-to-br from-brand-primary to-brand-primary/80',
+          'shadow-lg shadow-brand-primary/20',
+          'border border-white/10',
           className
         )}
       >
-        {/* Organic blob decorations */}
-        <div className="doodle-overlay">
-          <div className="absolute -top-10 -right-10 w-36 h-36 rounded-full bg-white/10 animate-blob-drift" />
-          <div className="absolute -bottom-8 -left-8 w-28 h-28 rounded-full bg-black/8 animate-blob-drift" style={{ animationDelay: '-3s' }} />
-          {/* Organic wave line */}
-          <svg className="absolute top-4 right-4 opacity-[0.12]" width="72" height="48" viewBox="0 0 72 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M4 24 Q20 8 36 24 Q52 40 68 24" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
-            <path d="M4 34 Q20 18 36 34 Q52 50 68 34" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"/>
-          </svg>
-          {/* Small cross doodle */}
-          <svg className="absolute bottom-5 left-5 opacity-[0.10] rotate-12" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 2v16M2 10h16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          {/* Hover shimmer */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-            <div className="shimmer absolute inset-0" />
-          </div>
-        </div>
+        {/* Subtle HIG noise or glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.2),transparent_50%)]" />
 
         <div className="relative z-10 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -102,50 +86,52 @@ export function MetricCard({
     )
   }
 
-  /* ── Standard — Floating elevated card (perfectly aligned, NO rotation) ── */
+  /* ── Standard Widget (Glass) ── */
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl p-6',
-        'floating-card',
-        'cursor-default',
+        'group relative overflow-hidden rounded-3xl p-6',
+        'bg-surface-primary/70 dark:bg-black/40',
+        'border border-black/[0.04] dark:border-white/[0.08]',
+        'shadow-[0_4px_16px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.2)]',
+        'backdrop-blur-3xl saturate-150',
+        'transition-all duration-300 ease-apple hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5',
         className
       )}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <p className="label-eyebrow text-text-muted mb-3">
+      <div className="relative z-10 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div className={cn(
+            'flex-shrink-0 rounded-2xl p-3 w-12 h-12 flex items-center justify-center',
+            accentMap[accent]
+          )}>
+            <Icon size={22} strokeWidth={1.5} />
+          </div>
+          <p className="text-[11px] font-bold tracking-wider uppercase text-text-muted/70 font-body">
             {label}
           </p>
-          <p className="text-3xl font-black font-heading text-text-primary tabular-nums tracking-tight">{value}</p>
+        </div>
+        
+        <div>
+          <p className="text-[2.25rem] font-semibold text-text-primary tracking-tight tabular-nums font-sans leading-none">{value}</p>
           {description && (
-            <p className="mt-1.5 text-sm text-text-secondary font-body">{description}</p>
+            <p className="mt-2 text-sm text-text-secondary font-medium">{description}</p>
           )}
           {trendValue && (
-            <p
-              className={cn(
-                'mt-2 text-xs font-bold flex items-center gap-1 font-body',
-                trend === 'up'      && 'text-olive',
-                trend === 'down'    && 'text-terracotta',
-                trend === 'neutral' && 'text-text-muted'
-              )}
-            >
+            <p className={cn(
+              'mt-2 text-sm font-semibold flex items-center gap-1',
+              trend === 'up'      && 'text-[#34c759]',
+              trend === 'down'    && 'text-[#ff3b30]',
+              trend === 'neutral' && 'text-[#8e8e93]'
+            )}>
               {trend && (() => {
                 const TIcon = trendIcon[trend]
-                return <TIcon size={12} />
+                return <TIcon size={14} />
               })()}
               {trendValue}
             </p>
           )}
         </div>
-        <div className={cn('flex-shrink-0 rounded-xl p-3', accentMap[accent])}>
-          <Icon size={22} strokeWidth={1.75} />
-        </div>
-      </div>
-
-      {/* Subtle accent glow on hover */}
-      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute bottom-0 right-0 h-24 w-24 rounded-full blur-2xl bg-brand-primary/5 translate-x-1/2 translate-y-1/2" />
       </div>
     </div>
   )
