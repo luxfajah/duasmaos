@@ -42,8 +42,8 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenuPrimitive.SubContent
       className={cn(
-        "z-50 min-w-[10rem] overflow-hidden rounded-md border border-border bg-surface p-1",
-        "shadow-lg data-[state=open]:animate-scale-in data-[state=closed]:animate-fade-in",
+        "z-50 min-w-[10rem] overflow-hidden rounded-xl border border-border/50 glass depth-modal p-1.5",
+        "shadow-xl data-[state=open]:animate-scale-in data-[state=closed]:animate-fade-in",
         className
       )}
       {...props}
@@ -61,8 +61,8 @@ function DropdownMenuContent({
       <DropdownMenuPrimitive.Content
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[12rem] overflow-hidden rounded-md border border-border bg-surface p-1",
-          "shadow-lg",
+          "z-50 min-w-[12rem] overflow-hidden rounded-xl border border-border/50 glass depth-modal p-1.5",
+          "shadow-xl [&_svg]:stroke-[1.5]",
           "data-[state=open]:animate-scale-in data-[state=closed]:animate-fade-in",
           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
           "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
@@ -86,8 +86,8 @@ function DropdownMenuItem({
   return (
     <DropdownMenuPrimitive.Item
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-md px-2.5 py-2 text-sm outline-none transition-colors",
-        "text-text-primary focus:bg-surface-muted focus:text-text-primary",
+        "relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-sm outline-none transition-colors",
+        "text-text-primary focus:bg-black/5 dark:focus:bg-white/10 focus:text-text-primary",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         variant === "danger" && "text-status-danger focus:bg-status-danger/10 focus:text-status-danger",
         inset && "pl-8",
@@ -107,8 +107,8 @@ function DropdownMenuCheckboxItem({
   return (
     <DropdownMenuPrimitive.CheckboxItem
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-md py-2 pl-8 pr-2.5 text-sm outline-none transition-colors",
-        "text-text-primary focus:bg-surface-muted",
+        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-2.5 text-sm outline-none transition-colors",
+        "text-text-primary focus:bg-black/5 dark:focus:bg-white/10",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -133,8 +133,8 @@ function DropdownMenuRadioItem({
   return (
     <DropdownMenuPrimitive.RadioItem
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-md py-2 pl-8 pr-2.5 text-sm outline-none transition-colors",
-        "text-text-primary focus:bg-surface-muted",
+        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-2.5 text-sm outline-none transition-colors",
+        "text-text-primary focus:bg-black/5 dark:focus:bg-white/10",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -173,7 +173,7 @@ function DropdownMenuSeparator({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
   return (
     <DropdownMenuPrimitive.Separator
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      className={cn("-mx-1.5 my-1.5 h-px bg-border/50", className)}
       {...props}
     />
   )
