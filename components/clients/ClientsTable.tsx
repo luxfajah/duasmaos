@@ -1,5 +1,7 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+
 import { useState } from 'react'
 import { Client } from '@/types/database'
 import { deleteClient } from '@/app/dashboard/clients/actions'
