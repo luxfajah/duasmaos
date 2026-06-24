@@ -51,7 +51,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         />
 
         {/* Main area */}
-        <div className="flex-1 flex flex-col relative w-full min-w-0 lg:pl-60">
+        <div className="flex-1 flex flex-col relative w-full min-w-0 lg:pl-16">
 
           {/* TopBar with notifications */}
           <TopBar

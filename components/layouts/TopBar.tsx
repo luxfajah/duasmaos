@@ -50,7 +50,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
       className={cn(
         'h-16 sticky top-0 z-30',
         'flex items-center px-6 lg:px-8',
-        'glass depth-modal border-x-0 border-t-0 border-b border-border/50 rounded-none',
+        'bg-background/60 backdrop-blur-2xl saturate-[1.5] border-b border-border/40',
         className
       )}
     >
@@ -111,9 +111,9 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
       </div>
 
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
-        <ThemeToggle className="text-text-muted hover:text-text-primary" />
+        <ThemeToggle className="text-text-muted hover:text-text-primary active:scale-[0.95] transition-all duration-150" />
 
-        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary rounded-full transition-all duration-150">
+        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary rounded-full transition-all duration-150 active:scale-[0.95]">
           <Settings2 size={17} strokeWidth={1.5} />
         </Link>
 
