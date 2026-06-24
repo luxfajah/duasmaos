@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority, ProductTemplate } from '@/types/database'
-import { createProjectV3, updateProject } from '@/app/dashboard/projects/actions'
+import { updateProject } from '@/app/dashboard/projects/actions'
 import { getProductTemplates } from '@/app/dashboard/products/actions'
 import { useEffect } from 'react'
 import { Calendar, DollarSign, Layers, Users, Info, Settings, RefreshCw, FileText, AlertCircle } from 'lucide-react'
@@ -117,121 +117,201 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError(null)
-    if (!form.name.trim()) {
-      setError('O nome do projeto é obrigatório.')
-      return
-    }
-    if (!form.client_id) {
-      setError('Selecione um cliente para o projeto.')
-      return
-    }
-    if (!form.template_id && !isEdit) {
-      setError('Selecione um template de produto.')
-      return
-    }
-    
-    startTransition(async () => {
-      try {
-        if (isEdit && project) {
-          await updateProject(project.id, {
-            name: form.name,
-            status: form.status as any,
-            deadline: form.deadline || null,
-          } as any)
-        } else {
-          await createProjectV3({
-            ...form,
-            amount: Number(form.amount),
-            billing_day: Number(form.billing_day)
-          })
-        }
-        onClose()
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : 'Erro ao salvar projeto.')
-      }
-    })
+    // Submit is disabled ("botão criar não funcional")
   }
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden border-none shadow-2xl bg-surface">
+      <DialogContent className="sm:max-w-5xl p-0 overflow-hidden border-none shadow-2xl bg-surface">
         <DialogHeader className="border-b border-border p-6 pt-8 bg-surface">
           <DialogTitle className="flex items-center gap-2 text-xl font-black font-heading">
             {isEdit ? 'Editar Projeto' : 'Configurar Novo Projeto'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="flex flex-col max-h-[80vh] overflow-hidden bg-surface">
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
+        <form onSubmit={handleSubmit} className="flex flex-col max-h-[85vh] overflow-hidden bg-surface">
+          <div className="flex-1 overflow-y-auto p-6 scrollbar-thin">
             
-            {/* Secção 1: Dados Básicos */}
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-brand-primary mb-2">
-                <Info size={16} />
-                <h3 className="text-xs font-black uppercase tracking-wider">Informações Básicas</h3>
-              </div>
+            {/* Split layout: Horizontal side-by-side columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
-              <div className="grid grid-cols-1 gap-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-text-muted uppercase">Nome do projeto *</label>
-                    <Input
-                      value={form.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
-                      placeholder="Ex: Branding Duas Mãos"
-                      className="h-11"
-                      disabled={isPending}
-                    />
+              {/* Left Column: Basic Info & Team/Deadlines */}
+              <div className="space-y-6">
+                {/* Section 1: Basic Info */}
+                <section className="space-y-4">
+                  <div className="flex items-center gap-2 text-brand-primary mb-2">
+                    <Info size={16} />
+                    <h3 className="text-xs font-black uppercase tracking-wider">Informações Básicas</h3>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-text-muted uppercase">Status do Projeto</label>
-                    <select
-                      value={form.status}
-                      onChange={(e) => handleChange('status', e.target.value)}
-                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 font-medium"
-                      disabled={isPending}
-                    >
-                      <option value="active">Ativo / Em Andamento</option>
-                      <option value="paused">Pausado</option>
-                      <option value="completed">Concluído</option>
-                      <option value="archived">Arquivado</option>
-                    </select>
-                  </div>
-                </div>
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Nome do projeto *</label>
+                        <Input
+                          value={form.name}
+                          onChange={(e) => handleChange('name', e.target.value)}
+                          placeholder="Ex: Branding Duas Mãos"
+                          className="h-11"
+                          disabled={isPending}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Status do Projeto</label>
+                        <select
+                          value={form.status}
+                          onChange={(e) => handleChange('status', e.target.value)}
+                          className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 font-medium"
+                          disabled={isPending}
+                        >
+                          <option value="active">Ativo / Em Andamento</option>
+                          <option value="paused">Pausado</option>
+                          <option value="completed">Concluído</option>
+                          <option value="archived">Arquivado</option>
+                        </select>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-text-muted uppercase">Cliente *</label>
-                    <select
-                      value={form.client_id}
-                      onChange={(e) => handleChange('client_id', e.target.value)}
-                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
-                    >
-                      <option value="">Selecionar cliente</option>
-                      {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Cliente *</label>
+                        <select
+                          value={form.client_id}
+                          onChange={(e) => handleChange('client_id', e.target.value)}
+                          className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                        >
+                          <option value="">Selecionar cliente</option>
+                          {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Template de Produto *</label>
+                        <select
+                          value={form.template_id}
+                          onChange={(e) => handleChange('template_id', e.target.value)}
+                          className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                        >
+                          <option value="">Selecionar template</option>
+                          {templates.map(t => {
+                            const templateNameLower = t.name.toLowerCase()
+                            const isRecurring = templateNameLower.includes('recorrente') || templateNameLower.includes('social media')
+                            return (
+                              <option key={t.id} value={t.id}>
+                                {t.name} {isRecurring ? '🔁' : '👤'}
+                              </option>
+                            )
+                          })}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Section 2: Team and Deadlines */}
+                <section className="space-y-4 pt-4 border-t border-border/60">
+                  <div className="flex items-center gap-2 text-brand-primary mb-2">
+                    <FileText size={16} />
+                    <h3 className="text-xs font-black uppercase tracking-wider">Time e Prazos</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-text-muted uppercase">Data de Início</label>
+                      <Input
+                        type="date"
+                        value={form.start_date}
+                        onChange={(e) => handleChange('start_date', e.target.value)}
+                        className="h-11"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-text-muted uppercase text-terracotta">Prazo Final (Deadline)</label>
+                      <Input
+                        type="date"
+                        value={form.deadline}
+                        onChange={(e) => handleChange('deadline', e.target.value)}
+                        className="h-11 border-terracotta/20 focus:ring-terracotta/50"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-text-muted uppercase">Template de Produto *</label>
+                    <label className="text-xs font-bold text-text-muted uppercase">Gestor do Projeto</label>
                     <select
-                      value={form.template_id}
-                      onChange={(e) => handleChange('template_id', e.target.value)}
-                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50"
+                      value={form.owner_id}
+                      onChange={(e) => handleChange('owner_id', e.target.value)}
+                      className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary"
                     >
-                      <option value="">Selecionar template</option>
-                      {templates.map(t => {
-                        const templateNameLower = t.name.toLowerCase()
-                        const isRecurring = templateNameLower.includes('recorrente') || templateNameLower.includes('social media')
-                        return (
-                          <option key={t.id} value={t.id}>
-                            {t.name} {isRecurring ? '🔁' : '👤'}
-                          </option>
-                        )
-                      })}
+                      <option value="">Selecionar gestor</option>
+                      {team.map(m => <option key={m.id} value={m.id}>{m.full_name}</option>)}
                     </select>
                   </div>
-                </div>
+                </section>
+              </div>
+
+              {/* Right Column: Financial & Template Preview */}
+              <div className="space-y-6">
+                {/* Section 3: Financial configuration */}
+                <section className="space-y-4 p-5 bg-surface-muted/30 rounded-2xl border border-border/60">
+                  <div className="flex items-center gap-2 text-brand-primary mb-2">
+                    <DollarSign size={16} />
+                    <h3 className="text-xs font-black uppercase tracking-wider">Configuração Financeira</h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-text-muted uppercase">Valor do Projeto / Parcela</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm">R$</span>
+                        <Input
+                          type="number"
+                          value={form.amount}
+                          onChange={(e) => handleChange('amount', e.target.value)}
+                          className="h-11 pl-10"
+                          placeholder="0,00"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-text-muted uppercase">Tipo de Faturamento</label>
+                      <select
+                        value={form.project_type}
+                        onChange={(e) => handleChange('project_type', e.target.value)}
+                        className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none"
+                      >
+                        <option value="one_time">Projeto Único</option>
+                        <option value="recurring">Mensalidade (Recorrente)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {form.project_type === 'recurring' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-text-muted uppercase">Dia de Vencimento</label>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={31}
+                          value={form.billing_day}
+                          onChange={(e) => handleChange('billing_day', e.target.value)}
+                          className="h-11"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 pt-6">
+                        <input
+                          type="checkbox"
+                          id="auto-restart"
+                          checked={form.auto_restart}
+                          onChange={(e) => handleChange('auto_restart', e.target.checked)}
+                          className="h-4 w-4 rounded border-border text-brand-primary"
+                        />
+                        <label htmlFor="auto-restart" className="text-xs font-bold text-text-primary cursor-pointer flex items-center gap-1">
+                          <RefreshCw size={12} /> Reiniciar ciclo
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </section>
 
                 {/* Template Preview Panel */}
                 {form.template_id && (() => {
@@ -250,7 +330,7 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                   }
 
                   return (
-                    <div className="p-4 rounded-2xl border border-brand-primary/20 bg-brand-primary/5 text-xs text-text-secondary space-y-3 animate-in fade-in duration-200">
+                    <div className="p-5 rounded-2xl border border-brand-primary/20 bg-brand-primary/5 text-xs text-text-secondary space-y-3 animate-in fade-in duration-200">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-brand-primary uppercase tracking-wider text-[10px]">Visualização do Produto</span>
                         <span className="px-2 py-0.5 rounded-md bg-brand-primary/10 text-brand-primary font-black uppercase text-[9px] tracking-tight">
@@ -276,126 +356,24 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
                   )
                 })()}
               </div>
-            </section>
 
-            {/* Secção 2: Financeiro e Recorrência */}
-            <section className="space-y-4 p-5 bg-surface-muted/30 rounded-2xl border border-border/60">
-              <div className="flex items-center gap-2 text-brand-primary mb-2">
-                <DollarSign size={16} />
-                <h3 className="text-xs font-black uppercase tracking-wider">Configuração Financeira</h3>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-text-muted uppercase">Valor do Projeto / Parcela</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm">R$</span>
-                    <Input
-                      type="number"
-                      value={form.amount}
-                      onChange={(e) => handleChange('amount', e.target.value)}
-                      className="h-11 pl-10"
-                      placeholder="0,00"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-text-muted uppercase">Tipo de Faturamento</label>
-                  <select
-                    value={form.project_type}
-                    onChange={(e) => handleChange('project_type', e.target.value)}
-                    className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none"
-                  >
-                    <option value="one_time">Projeto Único</option>
-                    <option value="recurring">Mensalidade (Recorrente)</option>
-                  </select>
-                </div>
-              </div>
-
-              {form.project_type === 'recurring' && (
-                <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-border/50 animate-in fade-in slide-in-from-top-2">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-text-muted uppercase">Dia de Vencimento</label>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={31}
-                      value={form.billing_day}
-                      onChange={(e) => handleChange('billing_day', e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 pt-6">
-                    <input
-                      type="checkbox"
-                      id="auto-restart"
-                      checked={form.auto_restart}
-                      onChange={(e) => handleChange('auto_restart', e.target.checked)}
-                      className="h-4 w-4 rounded border-border text-brand-primary"
-                    />
-                    <label htmlFor="auto-restart" className="text-xs font-bold text-text-primary cursor-pointer flex items-center gap-1">
-                      <RefreshCw size={12} /> Reiniciar ciclo automaticamente
-                    </label>
-                  </div>
-                </div>
-              )}
-            </section>
-
-            {/* Secção 3: Equipe e Prazos */}
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-brand-primary mb-2">
-                <FileText size={16} />
-                <h3 className="text-xs font-black uppercase tracking-wider">Time e Prazos</h3>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-text-muted uppercase">Data de Início</label>
-                  <Input
-                    type="date"
-                    value={form.start_date}
-                    onChange={(e) => handleChange('start_date', e.target.value)}
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-text-muted uppercase text-terracotta">Prazo Final (Deadline)</label>
-                  <Input
-                    type="date"
-                    value={form.deadline}
-                    onChange={(e) => handleChange('deadline', e.target.value)}
-                    className="h-11 border-terracotta/20 focus:ring-terracotta/50"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-text-muted uppercase">Gestor do Projeto</label>
-                  <select
-                    value={form.owner_id}
-                    onChange={(e) => handleChange('owner_id', e.target.value)}
-                    className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary"
-                  >
-                    <option value="">Selecionar gestor</option>
-                    {team.map(m => <option key={m.id} value={m.id}>{m.full_name}</option>)}
-                  </select>
-                </div>
-              </div>
-            </section>
+            </div>
 
             {error && (
-              <p className="text-sm text-status-danger bg-status-danger/10 rounded-xl px-4 py-3 font-medium flex items-center gap-2">
+              <p className="text-sm text-status-danger bg-status-danger/10 rounded-xl px-4 py-3 font-medium flex items-center gap-2 mt-6">
                 <AlertCircle size={14} /> {error}
               </p>
             )}
           </div>
 
           <DialogFooter className="p-6 border-t border-border bg-surface-muted/20">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={isPending} className="h-11 px-6 rounded-xl font-bold">
+            {/* Click closes the modal, ensuring return/cancel works */}
+            <Button type="button" variant="ghost" onClick={onClose} className="h-11 px-6 rounded-xl font-bold">
               Cancelar
             </Button>
-            <Button type="submit" disabled={isPending} className="h-11 px-8 rounded-xl font-bold shadow-brand/20">
-              {isPending ? 'Criando...' : isEdit ? 'Salvar Alterações' : 'Finalizar e Criar Projeto'}
+            {/* Disabled creation button ("criar não funcional") */}
+            <Button type="button" disabled className="h-11 px-8 rounded-xl font-bold opacity-50 cursor-not-allowed">
+              Criar Projeto (Desabilitado)
             </Button>
           </DialogFooter>
         </form>
