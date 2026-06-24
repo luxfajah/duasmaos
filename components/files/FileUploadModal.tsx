@@ -106,12 +106,12 @@ export function FileUploadModal({ open, onClose, userId, projects, clients, defa
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-surface w-full max-w-2xl rounded-2xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-300">
+      <div className="glass depth-modal w-full max-w-2xl rounded-[28px] shadow-xl border border-border/50 overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
         <div className="flex items-center justify-between px-7 py-5 border-b border-border">
           <h2 className="font-bold font-heading text-text-primary text-lg">Adicionar à Biblioteca</h2>
-          <button onClick={onClose} className="p-2 hover:bg-surface-muted rounded-xl transition-colors">
+          <button onClick={onClose} className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors">
             <X size={18} className="text-text-muted" />
           </button>
         </div>
@@ -235,13 +235,13 @@ export function FileUploadModal({ open, onClose, userId, projects, clients, defa
           {error && <p className="text-sm text-status-danger font-medium">{error}</p>}
 
           <div className="flex gap-3 pt-2">
-            <button onClick={onClose} className="flex-1 py-3 border border-border rounded-xl text-sm font-semibold text-text-secondary hover:bg-surface-muted transition-colors">
+            <button onClick={onClose} className="flex-1 py-2.5 border border-border rounded-full text-sm font-semibold text-text-secondary hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
               Cancelar
             </button>
             <button
               onClick={handleSave}
               disabled={isPending}
-              className="flex-1 py-3 bg-brand-primary text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="flex-1 py-2.5 bg-brand-primary text-white rounded-full text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {isPending ? <><Loader2 size={16} className="animate-spin" /> Enviando...</> : mode === 'drive' ? <>Salvar Link</> : <>Enviar Arquivo</>}
             </button>

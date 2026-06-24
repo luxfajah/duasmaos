@@ -129,7 +129,7 @@ function TaskCard({ task, index }: { task: Task; index: number }) {
 
         {/* Priority badge */}
         <span className={cn(
-          'shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border',
+          'shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border',
           pc.badgeClass
         )}>
           {pc.label}
@@ -181,9 +181,9 @@ function TaskCard({ task, index }: { task: Task; index: number }) {
           )}
           {isDone && (
             <button className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold font-heading',
-              'bg-surface-muted text-text-muted border border-border',
-              'hover:bg-sand hover:text-text-secondary',
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold font-heading',
+              'bg-brand-primary/10 text-brand-primary',
+              'hover:bg-brand-primary/20',
               'transition-all duration-200'
             )}>
               <ExternalLink size={10} strokeWidth={2.5} />
@@ -201,11 +201,11 @@ function TaskCard({ task, index }: { task: Task; index: number }) {
 ───────────────────────────────────────── */
 export function DailyTasksList({ tasks }: DailyTasksListProps) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col divide-y divide-border/40">
       {tasks.length === 0 ? (
         /* Empty state */
         <div className="task-card p-10 flex flex-col items-center justify-center text-center">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-4">
+          <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center mb-4">
             <CheckCircle2 size={26} className="text-emerald-500" />
           </div>
           <p className="text-sm font-bold font-heading text-text-primary">Tudo limpo por hoje!</p>

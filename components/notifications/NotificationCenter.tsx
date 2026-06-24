@@ -121,7 +121,7 @@ export function NotificationCenter({ tasks }: NotificationCenterProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-[380px] max-h-[520px] bg-surface border border-border rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 top-full mt-2 w-[380px] max-h-[520px] glass depth-modal border border-border/50 rounded-[20px] shadow-xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200">
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
             <div className="flex items-center gap-2">
@@ -152,15 +152,14 @@ export function NotificationCenter({ tasks }: NotificationCenterProps) {
                 <p className="text-xs opacity-60">Nenhuma tarefa pendente ou atrasada.</p>
               </div>
             ) : (
-              <div className="p-3 space-y-2">
+              <div className="divide-y divide-border/40">
                 {notifications.map(n => (
                   <div key={n.id} className={cn(
-                    'flex items-start gap-3 p-3 rounded-xl border transition-all group',
-                    n.type === 'overdue'
-                      ? 'bg-status-danger/5 border-status-danger/20 hover:border-status-danger/40'
-                      : n.type === 'due_today'
-                      ? 'bg-status-warning/5 border-status-warning/20 hover:border-status-warning/40'
-                      : 'bg-surface-muted border-border hover:border-brand-primary/30'
+                    'flex items-start gap-3 px-4 py-3 transition-all group cursor-pointer',
+                    'hover:bg-black/5 dark:hover:bg-white/5',
+                    n.type === 'overdue' ? 'hover:bg-status-danger/5'
+                      : n.type === 'due_today' ? 'hover:bg-status-warning/5'
+                      : ''
                   )}>
                     <div className="shrink-0 mt-0.5">
                       {n.type === 'overdue'
@@ -187,14 +186,14 @@ export function NotificationCenter({ tasks }: NotificationCenterProps) {
                       <Link
                         href={`/dashboard/tasks/${n.taskId}`}
                         onClick={() => setOpen(false)}
-                        className="p-1.5 hover:bg-brand-primary/10 text-text-muted hover:text-brand-primary rounded-lg transition-colors"
+                        className="p-1.5 hover:bg-brand-primary/10 text-text-muted hover:text-brand-primary rounded-full transition-colors"
                         title="Ver tarefa"
                       >
                         <ExternalLink size={12} />
                       </Link>
                       <button
                         onClick={() => dismiss(n.id)}
-                        className="p-1.5 hover:bg-status-danger/10 text-text-muted hover:text-status-danger rounded-lg transition-colors"
+                        className="p-1.5 hover:bg-status-danger/10 text-text-muted hover:text-status-danger rounded-full transition-colors"
                         title="Descartar"
                       >
                         <X size={12} />

@@ -261,7 +261,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
           <Globe size={14} /> {existingSettings ? 'Configurar Portal' : 'Gerar Portal'}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[780px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[780px] max-h-[90vh] overflow-y-auto glass depth-modal border border-border/50 shadow-xl rounded-[28px] p-0">
         <DialogHeader>
           <DialogTitle>Configuração do Portal de Aprovação</DialogTitle>
           <p className="text-sm text-text-muted">Personalize o acesso e a identidade visual do portal.</p>

@@ -6,41 +6,54 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
-import { SlIcon } from '@/components/ui/StreamlineIcon'
+import {
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  CheckSquare,
+  CalendarDays,
+  FileStack,
+  FileText,
+  Package,
+  TrendingUp,
+  Settings2,
+  Plus,
+  type LucideIcon,
+} from 'lucide-react'
 
 /* ─────────────────────────────────────────
    NAV CONFIG
 ───────────────────────────────────────── */
 
-const navGroups = [
+const navGroups: { label: string; items: { href: string; label: string; icon: LucideIcon; exact?: boolean }[] }[] = [
   {
     label: 'Operação',
     items: [
-      { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', exact: true },
-      { href: '/dashboard/clients', label: 'Clientes', icon: 'clients', exact: true },
-      { href: '/dashboard/projects', label: 'Projetos', icon: 'projects' },
-      { href: '/dashboard/tasks', label: 'Tarefas', icon: 'tasks' },
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+      { href: '/dashboard/clients', label: 'Clientes', icon: Users, exact: true },
+      { href: '/dashboard/projects', label: 'Projetos', icon: FolderKanban },
+      { href: '/dashboard/tasks', label: 'Tarefas', icon: CheckSquare },
     ],
   },
   {
     label: 'Produção',
     items: [
-      { href: '/dashboard/calendar', label: 'Calendário', icon: 'calendar' },
-      { href: '/dashboard/files', label: 'Arquivos', icon: 'files' },
+      { href: '/dashboard/calendar', label: 'Calendário', icon: CalendarDays },
+      { href: '/dashboard/files', label: 'Arquivos', icon: FileStack },
     ],
   },
   {
     label: 'Comercial',
     items: [
-      { href: '/dashboard/propostas', label: 'Propostas', icon: 'files' },
-      { href: '/dashboard/products', label: 'Produtos', icon: 'projects' },
+      { href: '/dashboard/propostas', label: 'Propostas', icon: FileText },
+      { href: '/dashboard/products', label: 'Produtos', icon: Package },
     ],
   },
   {
     label: 'Administrativo',
     items: [
-      { href: '/dashboard/financeiro', label: 'Financeiro', icon: 'financials' },
-      { href: '/dashboard/configuracoes', label: 'Configurações', icon: 'settings' },
+      { href: '/dashboard/financeiro', label: 'Financeiro', icon: TrendingUp },
+      { href: '/dashboard/configuracoes', label: 'Configurações', icon: Settings2 },
     ],
   },
 ]
@@ -120,14 +133,14 @@ export function Sidebar({ className }: SidebarProps) {
           <Link href="/dashboard/projects?new=true" className="block">
             <button className={cn(
               'bg-brand-primary text-[hsl(35_35%_95%)] font-semibold font-sans w-full',
-              'flex items-center rounded-xl',
+              'flex items-center rounded-full',
               'w-12 h-10 group-hover:w-full group-hover:h-10',
               'transition-all duration-300 ease-in-out',
               'shadow-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] overflow-hidden',
             )}>
               {/* Ícone — fixo, sempre visível */}
               <span className="flex items-center justify-center w-12 h-10 shrink-0">
-                <SlIcon name="plus" size={18} />
+                <Plus size={18} strokeWidth={1.5} />
               </span>
               {/* Texto — só aparece quando aberto */}
               <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-150 text-sm whitespace-nowrap pr-4 -ml-1 font-heading">
@@ -162,10 +175,10 @@ export function Sidebar({ className }: SidebarProps) {
                       >
                         {/* Icon */}
                         <div className="flex items-center justify-center w-8 h-8 shrink-0 relative z-10 transition-transform duration-200 group-hover/item:scale-105">
-                          <SlIcon 
-                            name={item.icon} 
-                            size={20} 
-                            className={cn("transition-colors duration-150", active ? "text-brand-primary" : "text-text-secondary")} 
+                          <item.icon
+                            size={18}
+                            strokeWidth={1.5}
+                            className={cn('transition-colors duration-150', active ? 'text-brand-primary' : 'text-text-secondary')}
                           />
                         </div>
                         {/* Label */}

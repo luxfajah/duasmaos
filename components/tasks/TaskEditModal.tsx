@@ -229,7 +229,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
 
   return (
     <Modal open={open} onClose={onClose}>
-      <ModalContent size="giant" className="overflow-hidden bg-[#FAFAFA] dark:bg-slate-950 shadow-3xl border-none">
+      <ModalContent size="giant" className="overflow-hidden glass depth-modal border border-border/50 shadow-xl">
         <ModalHeader showClose={false} className="p-0 border-b border-border/50">
           <div className="flex flex-col w-full">
             {/* Context Header */}

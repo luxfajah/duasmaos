@@ -3,7 +3,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { Avatar } from '@/components/ui/avatar'
-import { Settings, LogOut } from 'lucide-react'
+import { Settings2, LogOut } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import Link from 'next/link'
@@ -49,8 +49,8 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
         <ThemeToggle className="text-text-muted hover:text-text-primary" />
 
-        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary rounded-lg transition-all duration-150">
-          <Settings size={17} strokeWidth={1.5} />
+        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary rounded-full transition-all duration-150">
+          <Settings2 size={17} strokeWidth={1.5} />
         </Link>
 
         <NotificationCenter tasks={tasks} />
@@ -79,7 +79,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
             <DropdownMenuSeparator />
             <Link href="/dashboard/settings">
               <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings2 size={14} strokeWidth={1.5} className="mr-2" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
             </Link>
@@ -87,7 +87,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
             <form action="/auth/signout" method="post" className="w-full">
               <button type="submit" className="w-full">
                 <DropdownMenuItem variant="danger">
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut size={14} strokeWidth={1.5} className="mr-2" />
                   <span>Sair do sistema</span>
                 </DropdownMenuItem>
               </button>

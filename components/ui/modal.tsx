@@ -76,9 +76,9 @@ function Modal({ open, onClose, children }: ModalProps) {
   return (
     <ModalContext.Provider value={{ open, onClose }}>
       <Portal>
-        {/* Backdrop */}
+        {/* Backdrop + centering container */}
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6"
           aria-modal="true"
           role="dialog"
         >
