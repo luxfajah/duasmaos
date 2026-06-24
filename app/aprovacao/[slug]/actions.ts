@@ -47,9 +47,6 @@ export async function loginPortal(slug: string, user: string, pass: string) {
 export async function checkPortalSession(slug: string) {
   const portal = await validatePortalSlug(slug)
   if (!portal) return false
-  
-  // If no password is set, it's public
-  if (!portal.settings.portal_user && !portal.settings.portal_password) return true
 
   const session = cookies().get(`portal_session_${slug}`)
   return !!session

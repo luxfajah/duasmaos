@@ -109,7 +109,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
     wallpaper_url: existingSettings?.wallpaper_url || '',
     ig_avatar_url: existingSettings?.ig_avatar_url || '',
     portal_user: existingSettings?.portal_user || clientName.toLowerCase().replace(/\s/g, '.'),
-    portal_password: existingSettings?.portal_password || '',
+    portal_password: existingSettings?.portal_password || '123',
     focus_of_month: existingSettings?.focus_of_month || 'Apresentação da marca, autoridade e engajamento.',
     planning_period: existingSettings?.planning_period || '',
     deadline_description: existingSettings?.deadline_description || '',
@@ -189,6 +189,14 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
   }
 
   const handleSave = async () => {
+    if (!formData.portal_user.trim()) {
+      toast.error('O usuário de acesso do portal é obrigatório.')
+      return
+    }
+    if (!formData.portal_password.trim()) {
+      toast.error('A senha de acesso do portal é obrigatória.')
+      return
+    }
     try {
       setLoading(true)
       const payload = {
@@ -239,7 +247,7 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
     const msg = `Olá! Seu portal de aprovação está pronto.\n\n` +
                 `Acesse por aqui: ${url}\n` +
                 `Usuário: ${formData.portal_user}\n` +
-                `Senha: ${formData.portal_password || '(Acesso público)'}\n` +
+                `Senha: ${formData.portal_password}\n` +
                 deadline +
                 `\nQualquer dúvida, estamos à disposição!`
     navigator.clipboard.writeText(msg)
@@ -275,11 +283,11 @@ export function PortalConfigModal({ clientId, clientName, existingSettings }: Po
             </div>
             <div className="grid grid-cols-2 gap-6 p-4 bg-surface-muted/30 rounded-xl border border-dashed border-border">
               <div className="space-y-2">
-                <Label>Usuário de Acesso</Label>
+                <Label>Usuário de Acesso *</Label>
                 <Input value={formData.portal_user} onChange={e => setFormData(p => ({...p, portal_user: e.target.value}))} placeholder="nome.cliente" />
               </div>
               <div className="space-y-2">
-                <Label>Senha de Acesso</Label>
+                <Label>Senha de Acesso *</Label>
                 <div className="flex gap-2">
                   <Input value={formData.portal_password} onChange={e => setFormData(p => ({...p, portal_password: e.target.value}))} placeholder="Senha forte" />
                   <Button variant="outline" size="icon" onClick={generatePassword} title="Gerar Senha Forte" type="button">

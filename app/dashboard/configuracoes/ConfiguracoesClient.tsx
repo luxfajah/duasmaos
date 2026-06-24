@@ -126,13 +126,23 @@ export function ConfiguracoesClient({ users, clients, invitations, portalSetting
       return
     }
 
+    if (!formUser.trim()) {
+      toast.error('O usuário do portal é obrigatório.')
+      return
+    }
+
+    if (!formPass.trim()) {
+      toast.error('A senha do portal é obrigatória.')
+      return
+    }
+
     setIsSaving(true)
     try {
       const updated = {
         client_id: selectedPortal.client_id,
         slug: formSlug.trim(),
-        portal_user: formUser.trim() || null,
-        portal_password: formPass.trim() || null,
+        portal_user: formUser.trim(),
+        portal_password: formPass.trim(),
         ig_username: formIgUser.trim(),
         ig_name: formIgName.trim(),
         ig_bio: formIgBio.trim() || null,
@@ -328,7 +338,7 @@ export function ConfiguracoesClient({ users, clients, invitations, portalSetting
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Usuário do Portal</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Usuário do Portal *</label>
                     <Input 
                       type="text" 
                       value={formUser} 
@@ -340,7 +350,7 @@ export function ConfiguracoesClient({ users, clients, invitations, portalSetting
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Senha do Portal</label>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Senha do Portal *</label>
                   <div className="relative">
                     <Input 
                       type={showPassword ? 'text' : 'password'} 
