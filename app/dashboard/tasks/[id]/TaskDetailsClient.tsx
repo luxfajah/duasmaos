@@ -30,9 +30,11 @@ import { cn } from '@/lib/utils'
 interface TaskDetailsClientProps {
   task: any // Typed in page.tsx as V2Task + Relations
   currentUser: { id: string, email?: string }
+  finalPaymentConfirmed?: boolean
+  isClient?: boolean
 }
 
-export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps) {
+export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = true, isClient = false }: TaskDetailsClientProps) {
   const isEditorialGrid = task.project?.workflow_type !== 'social_media'
   const [selectedPost, setSelectedPost] = useState<V2SocialPost | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
@@ -213,13 +215,21 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1 block">Link Externo (Drive, Figma, Trello, etc)</label>
-                  <input 
-                    type="url"
-                    value={deliveryLink}
-                    onChange={(e) => setDeliveryLink(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full bg-surface-muted/10 border border-border rounded-lg px-4 py-2 text-sm text-text-primary focus:border-brand-primary/40 outline-none transition-colors"
-                  />
+                  {isClient && !finalPaymentConfirmed && deliveryLink ? (
+                    <div className="w-full bg-red-500/5 border border-red-500/20 text-red-500 rounded-lg px-4 py-2 text-sm flex items-center justify-between cursor-not-allowed">
+                      <span>••••••••••••••••••••••••••••</span>
+                      <span className="text-[9px] bg-red-500/10 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">Aguardando Pagamento Final</span>
+                    </div>
+                  ) : (
+                    <input 
+                      type="url"
+                      value={deliveryLink}
+                      onChange={(e) => setDeliveryLink(e.target.value)}
+                      placeholder="https://..."
+                      disabled={isClient}
+                      className="w-full bg-surface-muted/10 border border-border rounded-lg px-4 py-2 text-sm text-text-primary focus:border-brand-primary/40 outline-none transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
+                    />
+                  )}
                 </div>
               </div>
               
@@ -236,18 +246,37 @@ export function TaskDetailsClient({ task, currentUser }: TaskDetailsClientProps)
                   <div className="flex flex-col gap-2 mt-2">
                     <h5 className="text-[10px] font-black uppercase tracking-widest text-text-muted">Arquivos Anexados</h5>
                     <div className="flex flex-col gap-2 max-h-[120px] overflow-y-auto custom-scrollbar">
-                      {taskFiles.map(f => (
-                        <a 
-                          key={f.id} 
-                          href={f.public_url || '#'} 
-                          target="_blank" 
-                          referrerPolicy="no-referrer"
-                          className="flex items-center justify-between p-2 rounded-lg border border-border bg-surface-muted/20 hover:border-brand-primary/30 hover:bg-brand-primary/5 transition-colors group text-xs text-text-secondary"
-                        >
-                          <span className="truncate flex-1 font-medium group-hover:text-brand-primary transition-colors">{f.name}</span>
-                          <span className="text-[10px] text-text-muted ml-2 opacity-50 group-hover:opacity-100 uppercase font-bold">{f.file_type?.split('/').pop()}</span>
-                        </a>
-                      ))}
+                      {taskFiles.map(f => {
+                        const ext = f.name.split('.').pop()?.toLowerCase() || ''
+                        const editableExtensions = ['psd', 'ai', 'indd', 'fig', 'sketch', 'zip', 'rar', 'cdr', 'pdf', 'eps']
+                        const isBlocked = isClient && editableExtensions.includes(ext) && !finalPaymentConfirmed
+                        
+                        if (isBlocked) {
+                          return (
+                            <div 
+                              key={f.id} 
+                              className="flex items-center justify-between p-2 rounded-lg border border-red-500/20 bg-red-500/5 text-xs text-red-500/80 cursor-not-allowed"
+                              title="Download bloqueado até a confirmação do pagamento final"
+                            >
+                              <span className="truncate flex-1 font-medium">{f.name} (Bloqueado)</span>
+                              <span className="text-[9px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">Sem Pagamento Final</span>
+                            </div>
+                          )
+                        }
+
+                        return (
+                          <a 
+                            key={f.id} 
+                            href={f.public_url || '#'} 
+                            target="_blank" 
+                            referrerPolicy="no-referrer"
+                            className="flex items-center justify-between p-2 rounded-lg border border-border bg-surface-muted/20 hover:border-brand-primary/30 hover:bg-brand-primary/5 transition-colors group text-xs text-text-secondary"
+                          >
+                            <span className="truncate flex-1 font-medium group-hover:text-brand-primary transition-colors">{f.name}</span>
+                            <span className="text-[10px] text-text-muted ml-2 opacity-50 group-hover:opacity-100 uppercase font-bold">{f.file_type?.split('/').pop()}</span>
+                          </a>
+                        )
+                      })}
                     </div>
                   </div>
                 )}

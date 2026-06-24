@@ -28,11 +28,36 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
 
   if (taskError || !task) return notFound()
 
-  // comments can stay as initialComments for now or we can move to v2_task_comments
+  // Fetch current user's profile to check role
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const isClient = profile?.role === 'client'
+
+  // Check if final payment is confirmed for the project
+  let finalPaymentConfirmed = true
+  if (task.project_id) {
+    const { data: finalPaymentTask } = await supabase
+      .from('v2_tasks')
+      .select('status')
+      .eq('project_id', task.project_id)
+      .ilike('title', '%pagamento final%')
+      .maybeSingle()
+
+    if (finalPaymentTask) {
+      finalPaymentConfirmed = finalPaymentTask.status === 'done' || finalPaymentTask.status === 'approved'
+    }
+  }
+
   return (
     <TaskDetailsClient 
       task={task} 
       currentUser={{ id: user.id, email: user.email }} 
+      finalPaymentConfirmed={finalPaymentConfirmed}
+      isClient={isClient}
     />
   )
 }

@@ -113,9 +113,9 @@ BEGIN
   -- 9. Seed Social Posts under Branding Task (Grade Editorial)
   INSERT INTO public.v2_social_posts (id, task_id, "order", post_type, status, requires_approval, client_approval_status, caption, art_text, hashtags)
   VALUES
-    (post1_id, t_branding_1, 1, 'carousel', 'awaiting_review', 'pending', 'Esta é a legenda conceito para a primeira peça do carrossel institucional.', 'Slide 1: Nova Marca\nSlide 2: Nossos Valores', '["branding", "identidade", "duasmaos"]'::jsonb),
-    (post2_id, t_branding_1, 2, 'carousel', 'awaiting_review', 'pending', 'Legenda da peça 02 que fala sobre nosso posicionamento.', 'Slide 1: Posicionamento\nSlide 2: Nosso método', '["advocacia", "marketing"]'::jsonb),
-    (post3_id, t_branding_1, 3, 'image', 'draft', 'pending', 'Legenda simples da peça única para fechar a grade.', 'Peça Única: Fale Conosco', '["contato"]'::jsonb)
+    (post1_id, t_branding_1, 1, 'carousel', 'awaiting_review', true, 'pending', 'Esta é a legenda conceito para a primeira peça do carrossel institucional.', 'Slide 1: Nova Marca\nSlide 2: Nossos Valores', '["branding", "identidade", "duasmaos"]'::jsonb),
+    (post2_id, t_branding_1, 2, 'carousel', 'awaiting_review', true, 'pending', 'Legenda da peça 02 que fala sobre nosso posicionamento.', 'Slide 1: Posicionamento\nSlide 2: Nosso método', '["advocacia", "marketing"]'::jsonb),
+    (post3_id, t_branding_1, 3, 'image', 'draft', true, 'pending', 'Legenda simples da peça única para fechar a grade.', 'Peça Única: Fale Conosco', '["contato"]'::jsonb)
   ON CONFLICT (id) DO NOTHING;
 
   -- 10. Seed Post Media

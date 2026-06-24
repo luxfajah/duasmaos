@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { TaskStatusV2, TaskPriorityV2, DeliverableTypeV2, TaskTypeV2 } from '@/types/database'
+import { evaluateProjectBlockers } from './actions'
 
 export async function createV2Task(
   projectId: string,
@@ -93,6 +94,9 @@ export async function createV2Task(
     await syncSocialPosts(task.id, data.social_post_count)
   }
 
+  // Run blockers evaluation
+  await evaluateProjectBlockers(projectId, supabase)
+
   revalidatePath('/dashboard', 'layout')
   revalidatePath('/dashboard/tasks')
   revalidatePath(`/dashboard/projects/${projectId}`)
@@ -157,6 +161,9 @@ export async function updateV2Task(
       if (assigneeError) throw assigneeError
     }
   }
+
+  // Run blockers evaluation
+  await evaluateProjectBlockers(projectId, supabase)
 
   revalidatePath('/dashboard', 'layout')
   revalidatePath('/dashboard/tasks')
@@ -571,10 +578,20 @@ async function checkTaskAutoCompletion(taskId: string) {
   const allApproved = posts.every(p => p.status === 'approved')
   
   if (allApproved) {
+    const { data: task } = await supabase
+      .from('v2_tasks')
+      .select('project_id')
+      .eq('id', taskId)
+      .single()
+
     await supabase
       .from('v2_tasks')
       .update({ status: 'done', updated_at: new Date().toISOString() })
       .eq('id', taskId)
+
+    if (task?.project_id) {
+      await evaluateProjectBlockers(task.project_id, supabase)
+    }
   }
 }
 

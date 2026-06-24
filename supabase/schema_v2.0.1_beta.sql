@@ -5,6 +5,7 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users CASCADE;
 DROP TRIGGER IF EXISTS update_posts_modtime ON public.posts CASCADE;
 DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
 DROP FUNCTION IF EXISTS public.update_modified_column() CASCADE;
+DROP FUNCTION IF EXISTS public.get_user_role(UUID) CASCADE;
 
 DROP TABLE IF EXISTS public.payments CASCADE;
 DROP TABLE IF EXISTS public.revenue_recurrences CASCADE;
@@ -478,47 +479,56 @@ ALTER TABLE public.revenues ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.revenue_recurrences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.project_documents ENABLE ROW LEVEL SECURITY;
-
-
 -- 5. RLS Policies
+
+-- Helper function to fetch user role securely in RLS policies without causing infinite recursion
+CREATE OR REPLACE FUNCTION public.get_user_role(user_id UUID)
+RETURNS public.user_role AS $$
+DECLARE
+  v_role public.user_role;
+BEGIN
+  SELECT role INTO v_role FROM public.profiles WHERE id = user_id;
+  RETURN v_role;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- clients
 CREATE POLICY "authenticated_select_clients" ON public.clients FOR SELECT TO authenticated USING (true);
 CREATE POLICY "admin_all_clients" ON public.clients FOR ALL TO authenticated USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor'))
+    public.get_user_role(auth.uid()) IN ('admin', 'gestor')
 );
 
 -- profiles
 CREATE POLICY "select_profiles" ON public.profiles FOR SELECT TO authenticated USING (true);
 CREATE POLICY "update_own_profile" ON public.profiles FOR UPDATE TO authenticated USING (id = auth.uid()) WITH CHECK (id = auth.uid());
 CREATE POLICY "admin_all_profiles" ON public.profiles FOR ALL TO authenticated USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+    public.get_user_role(auth.uid()) = 'admin'
 );
 
 -- client_addresses, client_documents, client_portal_settings
 CREATE POLICY "authenticated_select_addresses" ON public.client_addresses FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_addresses" ON public.client_addresses FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_addresses" ON public.client_addresses FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "authenticated_select_documents" ON public.client_documents FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_documents" ON public.client_documents FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_documents" ON public.client_documents FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "public_select_portal_settings" ON public.client_portal_settings FOR SELECT USING (is_active = true);
 CREATE POLICY "authenticated_select_portal_settings" ON public.client_portal_settings FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_portal_settings" ON public.client_portal_settings FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_portal_settings" ON public.client_portal_settings FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 -- v2_workspaces, v2_projects, v2_project_stages, v2_tasks
 CREATE POLICY "authenticated_select_workspaces" ON public.v2_workspaces FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_workspaces" ON public.v2_workspaces FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_workspaces" ON public.v2_workspaces FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 
 CREATE POLICY "authenticated_select_projects" ON public.v2_projects FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_projects" ON public.v2_projects FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_projects" ON public.v2_projects FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "authenticated_select_stages" ON public.v2_project_stages FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_stages" ON public.v2_project_stages FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_stages" ON public.v2_project_stages FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "authenticated_select_tasks" ON public.v2_tasks FOR SELECT TO authenticated USING (true);
 CREATE POLICY "authenticated_update_tasks" ON public.v2_tasks FOR UPDATE TO authenticated USING (true);
-CREATE POLICY "admin_all_tasks" ON public.v2_tasks FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_tasks" ON public.v2_tasks FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 -- v2_social_posts, v2_post_media, v2_social_post_versions
 CREATE POLICY "public_select_posts" ON public.v2_social_posts FOR SELECT USING (true);
@@ -532,13 +542,13 @@ CREATE POLICY "authenticated_all_post_versions" ON public.v2_social_post_version
 
 -- v2_project_members, v2_stage_templates, v2_task_templates, v2_stage_approvals, task_comments
 CREATE POLICY "authenticated_select_members" ON public.v2_project_members FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_members" ON public.v2_project_members FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_members" ON public.v2_project_members FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "select_templates" ON public.v2_stage_templates FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_templates" ON public.v2_stage_templates FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_templates" ON public.v2_stage_templates FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 
 CREATE POLICY "select_task_templates" ON public.v2_task_templates FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_task_templates" ON public.v2_task_templates FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_task_templates" ON public.v2_task_templates FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 
 CREATE POLICY "authenticated_all_stage_approvals" ON public.v2_stage_approvals FOR ALL TO authenticated USING (true);
 CREATE POLICY "authenticated_all_task_comments" ON public.task_comments FOR ALL TO authenticated USING (true);
@@ -548,29 +558,29 @@ CREATE POLICY "public_select_proposals" ON public.proposals FOR SELECT USING (tr
 CREATE POLICY "authenticated_all_proposals" ON public.proposals FOR ALL TO authenticated USING (true);
 
 CREATE POLICY "authenticated_select_product_templates" ON public.product_templates FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_product_templates" ON public.product_templates FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_product_templates" ON public.product_templates FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 
 CREATE POLICY "authenticated_select_product_stages" ON public.product_template_stages FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_product_stages" ON public.product_template_stages FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_product_stages" ON public.product_template_stages FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 
 CREATE POLICY "authenticated_select_product_tasks" ON public.product_template_tasks FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_product_tasks" ON public.product_template_tasks FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_product_tasks" ON public.product_template_tasks FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 
 -- revenues, revenue_recurrences, payments, project_documents
 CREATE POLICY "authenticated_select_revenues" ON public.revenues FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_revenues" ON public.revenues FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_revenues" ON public.revenues FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "authenticated_select_recurrences" ON public.revenue_recurrences FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_recurrences" ON public.revenue_recurrences FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_recurrences" ON public.revenue_recurrences FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "authenticated_select_payments" ON public.payments FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_payments" ON public.payments FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_payments" ON public.payments FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 CREATE POLICY "authenticated_select_proj_docs" ON public.project_documents FOR SELECT TO authenticated USING (true);
-CREATE POLICY "admin_all_proj_docs" ON public.project_documents FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin', 'gestor')));
+CREATE POLICY "admin_all_proj_docs" ON public.project_documents FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) IN ('admin', 'gestor'));
 
 -- invitations
-CREATE POLICY "admin_all_invitations" ON public.invitations FOR ALL TO authenticated USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin_all_invitations" ON public.invitations FOR ALL TO authenticated USING (public.get_user_role(auth.uid()) = 'admin');
 CREATE POLICY "public_select_invitations" ON public.invitations FOR SELECT USING (used = false);
 
 

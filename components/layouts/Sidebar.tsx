@@ -14,28 +14,33 @@ import { SlIcon } from '@/components/ui/StreamlineIcon'
 
 const navGroups = [
   {
-    label: 'Principal',
+    label: 'Operação',
     items: [
       { href: '/dashboard', label: 'Dashboard', icon: 'dashboard', exact: true },
-      { href: '/dashboard/projects', label: 'Projetos', icon: 'projects' },
       { href: '/dashboard/clients', label: 'Clientes', icon: 'clients', exact: true },
-      { href: '/dashboard/financeiro', label: 'Financeiro', icon: 'financials' },
-      { href: '/dashboard/configuracoes', label: 'Configurações', icon: 'settings' },
-    ],
-  },
-  {
-    label: 'Produtos',
-    items: [
-      { href: '/dashboard/products', label: 'Produtos', icon: 'projects' },
-      { href: '/dashboard/propostas', label: 'Propostas', icon: 'files' },
+      { href: '/dashboard/projects', label: 'Projetos', icon: 'projects' },
+      { href: '/dashboard/tasks', label: 'Tarefas', icon: 'tasks' },
     ],
   },
   {
     label: 'Produção',
     items: [
-      { href: '/dashboard/tasks', label: 'Tarefas', icon: 'tasks' },
       { href: '/dashboard/calendar', label: 'Calendário', icon: 'calendar' },
       { href: '/dashboard/files', label: 'Arquivos', icon: 'files' },
+    ],
+  },
+  {
+    label: 'Comercial',
+    items: [
+      { href: '/dashboard/propostas', label: 'Propostas', icon: 'files' },
+      { href: '/dashboard/products', label: 'Produtos', icon: 'projects' },
+    ],
+  },
+  {
+    label: 'Administrativo',
+    items: [
+      { href: '/dashboard/financeiro', label: 'Financeiro', icon: 'financials' },
+      { href: '/dashboard/configuracoes', label: 'Configurações', icon: 'settings' },
     ],
   },
 ]

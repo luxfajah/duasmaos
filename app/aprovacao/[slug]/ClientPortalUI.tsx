@@ -42,6 +42,7 @@ interface Props {
   clientName: string
   settings: ClientPortalSettings
   posts: PostDetail[]
+  finalPaymentConfirmed?: boolean
 }
 
 // --- Hook for Animations ---
@@ -61,7 +62,7 @@ function useReveal() {
   }, [])
 }
 
-export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
+export function ClientPortalUI({ slug, clientName, settings, posts, finalPaymentConfirmed = true }: Props) {
   const [loading, setLoading] = useState(true)
   const [currentPostIdx, setCurrentPostIdx] = useState(0)
   const [lightboxPost, setLightboxPost] = useState<PostDetail | null>(null)
@@ -289,10 +290,17 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
       {/* Info Panel (SEC 2: Summary + Calendar) */}
       <section id="infoPanelSection" className="info-container">
         <div className="info-panel reveal">
-          <a href="#" className="download-all-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Baixar Todos os Posts
-          </a>
+          {!finalPaymentConfirmed ? (
+            <div className="download-all-btn blocked cursor-not-allowed opacity-60 flex items-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 px-4 py-2 rounded-lg text-xs font-bold shadow-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Downloads Bloqueados (Aguardando Pagamento Final)
+            </div>
+          ) : (
+            <a href="#" className="download-all-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Baixar Todos os Posts
+            </a>
+          )}
           <div className="info-eyebrow">Planejamento · {format(new Date(), 'MMMM yyyy', { locale: ptBR })}</div>
           <h2 className="info-title">Conteúdo para<br /><em>revisão e aprovação</em></h2>
           <div className="info-divider"></div>
@@ -506,9 +514,15 @@ export function ClientPortalUI({ slug, clientName, settings, posts }: Props) {
                           <div className="pnb-dot">{idx + 1}</div> 
                           {post.publish_date ? format(parseISO(post.publish_date), 'dd/MM') : 'Sem data'}
                         </div>
-                        <a href="#" className="download-post-btn" style={{ float: 'none', margin: 0 }}>
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        </a>
+                        {!finalPaymentConfirmed ? (
+                          <div className="download-post-btn blocked cursor-not-allowed opacity-60 text-red-500 flex items-center justify-center" style={{ float: 'none', margin: 0 }} title="Download bloqueado (Aguardando pagamento final)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="16" height="16"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                          </div>
+                        ) : (
+                          <a href="#" className="download-post-btn" style={{ float: 'none', margin: 0 }}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                          </a>
+                        )}
                       </div>
                     )}
                     

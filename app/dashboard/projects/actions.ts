@@ -224,6 +224,12 @@ export async function createProjectV3(data: {
           const rawType = t.task_type || 'task'
           const ALLOWED_TASK_TYPES = ['task', 'meeting', 'review', 'approval', 'deliverable', 'operational', 'content_post', 'document']
           const taskType = ALLOWED_TASK_TYPES.includes(rawType) ? rawType : 'task'
+
+          // Calculate due_date based on template's deadline_offset
+          const baseDate = data.start_date ? new Date(data.start_date) : new Date()
+          const dueDate = new Date(baseDate)
+          dueDate.setDate(dueDate.getDate() + (t.deadline_offset || 0))
+
           tasksToInsert.push({
             id: taskId,
             project_id: project.id,
@@ -234,7 +240,9 @@ export async function createProjectV3(data: {
             status: isFirstTask ? 'pending' : 'locked',
             priority: 'medium',
             depends_on_task_id: previousTaskId,
-            stage_order: globalOrder++
+            stage_order: globalOrder++,
+            due_date: dueDate.toISOString(),
+            deadline_offset_days: t.deadline_offset || 0
           })
           previousTaskId = taskId
         }
@@ -244,6 +252,10 @@ export async function createProjectV3(data: {
     if (tasksToInsert.length > 0) {
       const { error: tasksInsertError } = await supabase.from('v2_tasks').insert(tasksToInsert)
       if (tasksInsertError) throw tasksInsertError
+
+      // Run blockers evaluation
+      const { evaluateProjectBlockers } = await import('@/app/dashboard/v2/actions')
+      await evaluateProjectBlockers(project.id, supabase)
     }
   }
 

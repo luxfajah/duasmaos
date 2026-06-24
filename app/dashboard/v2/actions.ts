@@ -229,22 +229,8 @@ export async function updateV2TaskStatus(taskId: string, status: TaskStatusV2) {
 
   if (updateError) throw updateError
 
-  // Unlocking/re-locking next tasks sequentially
-  if (status === 'done') {
-    const { error: unlockError } = await supabase
-      .from('v2_tasks')
-      .update({ status: 'pending' })
-      .eq('depends_on_task_id', taskId)
-      .eq('status', 'locked')
-    if (unlockError) throw unlockError
-  } else {
-    const { error: lockError } = await supabase
-      .from('v2_tasks')
-      .update({ status: 'locked' })
-      .eq('depends_on_task_id', taskId)
-      .eq('status', 'pending')
-    if (lockError) throw lockError
-  }
+  // Run blockers evaluation to propagate the state of tasks sequentially
+  await evaluateProjectBlockers(taskToUpdate.project_id, supabase)
 
   const { data: task } = await supabase
     .from('v2_tasks')
@@ -528,5 +514,150 @@ export async function getV2DashboardStats() {
       if (!t.due_date || t.status === 'done') return false
       return new Date(t.due_date) < now
     }).length,
+  }
+}
+
+/**
+ * 9. Evaluate Project Blockers (Regra de Ouro)
+ * Evaluates all sequential blockers for a project and updates task statuses.
+ */
+export async function evaluateProjectBlockers(projectId: string, supabase: any) {
+  // Fetch tasks in this project ordered by stage_order
+  const { data: tasks, error: tasksError } = await supabase
+    .from('v2_tasks')
+    .select('*, stage:v2_project_stages(name, stage_key, "order")')
+    .eq('project_id', projectId)
+    .order('stage_order', { ascending: true })
+
+  if (tasksError || !tasks) return
+
+  // Scan blocker task states
+  let contractSigned = true
+  let paymentConfirmed = true
+  let strategicApproved = true
+  let finalApproved = true
+
+  for (const t of tasks) {
+    const titleLower = t.title.toLowerCase()
+    const isDoneOrApproved = t.status === 'done' || t.status === 'approved'
+
+    // 1. Assinatura do Contrato
+    if (titleLower.includes('assinatura do contrato')) {
+      contractSigned = isDoneOrApproved
+    }
+    // 2. Confirmação de Pagamento
+    if (
+      titleLower.includes('confirmação de pagamento') ||
+      titleLower.includes('confirmação do pagamento')
+    ) {
+      if (!titleLower.includes('final')) {
+        paymentConfirmed = isDoneOrApproved
+      }
+    }
+    // 3. Aprovação da Estratégia
+    if (titleLower.includes('aprovação da estratégia')) {
+      strategicApproved = isDoneOrApproved
+    }
+    // 4. Aprovação Final
+    if (
+      titleLower.includes('aprovação final') ||
+      titleLower.includes('aprovação de encerramento')
+    ) {
+      finalApproved = isDoneOrApproved
+    }
+  }
+
+  // Evaluate sequential progression and rules
+  let previousTaskCompleted = true // The first task starts as unlocked
+
+  for (const t of tasks) {
+    const titleLower = t.title.toLowerCase()
+    const stageNameLower = (t.stage?.name || '').toLowerCase()
+
+    let isBlocked = false
+
+    // Check rules:
+    // Rule 1: Sem contrato assinado -> Não libera Onboarding
+    const isOnboarding = titleLower.includes('onboarding') || stageNameLower.includes('onboarding')
+    if (isOnboarding && !contractSigned) {
+      isBlocked = true
+    }
+
+    // Rule 2: Sem pagamento confirmado -> Não libera Produção
+    const isProduction =
+      titleLower.includes('produção') ||
+      titleLower.includes('desenvolvimento') ||
+      titleLower.includes('copy') ||
+      titleLower.includes('post') ||
+      titleLower.includes('conceito') ||
+      stageNameLower.includes('produção') ||
+      stageNameLower.includes('criativa') ||
+      stageNameLower.includes('desenvolvimento')
+
+    if (isProduction && !paymentConfirmed) {
+      // Do not block the payment/commercial tasks themselves
+      const isCommercialTask =
+        titleLower.includes('confirmação') ||
+        titleLower.includes('cobrança') ||
+        titleLower.includes('proposta') ||
+        titleLower.includes('contrato')
+      if (!isCommercialTask) {
+        isBlocked = true
+      }
+    }
+
+    // Rule 3: Sem aprovação estratégica -> Não libera Identidade Visual (Branding criativa/visual)
+    const isVisualIdentity =
+      titleLower.includes('visual') ||
+      titleLower.includes('aplicaç') ||
+      titleLower.includes('conceito') ||
+      titleLower.includes('apresentaç') ||
+      (stageNameLower.includes('criativa') && !titleLower.includes('briefing'))
+
+    if (isVisualIdentity && !strategicApproved) {
+      isBlocked = true
+    }
+
+    // Rule 4: Sem aprovação final -> Não libera Entrega
+    const isDelivery =
+      stageNameLower.includes('entrega') || titleLower.includes('entrega')
+
+    if (isDelivery && !finalApproved) {
+      // Do not block final approval itself
+      const isFinalApprovalTask =
+        titleLower.includes('aprovação final') ||
+        titleLower.includes('aprovação de encerramento')
+      if (!isFinalApprovalTask) {
+        isBlocked = true
+      }
+    }
+
+    // Determine target status
+    let targetStatus = t.status
+    if (
+      t.status === 'locked' ||
+      t.status === 'pending' ||
+      t.status === 'blocked'
+    ) {
+      if (isBlocked) {
+        targetStatus = 'blocked'
+      } else if (!previousTaskCompleted) {
+        targetStatus = 'locked'
+      } else {
+        targetStatus = 'pending'
+      }
+    }
+
+    // Update in database if status changed
+    if (targetStatus !== t.status) {
+      await supabase
+        .from('v2_tasks')
+        .update({ status: targetStatus, updated_at: new Date().toISOString() })
+        .eq('id', t.id)
+      t.status = targetStatus // Update local value for subsequent checks
+    }
+
+    // Carry forward sequential flag
+    previousTaskCompleted = t.status === 'done' || t.status === 'approved'
   }
 }

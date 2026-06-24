@@ -152,7 +152,7 @@ export async function updateTask(
   const supabase = createClient()
   const { assigned_to, social_post_count, ...taskData } = formData
 
-  const { data: currentTask } = await supabase.from('v2_tasks').select('status').eq('id', id).single()
+  const { data: currentTask } = await supabase.from('v2_tasks').select('status, project_id').eq('id', id).single()
   if (currentTask?.status === 'locked') {
     throw new Error('Não é possível modificar as propriedades de uma tarefa bloqueada.')
   }
@@ -175,6 +175,11 @@ export async function updateTask(
   // Sync social posts if count changed
   if (social_post_count !== undefined) {
     await syncSocialPosts(id, social_post_count)
+  }
+
+  if (currentTask?.project_id) {
+    const { evaluateProjectBlockers } = await import('@/app/dashboard/v2/actions')
+    await evaluateProjectBlockers(currentTask.project_id, supabase)
   }
 
   revalidatePath('/dashboard/tasks')

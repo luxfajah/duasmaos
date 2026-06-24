@@ -115,7 +115,9 @@ export default async function ClientDetailPage({ params }: Props) {
             existingSettings={portalSettings} 
           />
           <Button variant="outline" size="sm" className="h-9">Exportar PDF</Button>
-          <Button size="sm" className="h-9">Editar CRM</Button>
+          <Link href={`/dashboard/clients/${client.id}/edit`}>
+            <Button size="sm" className="h-9">Editar CRM</Button>
+          </Link>
         </div>
       </div>
 
