@@ -21,16 +21,16 @@ function DropdownMenuSubTrigger({
   return (
     <DropdownMenuPrimitive.SubTrigger
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 rounded-md px-2.5 py-2 text-sm outline-none transition-colors",
-        "text-text-primary hover:bg-surface-muted focus:bg-surface-muted",
-        "data-[state=open]:bg-surface-muted",
+        "flex cursor-pointer select-none items-center gap-2 rounded-md px-2.5 py-2 text-sm outline-none transition-all duration-100 ease-out",
+        "text-text-primary hover:bg-brand-primary hover:text-white focus:bg-brand-primary focus:text-white active:scale-[0.98]",
+        "data-[state=open]:bg-brand-primary data-[state=open]:text-white",
         inset && "pl-8",
         className
       )}
       {...props}
     >
       {children}
-      <ChevronRight className="ml-auto size-3.5 text-text-muted" />
+      <ChevronRight className="ml-auto size-3.5 opacity-60" />
     </DropdownMenuPrimitive.SubTrigger>
   )
 }
@@ -86,8 +86,8 @@ function DropdownMenuItem({
   return (
     <DropdownMenuPrimitive.Item
       className={cn(
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-sm outline-none transition-colors",
-        "text-text-primary focus:bg-black/5 dark:focus:bg-white/10 focus:text-text-primary",
+        "relative flex cursor-pointer select-none items-center gap-2 rounded-lg px-2.5 py-2 text-sm outline-none transition-all duration-100 ease-out active:scale-[0.98]",
+        "text-text-primary focus:bg-brand-primary focus:text-white",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         variant === "danger" && "text-status-danger focus:bg-status-danger/10 focus:text-status-danger",
         inset && "pl-8",
@@ -107,8 +107,8 @@ function DropdownMenuCheckboxItem({
   return (
     <DropdownMenuPrimitive.CheckboxItem
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-2.5 text-sm outline-none transition-colors",
-        "text-text-primary focus:bg-black/5 dark:focus:bg-white/10",
+        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-2.5 text-sm outline-none transition-all duration-100 ease-out active:scale-[0.98]",
+        "text-text-primary focus:bg-brand-primary focus:text-white",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}
@@ -133,8 +133,8 @@ function DropdownMenuRadioItem({
   return (
     <DropdownMenuPrimitive.RadioItem
       className={cn(
-        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-2.5 text-sm outline-none transition-colors",
-        "text-text-primary focus:bg-black/5 dark:focus:bg-white/10",
+        "relative flex cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-2.5 text-sm outline-none transition-all duration-100 ease-out active:scale-[0.98]",
+        "text-text-primary focus:bg-brand-primary focus:text-white",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className
       )}

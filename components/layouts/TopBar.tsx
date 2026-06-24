@@ -38,9 +38,9 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
   return (
     <header
       className={cn(
-        'h-14 sticky top-0 z-30',
+        'h-16 sticky top-0 z-30',
         'flex items-center px-6 lg:px-8',
-        'bg-background/60 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.06]',
+        'glass depth-modal border-x-0 border-t-0 border-b border-border/50 rounded-none',
         className
       )}
     >
