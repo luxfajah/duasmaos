@@ -160,11 +160,9 @@ export async function createProjectV3(data: {
     .insert({
       name: data.name,
       client_id: data.client_id,
-      template_id: data.template_id,
       workflow_type: (template?.type || 'branding') as WorkflowTypeV2,
-      type: data.project_type,
+      type: data.payment_type,
       amount: data.amount,
-      payment_type: data.payment_type,
       billing_day: data.billing_day,
       auto_restart: data.auto_restart || false,
       status: 'active',

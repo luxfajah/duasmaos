@@ -15,6 +15,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Menu } from 'lucide-react'
+import { navGroups } from '@/lib/nav.config'
+import { usePathname } from 'next/navigation'
 
 interface TopBarProps {
   className?: string
@@ -34,6 +38,12 @@ interface TopBarProps {
 
 export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] }: TopBarProps) {
   const displayName = userName ?? userEmail?.split('@')[0] ?? 'Usuário'
+  const pathname = usePathname()
+
+  function isActive(href: string, exact?: boolean) {
+    if (exact) return pathname === href
+    return pathname.startsWith(href)
+  }
 
   return (
     <header
@@ -44,7 +54,61 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
         className
       )}
     >
-      <div className="flex-1" />
+      <div className="flex-1 flex items-center">
+        {/* Mobile Hamburger Menu */}
+        <Sheet>
+          <SheetTrigger className="lg:hidden p-2 -ml-2 mr-2 text-text-secondary hover:text-text-primary rounded-lg transition-colors">
+            <Menu size={20} strokeWidth={1.5} />
+            <span className="sr-only">Abrir menu</span>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 p-0">
+            <div className="flex flex-col py-5 h-full overflow-y-auto">
+              <div className="mb-6 px-6">
+                <Link href="/dashboard" className="flex items-center">
+                  <div className="relative h-7 w-[160px] pointer-events-none">
+                    <img src="/brand/logos/logotipo-light.png" alt="Duas Mãos" className="object-contain object-left h-full dark:hidden" />
+                    <img src="/brand/logos/logotipo-dark.png" alt="Duas Mãos" className="object-contain object-left h-full hidden dark:block" />
+                  </div>
+                </Link>
+              </div>
+              <nav className="flex-1 space-y-5 px-4">
+                {navGroups.map((group) => (
+                  <div key={group.label}>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted/65 mb-2 px-2 h-4 whitespace-nowrap font-body">
+                      {group.label}
+                    </p>
+                    <ul className="space-y-0.5">
+                      {group.items.map((item) => {
+                        const active = isActive(item.href, item.exact)
+                        return (
+                          <li key={item.href}>
+                            <Link
+                              href={item.href}
+                              className={cn(
+                                'flex items-center rounded-lg p-2 transition-all duration-150 relative active:scale-[0.98]',
+                                active
+                                  ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary font-semibold'
+                                  : 'text-text-secondary hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary'
+                              )}
+                            >
+                              <div className="flex items-center justify-center w-6 h-6 shrink-0 relative z-10">
+                                <item.icon size={18} strokeWidth={1.5} className={cn('transition-colors duration-150', active ? 'text-brand-primary' : 'text-text-secondary')} />
+                              </div>
+                              <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap relative z-10">
+                                {item.label}
+                              </span>
+                            </Link>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </nav>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
 
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
         <ThemeToggle className="text-text-muted hover:text-text-primary" />
