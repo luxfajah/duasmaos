@@ -1,5 +1,7 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+
 import { useState } from 'react'
 import { Client } from '@/types/database'
 import { ClientsTable } from '@/components/clients/ClientsTable'
@@ -103,79 +105,61 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
       </div>
 
       {/* ── Filter Bar & Actions ── */}
-      <div className="flex flex-col gap-6">
-        {/* Status Tabs & New Client Action */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border gap-4">
-          <div className="flex overflow-x-auto scrollbar-none gap-6">
-            <button
-              onClick={() => setStatusFilter('all')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
-                statusFilter === 'all'
-                  ? 'border-brand-primary text-brand-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Todos ({countAll})
-            </button>
-            <button
-              onClick={() => setStatusFilter('active')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
-                statusFilter === 'active'
-                  ? 'border-brand-primary text-brand-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Ativos ({countActive})
-            </button>
-            <button
-              onClick={() => setStatusFilter('paused')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
-                statusFilter === 'paused'
-                  ? 'border-brand-primary text-brand-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Pausados ({countPaused})
-            </button>
-            <button
-              onClick={() => setStatusFilter('inactive')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
-                statusFilter === 'inactive'
-                  ? 'border-brand-primary text-brand-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-              }`}
-            >
-              Inativos ({countInactive})
-            </button>
-          </div>
-
-          <div className="pb-2">
-            <Link href="/dashboard/clients/new">
-              <Button className="flex items-center gap-2 w-full sm:w-auto shadow-brand active:scale-[0.97] transition-all duration-300 ease-apple">
-                <Plus size={16} />
-                Novo Cliente
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Search Control */}
-        <div className="relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        
+        {/* Search Control (Apple HIG Search Field) */}
+        <div className="relative flex-1 max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nome, empresa, e-mail, CPF ou CNPJ..."
-            className="pl-10 h-11 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)]"
+            placeholder="Buscar por nome, empresa, documento..."
+            className={cn(
+              'pl-9 h-10 w-full rounded-full transition-all duration-200',
+              'bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07]',
+              'focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:bg-transparent dark:focus-visible:bg-transparent'
+            )}
             id="clients-search"
           />
+        </div>
+
+        {/* Status Segmented Control & Actions */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-xl">
+            {[
+              { id: 'all', label: `Todos (${countAll})` },
+              { id: 'active', label: `Ativos (${countActive})` },
+              { id: 'paused', label: `Pausados (${countPaused})` },
+              { id: 'inactive', label: `Inativos (${countInactive})` },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id as StatusFilter)}
+                className={cn(
+                  'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ease-apple select-none',
+                  statusFilter === tab.id
+                    ? 'bg-white dark:bg-white/10 text-text-primary shadow-sm'
+                    : 'text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5'
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <Link href="/dashboard/clients/new">
+            <Button className="flex items-center gap-2 h-10 rounded-full px-5 shadow-brand active:scale-[0.96] transition-all duration-300 ease-apple">
+              <Plus size={16} strokeWidth={2} />
+              <span className="font-semibold font-sans">Novo Cliente</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
       {/* ── Table Container ── */}
-      <div className="apple-bezel"><div className="apple-bezel-inner overflow-hidden">
+      <div className="bg-surface-primary dark:bg-white/[0.02] border border-black/[0.04] dark:border-white/[0.04] rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.2)] overflow-hidden">
         <ClientsTable clients={filtered} />
-      </div></div>
+      </div>
     </div>
   )
 }

@@ -105,48 +105,44 @@ export function ClientsTable({ clients }: ClientsTableProps) {
           }
           
           return (
-            <TableRow key={client.id} className="group">
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-brand-primary/10 flex items-center justify-center text-brand-primary">
-                    {isPJ ? <Building2 size={18} /> : <User size={18} />}
+            <TableRow key={client.id} className="group transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02] border-b border-black/[0.04] dark:border-white/[0.04]">
+              <TableCell className="py-4">
+                <div className="flex items-center gap-3.5">
+                  {/* Tinted Avatar (Apple style) */}
+                  <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary shrink-0 shadow-sm shadow-brand-primary/5">
+                    {isPJ ? <Building2 size={18} strokeWidth={1.5} /> : <User size={18} strokeWidth={1.5} />}
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="font-medium text-text-primary truncate flex items-center gap-1.5">
+                    <span className="font-semibold font-sans text-text-primary truncate flex items-center gap-1.5 text-[15px] tracking-tight">
                       {isPJ ? (client.company || client.name) : client.name}
                       {isBirthdayToday && (
                         <Badge 
                           variant="outline" 
-                          className="bg-amber-500/10 text-amber-600 border-amber-500/20 py-0.5 px-1.5 text-[9px] font-black uppercase tracking-tight animate-bounce flex items-center gap-0.5"
+                          className="bg-amber-500/10 text-amber-600 border-amber-500/20 py-0.5 px-1.5 text-[9px] font-bold uppercase tracking-tight animate-bounce flex items-center gap-0.5"
                         >
                           Hoje! 🎂
                         </Badge>
                       )}
                       {!isBirthdayToday && isBirthdayThisMonth && (
-                        <span 
-                          className="text-sm cursor-help animate-pulse" 
-                          title="Aniversário este mês!"
-                        >
-                          🎈
-                        </span>
+                        <span className="text-sm cursor-help" title="Aniversário este mês!">🎈</span>
                       )}
                     </span>
                     {isPJ && client.name && client.company !== client.name && (
-                      <span className="text-xs text-text-muted truncate">
+                      <span className="text-[13px] text-text-secondary truncate mt-0.5 font-medium">
                         Resp: {client.name}
                       </span>
                     )}
                   </div>
                 </div>
               </TableCell>
-              <TableCell className="text-text-secondary font-mono text-xs">
+              <TableCell className="text-text-secondary font-mono text-[13px]">
                 {formattedIdentifier}
               </TableCell>
               <TableCell>
                 <div className="flex flex-col">
-                  <span className="text-sm text-text-primary">{client.email || '—'}</span>
+                  <span className="text-[14px] text-text-primary font-medium">{client.email || '—'}</span>
                   {client.phone && (
-                    <span className="text-xs text-text-muted">{formatPhone(client.phone)}</span>
+                    <span className="text-[13px] text-text-secondary">{formatPhone(client.phone)}</span>
                   )}
                 </div>
               </TableCell>
@@ -165,30 +161,29 @@ export function ClientsTable({ clients }: ClientsTableProps) {
                 <Badge variant={status.variant}>{status.label}</Badge>
               </TableCell>
               <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Link href={`/dashboard/clients/${client.id}`}>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <ExternalLink size={14} />
-                    </Button>
-                  </Link>
-                  <Link href={`/dashboard/clients/${client.id}/edit`}>
+                {/* HIG Capsule Actions */}
+                <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-2 group-hover:translate-x-0">
+                  <div className="flex items-center p-1 gap-0.5 bg-white dark:bg-black/40 border border-black/5 dark:border-white/10 rounded-full shadow-sm">
+                    <Link href={`/dashboard/clients/${client.id}`}>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 rounded-full p-0 text-text-secondary hover:text-brand-primary hover:bg-brand-primary/10">
+                        <ExternalLink size={14} strokeWidth={2} />
+                      </Button>
+                    </Link>
+                    <Link href={`/dashboard/clients/${client.id}/edit`}>
+                      <Button variant="ghost" size="sm" className="h-7 w-7 rounded-full p-0 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5">
+                        <Pencil size={14} strokeWidth={2} />
+                      </Button>
+                    </Link>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0"
+                      className="h-7 w-7 rounded-full p-0 text-text-secondary hover:text-status-danger hover:bg-status-danger/10"
+                      onClick={() => handleDelete(client.id)}
+                      disabled={deletingId === client.id}
                     >
-                      <Pencil size={14} />
+                      <Trash2 size={14} strokeWidth={2} />
                     </Button>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-status-danger hover:text-status-danger hover:bg-status-danger/10"
-                    onClick={() => handleDelete(client.id)}
-                    disabled={deletingId === client.id}
-                  >
-                    <Trash2 size={14} />
-                  </Button>
+                  </div>
                 </div>
               </TableCell>
             </TableRow>
