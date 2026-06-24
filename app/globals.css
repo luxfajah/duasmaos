@@ -7,7 +7,7 @@
     /* ─────────────────────────────────────────
        SUPERFÍCIES — Neutral & Clean Layers
     ───────────────────────────────────────── */
-    --background: 240 14% 97%;         /* #F7F7F9 — Level 0 */
+    --background: 240 5% 96.5%;         /* #F5F5F7 — Apple Silver — Level 0 */
     --foreground: 220 25% 14%;        /* Deep Blue dark — primary text */
     --surface: 0 0% 100%;             /* Pure White — Level 1 cards */
     --surface-muted: 240 10% 94%;     /* Subtle grey */
@@ -76,12 +76,12 @@
     /* ─────────────────────────────────────────
        SOMBRAS — Soft Diffused Elevation
     ───────────────────────────────────────── */
-    --shadow-xs: 0 1px 4px 0 rgb(0 0 0 / 0.04);
-    --shadow-sm: 0 2px 10px 0 rgb(0 0 0 / 0.06), 0 1px 3px 0 rgb(0 0 0 / 0.04);
-    --shadow-md: 0 4px 24px 0 rgb(0 0 0 / 0.08), 0 1px 4px 0 rgb(0 0 0 / 0.04);
-    --shadow-lg: 0 10px 44px -4px rgb(0 0 0 / 0.11), 0 2px 8px 0 rgb(0 0 0 / 0.05);
-    --shadow-xl: 0 20px 64px -8px rgb(0 0 0 / 0.13), 0 4px 16px 0 rgb(0 0 0 / 0.06);
-    --shadow-glass: 0 8px 32px -4px rgb(0 0 0 / 0.12), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+    --shadow-sm: 0 2px 8px 0 rgb(0 0 0 / 0.04), 0 1px 2px 0 rgb(0 0 0 / 0.02);
+    --shadow-md: 0 4px 16px 0 rgb(0 0 0 / 0.06), 0 1px 3px 0 rgb(0 0 0 / 0.03);
+    --shadow-lg: 0 8px 24px -4px rgb(0 0 0 / 0.08), 0 2px 6px 0 rgb(0 0 0 / 0.04);
+    --shadow-xl: 0 16px 48px -8px rgb(0 0 0 / 0.1), 0 4px 12px 0 rgb(0 0 0 / 0.05);
+    --shadow-glass: 0 8px 32px -4px rgb(0 0 0 / 0.08), inset 0 1px 0 0 rgb(255 255 255 / 0.05);
     --shadow-brand: 0 6px 28px 0 hsl(var(--brand-primary) / 0.28);
 
     /* Glass System Tokens — LIGHT MODE: softer blur, warm-white bg */
@@ -112,11 +112,11 @@
      DARK MODE
   ───────────────────────────────────────── */
   .dark {
-    --background: 240 36% 8%;
+    --background: 240 10% 4%;
     --foreground: 35 30% 95%;
-    --surface: 240 36% 12%;
-    --surface-muted: 240 22% 17%;
-    --surface-elevated: 240 30% 15%;
+    --surface: 240 10% 9%;
+    --surface-muted: 240 12% 14%;
+    --surface-elevated: 240 12% 12%;
     --surface-deep-blue: 240 36% 10%;
     --border: 240 20% 20%;
     --border-strong: 240 20% 28%;
@@ -317,30 +317,30 @@
 
   /* ── Typography Font Utilities ── */
   .font-heading {
-    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--font-heading), -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Plus Jakarta Sans', system-ui, sans-serif;
   }
   .font-subheading {
     font-family: var(--font-subheading), 'Amaranth', 'Georgia', serif;
   }
   .font-body {
-    font-family: var(--font-body), 'Lato', system-ui, sans-serif;
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Lato', system-ui, sans-serif;
   }
 
   /* ── Heading Editorial Style ── */
   .heading-editorial {
-    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--font-heading), -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-weight: 800;
     letter-spacing: -0.04em;
     line-height: 1.05;
   }
   .heading-section {
-    font-family: var(--font-heading), 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: var(--font-heading), -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.2;
   }
   .label-eyebrow {
-    font-family: var(--font-body), 'Lato', system-ui, sans-serif;
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Lato', system-ui, sans-serif;
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.14em;
@@ -349,20 +349,19 @@
 
   /* ── Glassmorphism ── */
   .glass {
-    /* Light: warm-white semi-transparent, low blur */
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    border: 1px solid rgba(0, 0, 0, 0.04);
     box-shadow: var(--shadow-glass);
     position: relative;
   }
 
   /* Dark Mode: deep navy glass, stronger blur */
   .dark .glass {
-    background: rgba(15, 23, 42, 0.60);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
     border: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow:
       0 8px 32px rgba(0, 0, 0, 0.35),
@@ -526,38 +525,33 @@
     box-shadow: var(--shadow-xs);
     border-radius: var(--radius-lg);
     border: 1px solid hsl(var(--border));
-    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .card-sand:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
   }
 
   /* Level 1 — Default light card */
   .card-default {
     background: hsl(var(--surface-elevated));
-    box-shadow: var(--shadow-sm);
-    border-radius: var(--radius-lg);
-    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+    border-radius: var(--radius-xl);
+    border: 1px solid hsl(var(--border) / 0.5);
+    transition: box-shadow 300ms cubic-bezier(0.25, 1, 0.5, 1);
   }
   .card-default:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-card-hover);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
   }
 
   /* Level 2 — Elevated card (stronger shadow) */
   .card-elevated {
     background: hsl(var(--surface-elevated));
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-sm);
     border-radius: var(--radius-lg);
-    transition: transform 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: box-shadow 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   .card-elevated:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-card-hover);
+    box-shadow: var(--shadow-md);
   }
 
   /* Level 3a — Terracotta highlight card */
@@ -566,14 +560,12 @@
     box-shadow: var(--shadow-terracotta);
     border-radius: var(--radius-lg);
     color: hsl(35 35% 95%);
-    transition: transform 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
   }
   .card-terracotta:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 44px 0 hsl(var(--brand-primary) / 0.45);
+    box-shadow: 0 10px 32px 0 hsl(var(--brand-primary) / 0.35);
   }
 
   /* Level 3b — Deep Blue immersive card */
@@ -582,14 +574,12 @@
     box-shadow: var(--shadow-deep-blue);
     border-radius: var(--radius-lg);
     color: hsl(35 35% 95%);
-    transition: transform 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: box-shadow 220ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
   }
   .card-deep-blue:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 64px -8px rgb(0 0 0 / 0.40);
+    box-shadow: 0 12px 48px -8px rgb(0 0 0 / 0.30);
   }
 
   /* Legacy aliases — keep backward compat */
@@ -629,13 +619,17 @@
 
   /* ── Sidebar Surface — Light in light theme, Deep Blue in dark ── */
   .sidebar-surface {
-    background: hsl(var(--surface-elevated));
-    border-right: 1px solid hsl(var(--border) / 0.5);
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(24px) saturate(1.9);
+    -webkit-backdrop-filter: blur(24px) saturate(1.9);
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
   }
 
   .dark .sidebar-surface {
-    background: hsl(222 30% 9%);
-    border-right-color: hsl(222 25% 16%);
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(24px) saturate(1.7);
+    -webkit-backdrop-filter: blur(24px) saturate(1.7);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   /* ── Organic Background Blobs ── */
@@ -805,11 +799,11 @@
 
   /* Topbar — minimal floating toolbar (search + bell + avatar) */
   .topbar-float {
-    background: hsl(var(--surface-elevated) / 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid hsl(var(--border) / 0.6);
-    box-shadow: 0 1px 0 0 hsl(35 18% 84% / 0.5), 0 4px 24px 0 rgb(0 0 0 / 0.04);
+    background: hsl(var(--surface-elevated) / 0.80);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.03);
   }
 
   /* Greeting block — blends into background, no hard card border */
@@ -912,17 +906,17 @@
 
   /* Floating sidebar shell — adds margin+radius so it floats off the edge */
   .sidebar-float {
-    margin: 12px 0 12px 12px;
-    height: calc(100vh - 24px);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-lg);
+    margin: 16px 0 16px 16px;
+    height: calc(100vh - 32px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.06), 0 1px 0 rgba(255,255,255,0.4) inset, 0 0 0 1px rgba(0,0,0,0.04);
   }
   
   .dark .sidebar-float {
     box-shadow:
-      0 8px 40px -8px hsl(222 55% 22% / 0.45),
-      0 2px 12px 0 hsl(222 55% 22% / 0.20),
-      inset 1px 0 0 0 hsl(222 45% 30% / 0.15);
+      0 24px 50px -12px rgba(0, 0, 0, 0.5),
+      0 1px 0 rgba(255, 255, 255, 0.05) inset,
+      0 0 0 1px rgba(255, 255, 255, 0.06);
   }
 
   /* ── Modal overlay (dark mode) — deep blur + heavy veil ── */
@@ -996,5 +990,126 @@
     transform: translateY(-4px) scale(1.015);
     box-shadow: var(--shadow-card-hover);
     border-color: hsl(var(--brand-primary) / 0.35);
+  }
+
+  /* ════════════════════════════════════════════
+     APPLE-TIER DESIGN SYSTEM UTILITIES
+  ════════════════════════════════════════════ */
+
+  /* Apple Glass — refined translucent surface */
+  .apple-glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.04),
+      0 1px 2px rgba(0,0,0,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .dark .apple-glass {
+    background: rgba(28, 28, 30, 0.65);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 2px 8px rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  /* Apple Hairline — ultra-subtle border */
+  .apple-hairline {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+  .dark .apple-hairline {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  /* Apple Double-Bezel — outer shell for premium card containment */
+  .apple-bezel {
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 2rem;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+  .dark .apple-bezel {
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+
+  /* Apple Double-Bezel Inner — the content card inside the bezel */
+  .apple-bezel-inner {
+    background: rgba(255, 255, 255, 0.80);
+    backdrop-filter: blur(16px) saturate(1.8);
+    -webkit-backdrop-filter: blur(16px) saturate(1.8);
+    border-radius: calc(2rem - 6px);
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.06),
+      0 1px 4px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+  .dark .apple-bezel-inner {
+    background: rgba(28, 28, 30, 0.60);
+    backdrop-filter: blur(16px) saturate(1.6);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.35),
+      0 1px 4px rgba(0,0,0,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  /* Apple Transition — physical spring-like motion */
+  .apple-transition {
+    transition: all 300ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* Apple Press — tactile click feedback */
+  .apple-press {
+    transition: transform 150ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .apple-press:active {
+    transform: scale(0.97);
+  }
+
+  /* Apple Input — pill-shaped search with inner depth */
+  .apple-input {
+    background: hsl(var(--surface-muted) / 0.6);
+    border: 1px solid hsl(var(--border) / 0.3);
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+    color: hsl(var(--text-primary));
+    transition: all 300ms cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .apple-input::placeholder {
+    color: hsl(var(--text-muted) / 0.6);
+  }
+  .apple-input:focus {
+    outline: none;
+    background: hsl(var(--surface-muted) / 0.8);
+    border-color: hsl(var(--brand-primary) / 0.3);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.04), 0 0 0 3px hsl(var(--brand-primary) / 0.08);
+  }
+  .dark .apple-input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .dark .apple-input:focus {
+    background: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15), 0 0 0 3px rgba(255,255,255,0.04);
+  }
+
+  /* Apple Divider — gradient fade on edges */
+  .apple-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--border) / 0.6) 15%,
+      hsl(var(--border)) 50%,
+      hsl(var(--border) / 0.6) 85%,
+      transparent 100%
+    );
   }
 }

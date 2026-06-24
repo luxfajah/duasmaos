@@ -20,30 +20,30 @@ const cardVariants = cva(
     "data-[size=sm]:gap-3 data-[size=sm]:py-3",
     "data-[size=sm]:has-data-[slot=card-footer]:pb-0",
     "*:[img:first-child]:rounded-t-2xl *:[img:last-child]:rounded-b-2xl",
-    "transition-all duration-200",
+    "transition-all duration-300 ease-apple",
   ].join(" "),
   {
     variants: {
       variant: {
         /* Level 0 — Sand, calming background surface */
         sand:
-          "bg-sand text-text-primary border border-sand-dark/50 shadow-xs hover:-translate-y-0.5 hover:shadow-md",
+          "bg-sand text-text-primary border border-sand-dark/50 shadow-xs hover:shadow-sm",
 
         /* Level 1 — Default light surface on white/near-white */
         default:
-          "glass glass-reflection text-text-primary hover:-translate-y-1 hover:shadow-card-hover",
+          "glass glass-reflection text-text-primary hover:shadow-sm",
 
         /* Level 2 — Elevated, stronger shadow */
         elevated:
-          "glass glass-reflection text-text-primary shadow-md hover:-translate-y-1.5 hover:shadow-card-hover",
+          "glass glass-reflection text-text-primary shadow-sm hover:shadow-md",
 
         /* Level 3a — Terracotta: energy and expression */
         terracotta:
-          "card-terracotta text-text-inverse ring-0 hover:-translate-y-1.5",
+          "card-terracotta text-text-inverse ring-0",
 
         /* Level 3b — Deep Blue: trust and immersion */
         "deep-blue":
-          "card-deep-blue text-text-inverse ring-0 hover:-translate-y-1.5",
+          "card-deep-blue text-text-inverse ring-0",
 
         /* ── Specialty variants ── */
         muted:
@@ -56,6 +56,10 @@ const cardVariants = cva(
           "bg-surface border border-border shadow-sm text-text-primary",
         highlight:
           "bg-editorial-highlight text-brand-primary border border-brand-accent/40 shadow-sm", // Keep solid
+
+        /* Apple — frosted glass, ultra-diffuse shadows, Double-Bezel */
+        apple:
+          "bg-white/80 dark:bg-white/[0.05] backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.06] shadow-apple-md rounded-[2rem]",
 
         /* Legacy aliases */
         graphite:

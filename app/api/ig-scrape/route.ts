@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from 'next/server'
 
 // Use Edge Runtime — different IP pool, less likely to be blocked by Instagram

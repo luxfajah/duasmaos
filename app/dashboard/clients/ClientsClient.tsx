@@ -109,7 +109,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
           <div className="flex overflow-x-auto scrollbar-none gap-6">
             <button
               onClick={() => setStatusFilter('all')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all shrink-0 ${
+              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
                 statusFilter === 'all'
                   ? 'border-brand-primary text-brand-primary'
                   : 'border-transparent text-text-muted hover:text-text-primary'
@@ -119,7 +119,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
             </button>
             <button
               onClick={() => setStatusFilter('active')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all shrink-0 ${
+              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
                 statusFilter === 'active'
                   ? 'border-brand-primary text-brand-primary'
                   : 'border-transparent text-text-muted hover:text-text-primary'
@@ -129,7 +129,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
             </button>
             <button
               onClick={() => setStatusFilter('paused')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all shrink-0 ${
+              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
                 statusFilter === 'paused'
                   ? 'border-brand-primary text-brand-primary'
                   : 'border-transparent text-text-muted hover:text-text-primary'
@@ -139,7 +139,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
             </button>
             <button
               onClick={() => setStatusFilter('inactive')}
-              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all shrink-0 ${
+              className={`pb-3 text-xs uppercase tracking-wider font-bold border-b-2 transition-all duration-300 ease-apple shrink-0 ${
                 statusFilter === 'inactive'
                   ? 'border-brand-primary text-brand-primary'
                   : 'border-transparent text-text-muted hover:text-text-primary'
@@ -151,7 +151,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
 
           <div className="pb-2">
             <Link href="/dashboard/clients/new">
-              <Button className="flex items-center gap-2 w-full sm:w-auto shadow-brand">
+              <Button className="flex items-center gap-2 w-full sm:w-auto shadow-brand active:scale-[0.97] transition-all duration-300 ease-apple">
                 <Plus size={16} />
                 Novo Cliente
               </Button>
@@ -166,16 +166,16 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome, empresa, e-mail, CPF ou CNPJ..."
-            className="pl-9 h-11"
+            className="pl-10 h-11 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)]"
             id="clients-search"
           />
         </div>
       </div>
 
       {/* ── Table Container ── */}
-      <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden">
+      <div className="apple-bezel"><div className="apple-bezel-inner overflow-hidden">
         <ClientsTable clients={filtered} />
-      </div>
+      </div></div>
     </div>
   )
 }

@@ -24,8 +24,8 @@ export function KanbanCard({ project }: KanbanCardProps) {
   return (
     <div
       className={`
-        group relative bg-surface border border-border rounded-lg p-4 shadow-sm cursor-grab active:cursor-grabbing
-        hover:border-border-strong hover:shadow-md transition-all duration-150
+        group relative bg-white/60 dark:bg-zinc-950/40 backdrop-blur-md border border-black/[0.04] dark:border-white/[0.06] rounded-2xl p-4 shadow-sm cursor-grab active:cursor-grabbing
+        hover:-translate-y-0.5 hover:shadow-md hover:border-black/[0.08] dark:hover:border-white/[0.12] transition-all duration-300 ease-apple
         border-l-4 ${priorityBorder}
       `}
     >

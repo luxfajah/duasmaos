@@ -183,18 +183,18 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
       
       {/* ── Filters & Search ── */}
       <div className="flex flex-col lg:flex-row gap-4 items-center justify-between bg-surface/40 p-4 rounded-2xl border border-border/40 backdrop-blur-sm">
-        <div className="flex flex-1 w-full gap-3">
+        <div className="flex flex-1 w-full gap-4">
           <div className="relative flex-1">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
             <Input 
               placeholder="Buscar produtos ou categorias..." 
-              className="pl-10 h-11 bg-surface border-border/50 rounded-xl focus:ring-brand-primary/20"
+              className="pl-10 h-11 bg-surface border-border/50 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] focus:ring-brand-primary/20"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select 
-            className="h-11 px-4 bg-surface border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20"
+            className="h-11 px-4 bg-surface border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
@@ -210,7 +210,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               router.push(`?${params.toString()}`)
             }}
             className={cn(
-              "h-11 px-4 rounded-xl font-bold transition-all border-border/50",
+              "h-11 px-4 rounded-xl font-bold transition-all duration-300 ease-apple active:scale-[0.97] border-border/50",
               showInactive ? "bg-surface-muted text-text-primary" : "text-text-muted hover:text-text-primary"
             )}
           >
@@ -225,7 +225,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               key={cat}
               onClick={() => setCategoryFilter(cat)}
               className={cn(
-                "px-4 h-9 rounded-lg text-xs font-black uppercase tracking-widest transition-all border",
+                "px-4 h-9 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ease-apple active:scale-[0.97] border",
                 categoryFilter === cat 
                   ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20" 
                   : "bg-surface border-border/50 text-text-muted hover:text-text-primary hover:border-border-strong"
@@ -238,7 +238,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
 
         <Button 
           onClick={() => setShowNewModal(true)}
-          className="h-11 px-6 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 w-full lg:w-auto"
+          className="h-11 px-6 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 w-full lg:w-auto active:scale-[0.97] transition-all duration-300 ease-apple"
         >
           <Plus size={18} />
           Novo Produto
@@ -250,7 +250,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
         {filtered.map(product => (
           <div 
             key={product.id}
-            className="group relative bg-surface border border-border/50 rounded-2xl hover:border-brand-primary/40 hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-300 flex flex-col h-[280px]"
+            className="group relative bg-surface border border-border/50 rounded-2xl hover:border-brand-primary/40 hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-300 ease-apple active:scale-[0.97] flex flex-col h-[280px]"
           >
             {/* Header / Type Badge */}
             <div className="p-5 flex-1">
@@ -351,7 +351,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             </div>
 
             {/* Price Footer */}
-            <div className="px-5 py-4 bg-surface-muted/30 border-t border-border/40 flex items-center justify-between group-hover:bg-brand-primary group-hover:border-brand-primary transition-colors">
+            <div className="px-5 py-4 bg-surface-muted/30 border-t border-border/40 flex items-center justify-between group-hover:bg-brand-primary group-hover:border-brand-primary transition-all duration-300 ease-apple">
               <div className="flex flex-col">
                 <span className="text-[9px] font-black text-text-muted uppercase tracking-widest group-hover:text-white/60">Investimento Base</span>
                 <span className="text-base font-black text-text-primary group-hover:text-white font-mono">
@@ -376,7 +376,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
         {filtered.length === 0 && (
           <button 
             onClick={() => setShowNewModal(true)}
-            className="h-[280px] rounded-2xl border-2 border-dashed border-border/40 hover:border-brand-primary/40 hover:bg-brand-primary/5 transition-all flex flex-col items-center justify-center gap-3 text-text-muted hover:text-brand-primary"
+            className="h-[280px] rounded-2xl border-2 border-dashed border-border/40 hover:border-brand-primary/40 hover:bg-brand-primary/5 transition-all duration-300 ease-apple active:scale-[0.97] flex flex-col items-center justify-center gap-3 text-text-muted hover:text-brand-primary"
           >
             <div className="h-12 w-12 rounded-xl bg-border/10 flex items-center justify-center">
               <Plus size={24} />
@@ -406,7 +406,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               <div className="space-y-2">
                 <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Categoria</label>
                 <select 
-                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none"
+                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
                   value={newProduct.category}
                   onChange={(e) => setNewProduct(prev => ({ ...prev, category: e.target.value }))}
                 >
@@ -416,7 +416,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               <div className="space-y-2">
                 <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Tipo</label>
                 <select 
-                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none"
+                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
                   value={newProduct.type}
                   onChange={(e) => setNewProduct(prev => ({ ...prev, type: e.target.value }))}
                 >
@@ -431,7 +431,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             <Button 
               onClick={handleCreateNew} 
               disabled={isPending}
-              className="h-11 px-8 rounded-xl bg-brand-primary text-white font-black shadow-xl shadow-brand-primary/20"
+              className="h-11 px-8 rounded-xl bg-brand-primary text-white font-black shadow-xl shadow-brand-primary/20 active:scale-[0.97] transition-all duration-300 ease-apple"
             >
               {isPending ? 'Iniciando...' : 'Iniciar Configuração'}
             </Button>
@@ -459,7 +459,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               <div className="space-y-2">
                 <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Categoria</label>
                 <select 
-                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none"
+                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
                   value={editingProduct?.category || 'Design'}
                   onChange={(e) => editingProduct && setEditingProduct({ ...editingProduct, category: e.target.value })}
                 >
@@ -469,7 +469,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               <div className="space-y-2">
                 <label className="text-xs font-black text-text-muted uppercase tracking-widest ml-1">Tipo</label>
                 <select 
-                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none"
+                  className="w-full h-12 px-4 bg-surface/50 border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 appearance-none shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
                   value={editingProduct?.type || 'service'}
                   onChange={(e) => editingProduct && setEditingProduct({ ...editingProduct, type: e.target.value })}
                 >
@@ -493,7 +493,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             <Button 
               onClick={handleUpdateMetadata} 
               disabled={isPending}
-              className="h-11 px-8 rounded-xl bg-brand-primary text-white font-black shadow-xl shadow-brand-primary/20"
+              className="h-11 px-8 rounded-xl bg-brand-primary text-white font-black shadow-xl shadow-brand-primary/20 active:scale-[0.97] transition-all duration-300 ease-apple"
             >
               {isPending ? 'Salvando...' : 'Salvar Alterações'}
             </Button>

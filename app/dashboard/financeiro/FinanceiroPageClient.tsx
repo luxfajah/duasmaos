@@ -121,7 +121,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Paid widget */}
-        <Card className="p-6 bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/20 dark:bg-emerald-500/10 dark:border-emerald-500/20 transition-all flex items-start gap-4">
+        <Card className="p-6 bg-emerald-500/5 border-emerald-500/10 hover:border-emerald-500/20 dark:bg-emerald-500/10 dark:border-emerald-500/20 transition-all duration-300 ease-apple flex items-start gap-4">
           <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl">
             <CheckCircle2 size={24} />
           </div>
@@ -135,7 +135,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
         </Card>
 
         {/* Pending widget */}
-        <Card className="p-6 bg-brand-primary/5 border-brand-primary/10 hover:border-brand-primary/20 dark:bg-brand-primary/10 dark:border-brand-primary/20 transition-all flex items-start gap-4">
+        <Card className="p-6 bg-brand-primary/5 border-brand-primary/10 hover:border-brand-primary/20 dark:bg-brand-primary/10 dark:border-brand-primary/20 transition-all duration-300 ease-apple flex items-start gap-4">
           <div className="p-3 bg-brand-primary/10 text-brand-primary rounded-xl">
             <DollarSign size={24} />
           </div>
@@ -149,7 +149,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
         </Card>
 
         {/* Overdue widget */}
-        <Card className="p-6 bg-status-danger/5 border-status-danger/10 hover:border-status-danger/20 dark:bg-status-danger/10 dark:border-status-danger/20 transition-all flex items-start gap-4">
+        <Card className="p-6 bg-status-danger/5 border-status-danger/10 hover:border-status-danger/20 dark:bg-status-danger/10 dark:border-status-danger/20 transition-all duration-300 ease-apple flex items-start gap-4">
           <div className="p-3 bg-status-danger/10 text-status-danger rounded-xl">
             <AlertTriangle size={24} />
           </div>
@@ -163,7 +163,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
         </Card>
 
         {/* Projection widget */}
-        <Card className="p-6 bg-info/5 border-info/10 hover:border-info/20 dark:bg-info/10 dark:border-info/20 transition-all flex items-start gap-4">
+        <Card className="p-6 bg-info/5 border-info/10 hover:border-info/20 dark:bg-info/10 dark:border-info/20 transition-all duration-300 ease-apple flex items-start gap-4">
           <div className="p-3 bg-info/10 text-info rounded-xl">
             <TrendingUp size={24} />
           </div>
@@ -189,7 +189,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             placeholder="Buscar por cliente ou projeto..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-surface border border-border rounded-xl pl-9 pr-4 py-2 text-sm text-text-primary outline-none focus:border-brand-primary/40 transition-colors"
+            className="w-full bg-surface border border-border/50 rounded-full pl-10 pr-4 py-2 text-sm text-text-primary outline-none focus:border-brand-primary/40 shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-300 ease-apple"
           />
         </div>
 
@@ -205,7 +205,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             <button
               key={btn.id}
               onClick={() => setFilterStatus(btn.id)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 ease-apple active:scale-[0.97] shrink-0 ${
                 filterStatus === btn.id
                   ? 'bg-brand-primary text-white shadow-brand'
                   : 'bg-surface border border-border text-text-secondary hover:bg-surface-muted'
@@ -219,7 +219,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
       </div>
 
       {/* 3. Table of Revenues */}
-      <Card className="overflow-hidden border border-border bg-surface">
+      <div className="apple-bezel"><div className="apple-bezel-inner overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -238,7 +238,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
                 const isOverdue = rev.status === 'overdue' || (rev.status === 'pending' && dueDate < new Date())
                 
                 return (
-                  <tr key={rev.id} className="hover:bg-surface-muted/20 transition-colors">
+                  <tr key={rev.id} className="hover:bg-surface-muted/20 transition-all duration-300 ease-apple">
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-bold text-text-primary text-sm">{rev.project?.name || 'Projeto Excluído'}</span>
@@ -277,7 +277,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
                         <Button 
                           onClick={() => handleOpenPaymentModal(rev)} 
                           size="sm" 
-                          className="h-8 rounded-lg text-xs bg-emerald-500 hover:bg-emerald-600 font-bold"
+                          className="h-8 rounded-xl text-xs bg-emerald-500 hover:bg-emerald-600 font-bold active:scale-[0.97] transition-all duration-300 ease-apple"
                         >
                           Marcar Pago
                         </Button>
@@ -301,12 +301,12 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             </tbody>
           </table>
         </div>
-      </Card>
+      </div></div>
 
       {/* 4. Confirm Payment Modal */}
       {selectedRevenue && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-surface rounded-2xl border border-border shadow-2xl max-w-md w-full overflow-hidden animate-in scale-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-surface rounded-2xl border border-border/50 shadow-2xl max-w-md w-full overflow-hidden animate-in scale-in-95 duration-300">
             <div className="px-6 py-5 border-b border-border bg-surface-muted/20 flex items-center justify-between">
               <h3 className="text-md font-black text-text-primary uppercase tracking-widest flex items-center gap-2">
                 <CreditCard size={18} className="text-brand-primary" /> Registrar Pagamento
@@ -338,7 +338,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border bg-surface text-text-primary outline-none focus:border-brand-primary/40 transition-colors"
+                  className="w-full h-11 px-3 py-2 text-sm rounded-xl border border-border/50 bg-surface text-text-primary outline-none focus:border-brand-primary/40 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
                 >
                   <option value="pix">Pix (Transferência rápida)</option>
                   <option value="credit_card">Cartão de Crédito</option>
@@ -354,14 +354,14 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
                 variant="outline" 
                 onClick={() => setSelectedRevenue(null)}
                 disabled={isSubmitting}
-                className="rounded-xl text-xs font-bold"
+                className="rounded-xl text-xs font-bold active:scale-[0.97] transition-all duration-300 ease-apple"
               >
                 Cancelar
               </Button>
               <Button 
                 onClick={handleConfirmPayment}
                 disabled={isSubmitting}
-                className="rounded-xl text-xs bg-emerald-500 hover:bg-emerald-600 shadow-emerald font-bold"
+                className="rounded-xl text-xs bg-emerald-500 hover:bg-emerald-600 shadow-emerald font-bold active:scale-[0.97] transition-all duration-300 ease-apple"
               >
                 {isSubmitting ? 'Registrando...' : 'Confirmar Recebimento'}
               </Button>

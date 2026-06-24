@@ -68,7 +68,7 @@ export function ProjectSelector({ currentProjectId, projects }: ProjectSelectorP
           
           <DropdownMenuSeparator />
           <DropdownMenuItem 
-            onClick={() => router.push('/dashboard/projects/new')}
+            onClick={() => router.push('/dashboard/projects?new=true')}
             className="flex items-center gap-2 p-3 text-brand-primary font-bold text-xs uppercase tracking-widest hover:bg-brand-primary/5 cursor-pointer rounded-xl"
           >
             <Plus size={16} />

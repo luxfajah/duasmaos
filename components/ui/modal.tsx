@@ -115,7 +115,7 @@ function ModalContent({ className, size = "md", children, ...props }: ModalConte
   return (
     <div
       className={cn(
-        "relative z-[10000] w-full bg-surface border border-border/50 shadow-2xl animate-scale-in flex flex-col overflow-hidden",
+        "relative z-[10000] w-full glass depth-modal border border-border/50 shadow-xl animate-scale-in flex flex-col overflow-hidden",
         sizeMap[size],
         size === "full" ? "h-[100dvh] rounded-none sm:rounded-xl sm:h-auto" : "rounded-[32px] m-4 sm:m-0",
         size === "giant" && "max-h-[85vh]",

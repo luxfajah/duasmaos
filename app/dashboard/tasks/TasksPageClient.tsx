@@ -56,7 +56,7 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 text-sm rounded-md border border-border bg-surface text-text-primary focus:outline-none"
+          className="glass-input h-10 px-3 text-sm rounded-md focus:outline-none"
           id="tasks-status-filter"
           aria-label="Filtrar por status"
         >

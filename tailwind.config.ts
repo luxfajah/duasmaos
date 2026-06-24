@@ -148,6 +148,8 @@ const config: Config = {
         lg:      "var(--radius-lg)",   /* 16px */
         xl:      "var(--radius-xl)",   /* 24px */
         "2xl":   "var(--radius-2xl)",  /* 32px */
+        "3xl":   "1.5rem",
+        "4xl":   "2rem",
         full:    "var(--radius-full)",
       },
 
@@ -163,6 +165,11 @@ const config: Config = {
         terracotta:    "var(--shadow-terracotta)",
         "deep-blue":   "var(--shadow-deep-blue)",
         "card-hover":  "var(--shadow-card-hover)",
+        "apple-xs":    "0 1px 2px rgba(0,0,0,0.04)",
+        "apple-sm":    "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)",
+        "apple-md":    "0 4px 16px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04)",
+        "apple-lg":    "0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)",
+        "apple-xl":    "0 16px 48px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.04)",
         none:          "none",
       },
 
@@ -170,6 +177,11 @@ const config: Config = {
         fast:   "100ms",
         normal: "200ms",
         slow:   "350ms",
+      },
+
+      transitionTimingFunction: {
+        apple: "cubic-bezier(0.25, 1, 0.5, 1)",
+        "apple-bounce": "cubic-bezier(0.34, 1.56, 0.64, 1)",
       },
 
       keyframes: {

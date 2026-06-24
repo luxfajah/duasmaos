@@ -38,9 +38,9 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
   return (
     <header
       className={cn(
-        'h-14 relative z-30',
+        'h-14 sticky top-0 z-30',
         'flex items-center px-6 lg:px-8',
-        'bg-transparent',
+        'bg-background/60 backdrop-blur-xl border-b border-black/[0.04] dark:border-white/[0.06]',
         className
       )}
     >
@@ -49,13 +49,13 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
         <ThemeToggle className="text-text-muted hover:text-text-primary" />
 
-        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-sand-warm hover:text-text-primary rounded-xl transition-all duration-150 hover:scale-105">
-          <Settings size={17} strokeWidth={1.75} />
+        <Link href="/dashboard/settings" title="Meu Perfil" className="p-2 text-text-muted hover:bg-black/5 dark:hover:bg-white/5 hover:text-text-primary rounded-lg transition-all duration-150">
+          <Settings size={17} strokeWidth={1.5} />
         </Link>
 
         <NotificationCenter tasks={tasks} />
 
-        <div className="h-5 w-px bg-sand-dark/40 mx-1" />
+        <div className="h-5 w-px bg-black/10 dark:bg-white/10 mx-1" />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -65,7 +65,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
                 src={userAvatar || undefined}
                 size="sm"
                 variant="brand"
-                className="transition-transform duration-200 group-hover:scale-105 ring-2 ring-brand-primary/20 cursor-pointer"
+                className="transition-transform duration-200 group-hover:scale-105 ring-1 ring-black/10 dark:ring-white/10 cursor-pointer"
               />
             </div>
           </DropdownMenuTrigger>

@@ -51,9 +51,10 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
               /* base */
               "h-10 w-full rounded-md border border-border bg-surface px-4 py-2.5",
               "text-sm text-text-primary placeholder:text-text-muted",
-              "transition-all duration-200 outline-none",
+              "shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]",
+              "transition-all duration-300 ease-apple outline-none",
               /* focus — Terracotta ring */
-              "focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20",
+              "focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20",
               /* disabled */
               "disabled:cursor-not-allowed disabled:opacity-50",
               /* error state */
@@ -109,8 +110,9 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         className={cn(
           "h-10 w-full rounded-md border border-border bg-surface px-4 py-2.5",
           "text-sm text-text-primary placeholder:text-text-muted",
-          "transition-all duration-200 outline-none",
-          "focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20",
+          "shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]",
+          "transition-all duration-300 ease-apple outline-none",
+          "focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20",
           "disabled:cursor-not-allowed disabled:opacity-50",
           "aria-invalid:border-brand-primary aria-invalid:ring-2 aria-invalid:ring-brand-primary/20",
           className

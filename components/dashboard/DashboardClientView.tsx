@@ -221,28 +221,27 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
             </p>
           </div>
 
-          {/* Subcard with Metrics - Yellow Theme */}
-          <div className="w-full bg-[#FFD166] dark:bg-[#d4a841] rounded-[32px] p-7 xl:p-8 text-[#4a3915] dark:text-[#2c220c] shadow-lg relative overflow-hidden flex flex-col mt-4">
-            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/30 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-white/40" />
+          {/* Subcard with Metrics - Glassmorphic Theme with Brand Yellow Accent */}
+          <div className="w-full floating-card border-l-4 border-l-brand-accent rounded-[32px] p-7 xl:p-8 text-text-primary shadow-lg relative overflow-hidden flex flex-col mt-4">
+            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-brand-accent/5 rounded-full blur-3xl pointer-events-none" />
             <div className="flex items-center justify-between mb-8 relative z-10">
-              <span className="text-sm font-bold font-body">Resumo do Projeto</span>
-              <span className="px-4 py-1.5 bg-black/5 rounded-full text-[10px] font-bold font-heading uppercase tracking-widest text-[#4a3915]/60">
+              <span className="text-sm font-bold font-body text-text-secondary">Resumo do Projeto</span>
+              <span className="px-4 py-1.5 bg-black/5 dark:bg-white/5 rounded-full text-[10px] font-bold font-heading uppercase tracking-widest text-text-secondary/80">
                 Estatística
               </span>
             </div>
             <div className="flex justify-between relative z-10 px-1">
               <div>
-                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight">{projectTasks.length}<span className="text-lg xl:text-xl opacity-60"></span></p>
-                <p className="text-[11px] xl:text-xs font-bold opacity-80 font-body uppercase tracking-wider">Tarefas</p>
+                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight text-text-primary">{projectTasks.length}</p>
+                <p className="text-[11px] xl:text-xs font-bold text-text-muted font-body uppercase tracking-wider">Tarefas</p>
               </div>
               <div>
-                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight">{completedTasks.length}<span className="text-lg xl:text-xl opacity-60"></span></p>
-                <p className="text-[11px] xl:text-xs font-bold opacity-80 font-body uppercase tracking-wider">Concluídas</p>
+                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight text-text-primary">{completedTasks.length}</p>
+                <p className="text-[11px] xl:text-xs font-bold text-text-muted font-body uppercase tracking-wider">Concluídas</p>
               </div>
               <div>
-                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight">{statusText}<span className="text-lg xl:text-xl opacity-60"></span></p>
-                <p className="text-[11px] xl:text-xs font-bold opacity-80 font-body uppercase tracking-wider">Status</p>
+                <p className="text-3xl xl:text-4xl font-black font-heading mb-1 tabular-nums flex items-baseline gap-0.5 tracking-tight text-text-primary">{statusText}</p>
+                <p className="text-[11px] xl:text-xs font-bold text-text-muted font-body uppercase tracking-wider">Status</p>
               </div>
             </div>
           </div>
@@ -280,15 +279,23 @@ export function DashboardClientView({ user, team, initialProjects, initialTasks 
                     </p>
                  </div>
                  <div className="flex items-center gap-2">
-                   {isOverdue && (
-                     <span className="px-3 py-1.5 bg-status-danger text-white rounded-full text-[10px] font-black font-body uppercase tracking-widest shadow-lg animate-pulse">
-                        Atrasada
-                     </span>
-                   )}
-                   {isHighPriority && !isOverdue && <span className="px-3 py-1.5 bg-terracotta text-white rounded-full text-[11px] font-bold font-body shadow-sm whitespace-nowrap">Alta Prioridade</span>}
-                   <span className={`px-3 py-1.5 rounded-full text-[11px] font-bold font-body tracking-wide whitespace-nowrap ${isMeeting ? 'bg-[#34A853]/15 text-[#21813A]' : 'bg-[#FFD166] text-[#4a3915]'}`}>
-                     {isMeeting ? 'Reunião' : 'Tarefa'}
-                   </span>
+                    {isOverdue && (
+                      <span className="px-2.5 py-1 bg-status-danger/15 text-status-danger border border-status-danger/20 rounded-full text-[10px] font-bold font-body uppercase tracking-wider animate-pulse">
+                         Atrasada
+                      </span>
+                    )}
+                    {isHighPriority && !isOverdue && (
+                      <span className="px-2.5 py-1 bg-brand-primary/15 text-brand-primary border border-brand-primary/20 rounded-full text-[10px] font-bold font-body uppercase tracking-wider whitespace-nowrap">
+                        Alta Prioridade
+                      </span>
+                    )}
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold font-body uppercase tracking-wider whitespace-nowrap border ${
+                      isMeeting 
+                        ? 'bg-[#34A853]/15 text-[#21813A] border-[#34A853]/20' 
+                        : 'bg-brand-accent/15 text-brand-accent dark:text-brand-accent border-brand-accent/20'
+                    }`}>
+                      {isMeeting ? 'Reunião' : 'Tarefa'}
+                    </span>
                  </div>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 border-t border-b border-sand-dark/20 py-4 relative z-10">

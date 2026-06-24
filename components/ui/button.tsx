@@ -9,7 +9,8 @@ const buttonVariants = cva(
     "group/button inline-flex shrink-0 items-center justify-center",
     "rounded-md border border-transparent bg-clip-padding",
     "text-sm font-bold whitespace-nowrap",
-    "transition-all duration-200 outline-none select-none",
+    "transition-all duration-300 ease-apple outline-none select-none",
+    "active:scale-[0.97]",
     "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
     "active:not-aria-[haspopup]:translate-y-px",
     "disabled:pointer-events-none disabled:opacity-50",
@@ -22,17 +23,17 @@ const buttonVariants = cva(
       variant: {
         /* Terracotta — primary energy, strong presence */
         default:
-          "bg-brand-primary text-text-inverse shadow-sm hover:bg-brand-primary-hover hover:-translate-y-0.5 hover:shadow-terracotta/30 hover:shadow-md",
+          "bg-brand-primary text-text-inverse shadow-xs hover:bg-brand-primary-hover hover:shadow-sm",
         primary:
-          "bg-brand-primary text-text-inverse shadow-sm hover:bg-brand-primary-hover hover:-translate-y-0.5 hover:shadow-terracotta/30 hover:shadow-md",
+          "bg-brand-primary text-text-inverse shadow-xs hover:bg-brand-primary-hover hover:shadow-sm",
 
         /* Sand/neutral — secondary, no strong presence */
         secondary:
-          "bg-surface border border-border text-text-primary shadow-sm hover:bg-surface-muted hover:-translate-y-0.5 hover:shadow-md",
+          "bg-surface border border-border text-text-primary shadow-xs hover:bg-surface-muted hover:shadow-sm",
 
         /* Deep Blue — immersive, trust */
         "deep-blue":
-          "bg-brand-deep-blue text-text-inverse shadow-sm hover:bg-brand-deep-blue-light hover:-translate-y-0.5 hover:shadow-deep-blue/30 hover:shadow-md",
+          "bg-brand-deep-blue text-text-inverse shadow-xs hover:bg-brand-deep-blue-light hover:shadow-sm",
 
         /* Ghost — no background, terracotta text */
         ghost:
@@ -40,7 +41,7 @@ const buttonVariants = cva(
 
         /* Outline — border only */
         outline:
-          "border border-border bg-transparent text-text-primary hover:bg-surface-muted hover:-translate-y-0.5",
+          "border border-border bg-transparent text-text-primary hover:bg-surface-muted",
 
         /* Danger */
         danger:
@@ -48,7 +49,7 @@ const buttonVariants = cva(
 
         /* Olive — secondary brand */
         olive:
-          "bg-brand-secondary text-text-inverse shadow-sm hover:bg-brand-secondary-light hover:-translate-y-0.5",
+          "bg-brand-secondary text-text-inverse shadow-xs hover:bg-brand-secondary-light",
 
         /* Editorial — styled accent */
         editorial:

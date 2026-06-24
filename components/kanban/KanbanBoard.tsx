@@ -64,7 +64,7 @@ export function KanbanBoard({ initialProjects }: KanbanBoardProps) {
                     {col.label}
                   </span>
                 </div>
-                <span className="text-xs font-bold text-text-muted bg-surface-muted rounded-full px-2 py-0.5">
+                <span className="text-[11px] font-bold text-text-muted bg-black/[0.04] dark:bg-white/[0.06] rounded-full px-2 py-0.5">
                   {colProjects.length}
                 </span>
               </div>
@@ -76,10 +76,10 @@ export function KanbanBoard({ initialProjects }: KanbanBoardProps) {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     className={`
-                      min-h-[200px] rounded-xl p-3 transition-colors duration-150
+                      min-h-[200px] rounded-2xl p-3 transition-all duration-300 ease-apple
                       ${snapshot.isDraggingOver
-                        ? 'bg-brand-primary/5 border-2 border-dashed border-brand-primary/30'
-                        : 'bg-surface-muted/40 border border-border/50'
+                        ? 'bg-brand-primary/[0.04] border-2 border-dashed border-brand-primary/30'
+                        : 'bg-black/[0.02] dark:bg-white/[0.01] border border-black/[0.03] dark:border-white/[0.04]'
                       }
                     `}
                   >

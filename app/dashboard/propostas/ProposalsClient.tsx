@@ -55,25 +55,25 @@ export function ProposalsClient({ initialProposals, clients }: { initialProposal
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center gap-4 bg-surface-muted/50 p-4 rounded-xl border border-border">
         <select
           value={selectedClientId}
           onChange={(e) => setSelectedClientId(e.target.value)}
-          className="flex h-10 w-full max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-10 w-full max-w-sm rounded-xl border border-border/50 bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
         >
           <option value="" disabled>Selecione o Cliente</option>
           {clients.map(client => (
             <option key={client.id} value={client.id}>{client.name}</option>
           ))}
         </select>
-        <Button onClick={handleCreate} disabled={isCreating || !selectedClientId} className="bg-brand-primary text-white">
+        <Button onClick={handleCreate} disabled={isCreating || !selectedClientId} className="bg-brand-primary text-white active:scale-[0.97] transition-all duration-300 ease-apple">
           <SlIcon name="plus" size={16} className="mr-2" />
           {isCreating ? 'Criando...' : 'Nova Proposta'}
         </Button>
       </div>
 
-      <div className="border border-border rounded-xl overflow-hidden bg-background shadow-sm">
+      <div className="apple-bezel"><div className="apple-bezel-inner overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-surface-muted/30">
@@ -92,7 +92,7 @@ export function ProposalsClient({ initialProposals, clients }: { initialProposal
               </TableRow>
             ) : (
               proposals.map((proposal) => (
-                <TableRow key={proposal.id} className="group hover:bg-surface-muted/20">
+                <TableRow key={proposal.id} className="group hover:bg-surface-muted/20 transition-all duration-300 ease-apple">
                   <TableCell className="font-medium">{proposal.client_name}</TableCell>
                   <TableCell>
                     <StatusBadge label={proposal.status} variant={proposal.status === 'draft' ? 'warning' : 'success'} />
@@ -101,7 +101,7 @@ export function ProposalsClient({ initialProposals, clients }: { initialProposal
                     {format(new Date(proposal.created_at), "d 'de' MMMM, yyyy", { locale: ptBR })}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 ease-apple">
                       <Button variant="outline" size="sm" asChild>
                         <Link href={`/dashboard/propostas/${proposal.id}`}>
                           <SlIcon name="edit" size={14} className="mr-2" />
@@ -121,7 +121,7 @@ export function ProposalsClient({ initialProposals, clients }: { initialProposal
             )}
           </TableBody>
         </Table>
-      </div>
+      </div></div>
     </div>
   )
 }

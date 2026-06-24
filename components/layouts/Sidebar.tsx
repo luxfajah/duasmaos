@@ -89,26 +89,6 @@ export function Sidebar({ className }: SidebarProps) {
         'overflow-hidden'
       )}>
 
-        {/* ── Organic Brand Decorations ── */}
-        {/* Flowing wave at top */}
-        <div className="pointer-events-none absolute top-0 right-0 w-full h-40 overflow-hidden opacity-[0.06] dark:opacity-[0.06] flex text-text-primary">
-          <svg width="264" height="160" viewBox="0 0 264 160" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M-20 80 C40 40 80 120 140 80 C200 40 220 100 284 60"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"
-              strokeDasharray="200" strokeDashoffset="0"
-            />
-            <path
-              d="M-20 100 C40 60 80 140 140 100 C200 60 220 120 284 80"
-              stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5"
-            />
-          </svg>
-        </div>
-        {/* Organic circle blob — bottom */}
-        <div className="pointer-events-none absolute -bottom-20 -right-20 w-56 h-56 rounded-full opacity-[0.04]"
-          style={{ background: 'hsl(13 55% 50%)' }}
-        />
-
         {/* ── Logo ── */}
         <div className="mb-5 px-4 flex items-center justify-start h-8 shrink-0 relative">
           <Link href="/dashboard" className="flex items-center w-full overflow-hidden whitespace-nowrap">
@@ -137,22 +117,24 @@ export function Sidebar({ className }: SidebarProps) {
 
         {/* ── Botão Novo Projeto — Terracotta ── */}
         <div className="px-3 mb-6">
-          <button className={cn(
-            'bg-brand-primary text-[hsl(35_35%_95%)] font-bold font-heading',
-            'flex items-center rounded-md',
-            'w-12 h-10 group-hover:w-full group-hover:h-10',
-            'transition-all duration-300 ease-in-out',
-            'shadow-terracotta/30 shadow-md hover:opacity-90 hover:-translate-y-0.5 overflow-hidden',
-          )}>
-            {/* Ícone — fixo, sempre visível */}
-            <span className="flex items-center justify-center w-12 h-10 shrink-0">
-              <SlIcon name="plus" size={20} />
-            </span>
-            {/* Texto — só aparece quando aberto */}
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-150 text-sm whitespace-nowrap pr-4 -ml-1">
-              Novo Projeto
-            </span>
-          </button>
+          <Link href="/dashboard/projects?new=true" className="block">
+            <button className={cn(
+              'bg-brand-primary text-[hsl(35_35%_95%)] font-semibold font-sans w-full',
+              'flex items-center rounded-xl',
+              'w-12 h-10 group-hover:w-full group-hover:h-10',
+              'transition-all duration-300 ease-in-out',
+              'shadow-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] overflow-hidden',
+            )}>
+              {/* Ícone — fixo, sempre visível */}
+              <span className="flex items-center justify-center w-12 h-10 shrink-0">
+                <SlIcon name="plus" size={18} />
+              </span>
+              {/* Texto — só aparece quando aberto */}
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-150 text-sm whitespace-nowrap pr-4 -ml-1 font-heading">
+                Novo Projeto
+              </span>
+            </button>
+          </Link>
         </div>
 
         {/* ── Navegação ── */}
@@ -160,7 +142,7 @@ export function Sidebar({ className }: SidebarProps) {
           {navGroups.map((group) => (
             <div key={group.label}>
               {/* Group label — only visible on hover */}
-              <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted/60 mb-2 px-2 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-body">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted/65 mb-2 px-3 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-body">
                 {group.label}
               </p>
               <ul className="space-y-0.5">
@@ -172,23 +154,19 @@ export function Sidebar({ className }: SidebarProps) {
                         href={item.href}
                         title={item.label}
                         className={cn(
-                          'flex items-center rounded-md p-2 transition-all duration-200 relative overflow-hidden group/item',
+                          'flex items-center rounded-lg p-2 mx-1 transition-all duration-150 relative group/item',
                           active
-                            ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/18 dark:text-white'
-                            : 'text-text-muted hover:bg-surface-muted hover:text-text-primary'
+                            ? 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary/20 dark:text-brand-primary font-semibold'
+                            : 'text-text-secondary hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-text-primary'
                         )}
                       >
-                        {/* Active indicator — Terracotta bar */}
-                        {active && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-brand-primary rounded-r-full shadow-[0_0_10px_hsl(13_55%_50%/0.7)]" />
-                        )}
-                        {/* Active glow fill */}
-                        {active && (
-                          <span className="absolute inset-0 bg-gradient-to-r from-brand-primary/5 dark:from-brand-primary/15 to-transparent rounded-md" />
-                        )}
                         {/* Icon */}
-                        <div className="flex items-center justify-center w-8 h-8 shrink-0 relative z-10 transition-transform duration-200 group-hover/item:scale-110">
-                          <SlIcon name={item.icon} size={22} />
+                        <div className="flex items-center justify-center w-8 h-8 shrink-0 relative z-10 transition-transform duration-200 group-hover/item:scale-105">
+                          <SlIcon 
+                            name={item.icon} 
+                            size={20} 
+                            className={cn("transition-colors duration-150", active ? "text-brand-primary" : "text-text-secondary")} 
+                          />
                         </div>
                         {/* Label */}
                         <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 relative z-10">

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { V2Project, ProjectStatusV2, WorkflowTypeV2, Priority, ProductTemplate } from '@/types/database'
-import { updateProject } from '@/app/dashboard/projects/actions'
+import { updateProject, createProjectV3 } from '@/app/dashboard/projects/actions'
 import { getProductTemplates } from '@/app/dashboard/products/actions'
 import { useEffect } from 'react'
 import { Calendar, DollarSign, Layers, Users, Info, Settings, RefreshCw, FileText, AlertCircle } from 'lucide-react'
@@ -117,7 +117,41 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    // Submit is disabled ("botão criar não funcional")
+    setError(null)
+
+    startTransition(async () => {
+      try {
+        if (isEdit && project) {
+          await updateProject(project.id, {
+            name: form.name,
+            status: form.status,
+            deadline: form.deadline || null,
+          })
+        } else {
+          if (!form.name || !form.client_id || !form.template_id) {
+            setError('Por favor, preencha todos os campos obrigatórios (*).')
+            return
+          }
+
+          await createProjectV3({
+            name: form.name,
+            client_id: form.client_id,
+            template_id: form.template_id,
+            project_type: form.project_type,
+            amount: form.amount,
+            payment_type: form.payment_type as any,
+            billing_day: form.billing_day,
+            auto_restart: form.auto_restart,
+            start_date: form.start_date,
+            deadline: form.deadline || undefined,
+            owner_id: form.owner_id || undefined,
+          })
+        }
+        onClose()
+      } catch (err: any) {
+        setError(err.message || 'Ocorreu um erro ao salvar o projeto.')
+      }
+    })
   }
 
   return (
@@ -368,12 +402,11 @@ export function ProjectModal({ project, clients, team, onClose, templateId }: Pr
 
           <DialogFooter className="p-6 border-t border-border bg-surface-muted/20">
             {/* Click closes the modal, ensuring return/cancel works */}
-            <Button type="button" variant="ghost" onClick={onClose} className="h-11 px-6 rounded-xl font-bold">
+            <Button type="button" variant="ghost" onClick={onClose} className="h-11 px-6 rounded-xl font-bold" disabled={isPending}>
               Cancelar
             </Button>
-            {/* Disabled creation button ("criar não funcional") */}
-            <Button type="button" disabled className="h-11 px-8 rounded-xl font-bold opacity-50 cursor-not-allowed">
-              Criar Projeto (Desabilitado)
+            <Button type="submit" className="h-11 px-8 rounded-xl font-bold" disabled={isPending}>
+              {isPending ? 'Salvando...' : isEdit ? 'Salvar Alterações' : 'Criar Projeto'}
             </Button>
           </DialogFooter>
         </form>

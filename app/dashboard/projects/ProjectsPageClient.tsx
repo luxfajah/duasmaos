@@ -38,11 +38,13 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
 
+  const newParam = searchParams.get('new')
+
   useEffect(() => {
-    if (templateIdParam) {
+    if (templateIdParam || newParam === 'true') {
       setShowModal(true)
     }
-  }, [templateIdParam])
+  }, [templateIdParam, newParam])
 
   // Operational Metrics calculation
   const totalActive = initialProjects.filter(p => p.status === 'active' || p.status === 'paused').length
@@ -88,7 +90,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
     <>
       <DashboardAlerts projects={initialProjects} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <MetricCard 
           label="Projetos Ativos" 
           value={totalActive} 
@@ -117,22 +119,22 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
 
       <OperationalStats projects={initialProjects} team={team} />
 
-      <div className="flex flex-col lg:flex-row gap-3 mb-6">
+      <div className="flex flex-col lg:flex-row gap-4 mb-8">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome ou cliente..."
-            className="pl-9 h-11"
+            className="pl-10 h-11 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)]"
             id="projects-search"
           />
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-4">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 px-4 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-all shadow-sm"
+            className="h-11 px-4 text-sm rounded-xl border border-border/50 bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
             id="projects-status-filter"
             aria-label="Filtrar por status"
           >
@@ -143,7 +145,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="h-11 px-4 text-sm rounded-xl border border-border bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 transition-all shadow-sm"
+            className="h-11 px-4 text-sm rounded-xl border border-border/50 bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
             id="projects-type-filter"
             aria-label="Filtrar por tipo"
           >
@@ -151,7 +153,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
             <option value="one_time">Único</option>
             <option value="recurring">Recorrente</option>
           </select>
-          <Button onClick={() => setShowModal(true)} className="h-11 px-6 flex items-center gap-2 rounded-xl shadow-brand/20 hover:shadow-brand/30 transition-all">
+          <Button onClick={() => setShowModal(true)} className="h-11 px-6 flex items-center gap-2 rounded-xl shadow-brand/20 hover:shadow-brand/30 active:scale-[0.97] transition-all duration-300 ease-apple">
             <Plus size={18} />
             Novo Projeto
           </Button>
@@ -159,14 +161,14 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
       </div>
 
       {filtered.length !== initialProjects.length && (
-        <p className="text-xs text-text-muted mb-4">
+        <p className="text-xs text-text-muted mb-5">
           Mostrando {filtered.length} de {initialProjects.length} projetos
         </p>
       )}
 
-      <div className="bg-surface border border-border rounded-xl overflow-hidden mt-4">
+      <div className="apple-bezel mt-5"><div className="apple-bezel-inner overflow-hidden">
         <ProjectsTable projects={filtered} clients={clients} team={team} />
-      </div>
+      </div></div>
 
       {showModal && (
         <ProjectModal
