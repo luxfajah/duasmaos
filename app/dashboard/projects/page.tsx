@@ -11,11 +11,14 @@ export default async function ProjectsPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: userProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const currentUserRole = userProfile?.role || 'client'
+
   // Get team members (non-client profiles)
   const { data: teamData } = await supabase
     .from('profiles')
     .select('id, full_name')
-    .in('role', ['admin', 'gestor', 'writer', 'designer'])
+    .in('role', ['admin', 'gestor', 'writer', 'designer', 'social_seller', 'ceo', 'social_media', 'webdesigner'])
     .order('full_name')
 
   const [projects, clients] = await Promise.all([
@@ -36,6 +39,7 @@ export default async function ProjectsPage() {
           initialProjects={projects}
           clients={clients.map((c) => ({ id: c.id, name: c.name }))}
           team={team}
+          currentUserRole={currentUserRole}
         />
       </Suspense>
     </div>

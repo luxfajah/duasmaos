@@ -9,6 +9,13 @@ export default async function NewProjectPage({ searchParams }: { searchParams?: 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: userProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const role = userProfile?.role || 'client'
+
+  if (!['admin', 'gestor', 'social_seller', 'ceo'].includes(role)) {
+    redirect('/dashboard/projects')
+  }
+
   const { data: teamData } = await supabase
     .from('profiles')
     .select('id, full_name')

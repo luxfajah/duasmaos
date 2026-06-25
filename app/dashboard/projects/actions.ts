@@ -152,6 +152,13 @@ export async function createProjectV3(data: {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'Usuário não autenticado' }
 
+    const { data: userProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const role = userProfile?.role || 'client'
+
+    if (!['admin', 'gestor', 'social_seller', 'ceo'].includes(role)) {
+      return { success: false, error: 'Você não tem permissão para criar projetos.' }
+    }
+
     // 0. Ensure a workspace exists
     let { data: defaultWorkspace } = await supabase.from('v2_workspaces').select('id').limit(1).single()
     if (!defaultWorkspace) {
@@ -160,11 +167,11 @@ export async function createProjectV3(data: {
         owner_id: user.id
       }).select().single()
       
-      if (wsError) return { success: false, error: `Erro ao inicializar workspace: ${wsError.message}` }
+      if (wsError || !newWorkspace) return { success: false, error: `Erro ao inicializar workspace: ${wsError?.message || 'Unknown Error'}` }
       defaultWorkspace = newWorkspace
     }
 
-    const workspaceId = defaultWorkspace.id
+    const workspaceId = defaultWorkspace!.id
   
     // 1. Fetch template details to get type
     const { data: template } = await supabase

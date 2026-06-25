@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'gestor' | 'writer' | 'designer' | 'client';
+export type UserRole = 'admin' | 'gestor' | 'writer' | 'designer' | 'client' | 'social_seller' | 'ceo' | 'social_media' | 'webdesigner';
 
 // ── Client Approval (Portal) ────────────────────────────────────────────────
 export type ClientApprovalStatus = 'pending' | 'approved' | 'rejected' | 'revision_requested';

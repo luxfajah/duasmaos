@@ -20,6 +20,7 @@ interface ProjectsPageClientProps {
   initialProjects: ProjectDTO[]
   clients: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
+  currentUserRole?: string
 }
 
 const STATUS_FILTER_OPTIONS: { value: string; label: string }[] = [
@@ -170,13 +171,16 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
             <option value="one_time">Único</option>
             <option value="recurring">Recorrente</option>
           </select>
-          <Button 
-            onClick={() => router.push('/dashboard/projects/new')}
-            className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
-          >
-            <Plus size={16} />
-            Novo Projeto
-          </Button>
+          
+          {['admin', 'gestor', 'social_seller', 'ceo'].includes(currentUserRole || '') && (
+            <Button 
+              onClick={() => router.push('/dashboard/projects/new')}
+              className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
+            >
+              <Plus size={16} />
+              Novo Projeto
+            </Button>
+          )}
         </div>
       </div>
 
