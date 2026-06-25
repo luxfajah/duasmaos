@@ -6,9 +6,8 @@ import { TasksTable } from '@/components/tasks/TasksTable'
 import { TaskKanban } from '@/components/tasks/TaskKanban'
 import { TaskEditModal } from '@/components/tasks/TaskEditModal'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useRouter } from 'next/navigation'
-import { Plus, Search, LayoutGrid, List } from 'lucide-react'
+import { Plus, LayoutGrid, List } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 import { MetricCard } from '@/components/dashboard/MetricCard'
@@ -24,7 +23,6 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [editingTask, setEditingTask] = useState<TaskWithRelations | null>(null)
-  const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [visualization, setVisualization] = useState<'kanban' | 'list'>('kanban')
 
@@ -46,11 +44,8 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
   })
 
   const filtered = tasksWithOverdue.filter((t) => {
-    const matchSearch =
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      (t.projects?.name ?? '').toLowerCase().includes(search.toLowerCase())
     const matchStatus = statusFilter === 'all' || t.status === statusFilter
-    return matchSearch && matchStatus
+    return matchStatus
   })
 
   const getStatusCount = (status: string) => {
@@ -105,34 +100,10 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
       </div>
 
       {/* ── Controls (Segmented Controls) ── */}
-      <div className="flex flex-col gap-4 mb-8">
-        {/* Top row: Search + Button */}
-        <div className="flex items-center justify-between gap-4 w-full">
-          <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por tarefa ou projeto..."
-            className="pl-10 h-10 w-full rounded-full transition-all duration-200 glass-pill hover:bg-white/40 dark:hover:bg-black/40 focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none"
-            id="tasks-search"
-          />
-        </div>
+      <div className="flex items-center gap-4 mb-8 w-full overflow-x-auto hide-scrollbar pb-2">
         
-        <Button 
-          onClick={() => setShowModal(true)} 
-          className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
-        >
-          <Plus size={16} />
-          Nova Tarefa
-        </Button>
-      </div>
-
-      {/* Bottom row: Filters */}
-      <div className="flex flex-wrap items-center gap-4 w-full overflow-x-auto hide-scrollbar pb-2">
-          
-          {/* Status Filter (Apple Segmented Control) */}
-          <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
+        {/* Status Filter (Apple Segmented Control) */}
+        <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
             {STATUS_FILTER_OPTIONS.map((opt) => {
               const count = getStatusCount(opt.value)
               const isActive = statusFilter === opt.value
@@ -173,7 +144,17 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
               </button>
             ))}
           </div>
-        </div>
+
+          {/* New Task Button */}
+          <div className="ml-auto shrink-0 pl-4">
+            <Button 
+              onClick={() => setShowModal(true)} 
+              className="h-9 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple"
+            >
+              <Plus size={16} />
+              Nova Tarefa
+            </Button>
+          </div>
       </div>
 
       {/* ── Content View ── */}
