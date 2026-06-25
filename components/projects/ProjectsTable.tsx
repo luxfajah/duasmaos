@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { updateProjectStatus, deleteProject, ProjectDTO } from '@/app/dashboard/projects/actions'
-import { ProjectModal } from './ProjectModal'
 import {
   Table,
   TableBody,
@@ -36,12 +35,10 @@ const priorityMap: Record<string, string> = {
 
 interface ProjectsTableProps {
   projects: ProjectDTO[]
-  clients: { id: string; name: string }[]
-  team: { id: string; full_name: string }[]
+  onEdit: (project: ProjectDTO) => void
 }
 
-export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
-  const [editingProject, setEditingProject] = useState<ProjectDTO | null>(null)
+export function ProjectsTable({ projects, onEdit }: ProjectsTableProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   async function handleDelete(id: string) {
@@ -169,9 +166,10 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
                     </Link>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => setEditingProject(project)}
+                      size="icon"
+                      onClick={() => onEdit(project)}
+                      className="text-text-muted hover:text-brand-primary"
+                      title="Editar"
                     >
                       <Pencil size={14} />
                     </Button>
@@ -191,15 +189,6 @@ export function ProjectsTable({ projects, clients, team }: ProjectsTableProps) {
           })}
         </TableBody>
       </Table>
-
-      {editingProject && (
-        <ProjectModal
-          project={editingProject}
-          clients={clients}
-          team={team}
-          onClose={() => setEditingProject(null)}
-        />
-      )}
     </>
   )
 }

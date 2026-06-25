@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { V2Project, ProjectStatusV2 } from '@/types/database'
 import { ProjectsTable } from '@/components/projects/ProjectsTable'
-import { ProjectModal } from '@/components/projects/ProjectModal'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -32,20 +32,21 @@ const STATUS_FILTER_OPTIONS: { value: string; label: string }[] = [
 
 export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsPageClientProps) {
   const searchParams = useSearchParams()
-  const templateIdParam = searchParams.get('templateId')
-
-  const [showModal, setShowModal] = useState(false)
+  const router = useRouter()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [typeFilter, setTypeFilter] = useState('all')
 
   const newParam = searchParams.get('new')
+  const templateIdParam = searchParams.get('templateId')
 
   useEffect(() => {
-    if (templateIdParam || newParam === 'true') {
-      setShowModal(true)
+    if (newParam === 'true') {
+      router.push('/dashboard/projects/new')
+    } else if (templateIdParam) {
+      router.push(`/dashboard/projects/new?templateId=${templateIdParam}`)
     }
-  }, [templateIdParam, newParam])
+  }, [newParam, templateIdParam, router])
 
   // Operational Metrics calculation
   const totalActive = initialProjects.filter(p => p.status === 'active' || p.status === 'paused').length
@@ -169,8 +170,11 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
             <option value="one_time">Único</option>
             <option value="recurring">Recorrente</option>
           </select>
-          <Button onClick={() => setShowModal(true)} className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple">
-            <Plus size={18} />
+          <Button 
+            onClick={() => router.push('/dashboard/projects/new')}
+            className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
+          >
+            <Plus size={16} />
             Novo Projeto
           </Button>
         </div>
@@ -182,18 +186,12 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
         </p>
       )}
 
-      <div className="glass-card-super pb-4 mt-5">
-        <ProjectsTable projects={filtered} clients={clients} team={team} />
-      </div>
-
-      {showModal && (
-        <ProjectModal
-          clients={clients}
-          team={team}
-          onClose={() => setShowModal(false)}
-          templateId={templateIdParam || undefined}
+      <div className="glass-card-super pb-4">
+        <ProjectsTable
+          projects={filtered}
+          onEdit={(project) => router.push(`/dashboard/projects/${project.id}/edit`)}
         />
-      )}
+      </div>
     </>
   )
 }
