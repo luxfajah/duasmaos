@@ -108,8 +108,10 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
       </div>
 
       {/* ── Controls (Segmented Controls) ── */}
-      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-8">
-        <div className="relative flex-1 w-full lg:w-auto">
+      <div className="flex flex-col gap-4 mb-8">
+        {/* Top row: Search + Button */}
+        <div className="flex items-center justify-between gap-4 w-full">
+          <div className="relative flex-1 max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <Input
             value={search}
@@ -120,7 +122,17 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
           />
         </div>
         
-        <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto hide-scrollbar pb-2 lg:pb-0">
+        <Button 
+          onClick={() => setShowModal(true)} 
+          className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
+        >
+          <Plus size={16} />
+          Nova Tarefa
+        </Button>
+      </div>
+
+      {/* Bottom row: Filters */}
+      <div className="flex flex-wrap items-center gap-4 w-full overflow-x-auto hide-scrollbar pb-2">
           
           {/* Status Filter (Apple Segmented Control) */}
           <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
@@ -191,14 +203,6 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
               </button>
             ))}
           </div>
-
-          <Button 
-            onClick={() => setShowModal(true)} 
-            className="h-10 px-6 ml-auto rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
-          >
-            <Plus size={16} />
-            Nova Tarefa
-          </Button>
         </div>
       </div>
 

@@ -90,14 +90,21 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
             key={col.id}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDrop(e, col.id)}
-            className="flex flex-col rounded-xl glass-panel min-h-[300px]"
+            className="flex flex-col rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 min-h-[300px] overflow-hidden transition-colors"
           >
             {/* Column header */}
-            <div className={cn('flex items-center gap-2 px-3 py-2.5 border-b border-border rounded-t-xl border-t-2', col.color)}>
-              <p className="text-xs font-bold uppercase tracking-widest text-text-secondary flex-1">
+            <div className="flex items-center gap-2 px-4 py-3 bg-white/40 dark:bg-black/20 border-b border-black/5 dark:border-white/5">
+              <div className={cn("w-2 h-2 rounded-full", 
+                col.id === 'locked' ? 'bg-sand' :
+                col.id === 'pending' ? 'bg-text-muted' :
+                col.id === 'in_progress' ? 'bg-status-info' :
+                col.id === 'in_review' ? 'bg-status-warning' :
+                'bg-status-success'
+              )} />
+              <p className="text-xs font-bold uppercase tracking-widest text-text-primary flex-1">
                 {col.label}
               </p>
-              <span className="text-xs font-bold text-text-muted bg-surface-muted rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+              <span className="text-[10px] font-bold text-text-muted bg-black/5 dark:bg-white/10 rounded-full px-2 py-0.5 text-center">
                 {colTasks.length}
               </span>
             </div>
@@ -144,11 +151,11 @@ function TaskCard({
       onClick={isLocked ? () => alert('Aguardando conclusão da etapa anterior da qual esta tarefa depende.') : onClick}
       title={isLocked ? 'Tarefa bloqueada. Aguardando conclusão da etapa anterior.' : undefined}
       className={cn(
-        'bg-background border border-border rounded-lg p-3 space-y-2 transition-all duration-150 relative overflow-hidden',
-        !isLocked && 'cursor-grab active:cursor-grabbing hover:border-brand-primary/40 hover:shadow-sm',
-        !isLocked && onClick && 'hover:bg-sand-light/10',
-        isLocked && 'cursor-not-allowed opacity-60 border-dashed bg-surface-muted/30 grayscale-[50%]',
-        isOverdue && !isLocked && 'border-status-danger/40 bg-status-danger/5 text-status-danger',
+        'bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-xl p-3.5 space-y-2.5 transition-all duration-300 relative overflow-hidden shadow-[0_2px_12px_-4px_rgba(0,0,0,0.05)] dark:shadow-none',
+        !isLocked && 'cursor-grab active:cursor-grabbing hover:border-brand-primary/30 hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.1)] hover:-translate-y-0.5',
+        !isLocked && onClick && 'hover:bg-brand-primary/[0.02]',
+        isLocked && 'cursor-not-allowed opacity-60 border-dashed bg-black/5 dark:bg-white/5 grayscale-[30%]',
+        isOverdue && !isLocked && 'border-status-danger/30 bg-status-danger/[0.03] text-status-danger shadow-[0_4px_12px_-4px_rgba(255,0,0,0.1)]',
       )}
     >
       {/* Priority + grip */}
