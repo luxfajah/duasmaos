@@ -11,6 +11,11 @@ import { useRouter } from 'next/navigation'
 import { Plus, Search, LayoutGrid, List } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+import { TasksByProjectView } from '@/components/tasks/TasksByProjectView'
+import { TaskCalendar } from '@/components/tasks/TaskCalendar'
+import { MetricCard } from '@/components/dashboard/MetricCard'
+import { Briefcase, CheckCircle, AlertTriangle, ListTodo } from 'lucide-react'
+
 interface TasksPageClientProps {
   initialTasks: TaskWithRelations[]
   projects: { id: string; name: string }[]
@@ -23,6 +28,18 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
   const [editingTask, setEditingTask] = useState<TaskWithRelations | null>(null)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [viewMode, setViewMode] = useState<'general' | 'project'>('general')
+  const [visualization, setVisualization] = useState<'kanban' | 'list' | 'calendar'>('kanban')
+
+  // Status Filter Options
+  const STATUS_FILTER_OPTIONS = [
+    { value: 'all', label: 'Todas' },
+    { value: 'pending', label: 'Pendentes' },
+    { value: 'in_progress', label: 'Em Andamento' },
+    { value: 'in_review', label: 'Em Revisão' },
+    { value: 'approved', label: 'Aprovadas' },
+    { value: 'done', label: 'Concluídas' },
+  ]
 
   // Auto-mark overdue: tasks past due_date that are not done/locked
   const now = new Date()
@@ -39,67 +56,181 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
     return matchSearch && matchStatus
   })
 
+  const getStatusCount = (status: string) => {
+    if (status === 'all') return tasksWithOverdue.length
+    return tasksWithOverdue.filter(t => t.status === status).length
+  }
+
+  // Metrics calculation
+  const totalTasks = initialTasks.length
+  const inProgressTasks = initialTasks.filter(t => t.status === 'in_progress' || t.status === 'in_review').length
+  const completedThisMonth = initialTasks.filter(t => {
+    if (t.status !== 'done' && t.status !== 'approved') return false
+    // We don't have a reliable completed_at on TaskWithRelations by default, 
+    // so we approximate or just show absolute done count.
+    return true
+  }).length
+  const delayedTasks = tasksWithOverdue.filter(t => t._isOverdue).length
+
   return (
     <>
-      {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-        <div className="relative flex-1">
+      {/* ── Bento Grid Metrics ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <MetricCard 
+          label="Total de Tarefas" 
+          value={totalTasks} 
+          icon={ListTodo} 
+          description="Todas registradas"
+          accent="default"
+        />
+        <MetricCard 
+          label="Em Andamento" 
+          value={inProgressTasks} 
+          icon={Briefcase} 
+          description="Foco atual da equipe"
+          accent="info"
+        />
+        <MetricCard 
+          label="Concluídas" 
+          value={completedThisMonth} 
+          icon={CheckCircle} 
+          description="Tarefas finalizadas"
+          accent="success"
+        />
+        <MetricCard 
+          label="Atrasadas" 
+          value={delayedTasks} 
+          icon={AlertTriangle} 
+          description="Ação imediata necessária"
+          accent={delayedTasks > 0 ? "danger" : "default"}
+          featured={delayedTasks > 0}
+        />
+      </div>
+
+      {/* ── Controls (Segmented Controls) ── */}
+      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-8">
+        <div className="relative flex-1 w-full lg:w-auto">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por tarefa ou projeto..."
-              className="pl-10 h-10 w-full rounded-full transition-all duration-200 glass-pill hover:bg-white/40 dark:hover:bg-black/40 focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none"
-              id="tasks-search"
-            />
-        </div>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 px-4 glass-pill rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
-            id="tasks-status-filter"
-          aria-label="Filtrar por status"
-        >
-          <option value="all">Todos os status</option>
-          <option value="pending">Pendente</option>
-          <option value="in_progress">Em progresso</option>
-          <option value="in_review">Revisão</option>
-          <option value="approved">Aprovado</option>
-          <option value="done">Concluído</option>
-          <option value="blocked">Pausado</option>
-        </select>
-        <Button 
-          onClick={() => setShowModal(true)} 
-          className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 w-full sm:w-auto active:scale-[0.97] transition-all duration-300 ease-apple"
-        >
-          <Plus size={16} />
-          Nova Tarefa
-        </Button>
-      </div>
-
-      {/* Kanban view — always visible above the table */}
-      <div className="mt-6">
-        <div className="flex items-center gap-2 mb-4">
-          <LayoutGrid size={16} className="text-brand-primary" />
-          <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Visão Kanban</h3>
-          <span className="text-xs text-text-muted">· Arraste para mudar status</span>
-        </div>
-        <TaskKanban tasks={filtered as any} />
-      </div>
-
-      {/* Table view */}
-      <div className="mt-8">
-        <div className="flex items-center gap-2 mb-4">
-          <List size={16} className="text-brand-primary" />
-          <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Lista Completa</h3>
-          <span className="text-xs font-medium text-text-muted bg-surface-muted px-2 py-0.5 rounded-full">{filtered.length}</span>
-        </div>
-        <div className="glass-card-super pb-4">
-          <TasksTable
-            tasks={filtered}
-            onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por tarefa ou projeto..."
+            className="pl-10 h-10 w-full rounded-full transition-all duration-200 glass-pill hover:bg-white/40 dark:hover:bg-black/40 focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none"
+            id="tasks-search"
           />
         </div>
+        
+        <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto overflow-x-auto hide-scrollbar pb-2 lg:pb-0">
+          
+          {/* Status Filter (Apple Segmented Control) */}
+          <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
+            {STATUS_FILTER_OPTIONS.map((opt) => {
+              const count = getStatusCount(opt.value)
+              const isActive = statusFilter === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setStatusFilter(opt.value)}
+                  className={cn(
+                    'flex items-center justify-center px-3 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
+                    isActive 
+                      ? 'bg-white dark:bg-white/10 text-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
+                      : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
+                  )}
+                >
+                  {opt.label} <span className="ml-1 opacity-70">({count})</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Grouping View (Geral / Por Projeto) */}
+          <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
+            <button
+              onClick={() => setViewMode('general')}
+              className={cn(
+                'px-4 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
+                viewMode === 'general'
+                  ? 'bg-white dark:bg-white/10 text-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
+                  : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
+              )}
+            >
+              Visão Geral
+            </button>
+            <button
+              onClick={() => setViewMode('project')}
+              className={cn(
+                'px-4 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
+                viewMode === 'project'
+                  ? 'bg-white dark:bg-white/10 text-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
+                  : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
+              )}
+            >
+              Por Projeto
+            </button>
+          </div>
+
+          {/* Visualization Options (Kanban / Lista / Calendário) */}
+          <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
+            {[
+              { id: 'kanban', label: 'Kanban' },
+              { id: 'list', label: 'Lista' },
+              { id: 'calendar', label: 'Calendário' },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => setVisualization(opt.id as any)}
+                className={cn(
+                  'px-4 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
+                  visualization === opt.id
+                    ? 'bg-white dark:bg-white/10 text-brand-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
+                    : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          <Button 
+            onClick={() => setShowModal(true)} 
+            className="h-10 px-6 ml-auto rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple shrink-0"
+          >
+            <Plus size={16} />
+            Nova Tarefa
+          </Button>
+        </div>
+      </div>
+
+      {/* ── Content View ── */}
+      <div className="mt-4">
+        {viewMode === 'general' ? (
+          <>
+            {visualization === 'kanban' && (
+              <TaskKanban tasks={filtered as any} />
+            )}
+            {visualization === 'list' && (
+              <div className="glass-card-super pb-4">
+                <TasksTable
+                  tasks={filtered}
+                  onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}
+                />
+              </div>
+            )}
+            {visualization === 'calendar' && (
+              <TaskCalendar 
+                tasks={filtered} 
+                onTaskClick={(task) => router.push(`/dashboard/tasks/${task.id}`)} 
+              />
+            )}
+          </>
+        ) : (
+          <TasksByProjectView 
+            tasks={filtered} 
+            viewType={visualization} 
+            onEditTask={(task) => router.push(`/dashboard/tasks/${task.id}`)} 
+          />
+        )}
       </div>
 
       {(showModal || editingTask) && (
