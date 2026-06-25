@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Client, ClientStatus, Profile, ClientAddress } from '@/types/database'
 import { createClient_, updateClient } from '@/app/dashboard/clients/actions'
 import { Button } from '@/components/ui/button'
@@ -38,7 +39,12 @@ export function ClientForm({ client }: ClientFormProps) {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [isSearchingCep, setIsSearchingCep] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [mounted, setMounted] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const [form, setForm] = useState({
     type: client?.type ?? 'pj',
@@ -521,23 +527,24 @@ export function ClientForm({ client }: ClientFormProps) {
         </div>
       </div>
 
-      {/* ── Floating Top Header ── */}
-      <div className="fixed top-0 left-0 right-0 p-4 lg:p-6 z-50 pointer-events-none flex justify-center">
-        <div className="pointer-events-auto flex items-center justify-between glass-pill px-4 py-2.5 rounded-full shadow-lg border border-black/[0.04] dark:border-white/[0.08] min-w-[280px]">
+      {/* ── Dynamic Top Navbar Title ── */}
+      {mounted && document.getElementById('top-bar-center') && createPortal(
+        <div className="flex items-center gap-2 lg:gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => router.back()} 
-            className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary"
+            className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5"
           >
             <ChevronLeft size={18} />
           </Button>
-          <h1 className="text-xs font-bold tracking-widest uppercase text-text-primary text-center">
+          <h1 className="text-[13px] font-bold tracking-widest uppercase text-text-primary text-center">
             {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
           </h1>
           <div className="w-8" />
-        </div>
-      </div>
+        </div>,
+        document.getElementById('top-bar-center')!
+      )}
 
       {/* ── Floating Action Bar ── */}
       <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none flex justify-center">
