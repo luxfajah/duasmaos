@@ -14,14 +14,14 @@ interface EditorialHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function EditorialHeader({ title, subtitle, context, action, className, ...props }: EditorialHeaderProps) {
   return (
-    <header className={cn("flex flex-col gap-4 apple-divider pb-10 sm:pb-12 mb-8 md:flex-row md:items-end justify-between", className)} {...props}>
-      <div className="space-y-3 max-w-2xl">
-        {context && <span className="text-sm font-medium tracking-widest uppercase text-brand-secondary">{context}</span>}
-        <h1 className="font-serif text-4xl sm:text-5xl font-medium tracking-tight text-text-primary leading-[1.1]">{title}</h1>
-        {subtitle && <p className="text-lg text-text-secondary/80 leading-relaxed">{subtitle}</p>}
+    <header className={cn("flex flex-col gap-3 md:flex-row md:items-end justify-between mb-8", className)} {...props}>
+      <div className="space-y-1 max-w-2xl">
+        {context && <span className="text-[12px] font-semibold tracking-widest uppercase text-brand-primary">{context}</span>}
+        <h1 className="font-sans text-3xl sm:text-[34px] font-bold tracking-tight text-text-primary leading-tight">{title}</h1>
+        {subtitle && <p className="text-[15px] font-medium text-text-secondary">{subtitle}</p>}
       </div>
       {action && (
-        <Button onClick={action.onClick} variant="primary" size="lg" className="shrink-0">
+        <Button onClick={action.onClick} className="shrink-0 rounded-full shadow-sm active:scale-95 transition-all mt-4 md:mt-0">
           {action.label}
         </Button>
       )}
