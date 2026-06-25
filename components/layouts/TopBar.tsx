@@ -111,7 +111,7 @@ export function TopBar({ className, userName, userEmail, userAvatar, tasks = [] 
       </div>
 
       {/* Portal target for dynamic center titles */}
-      <div id="top-bar-center" className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center z-10" />
+      <div id="top-bar-center" className="fixed left-1/2 -translate-x-1/2 top-0 h-16 flex items-center justify-center z-[40]" />
 
       <div className="flex-1 flex justify-end items-center gap-2 shrink-0">
         <ThemeToggle className="text-text-muted hover:text-text-primary active:scale-[0.95] transition-all duration-150" />
