@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
   [
-    "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center",
-    "gap-1 overflow-hidden rounded-full border border-transparent",
-    "px-2 py-0.5 text-[10px] font-bold tracking-wide whitespace-nowrap",
+    "group/badge inline-flex h-6 w-fit shrink-0 items-center justify-center",
+    "gap-1 overflow-hidden rounded-md border border-transparent",
+    "px-2.5 py-0.5 text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap",
     "transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-    "[&>svg]:pointer-events-none [&>svg]:size-3!",
+    "[&>svg]:pointer-events-none [&>svg]:size-3.5!",
   ].join(" "),
   {
     variants: {
@@ -29,17 +29,17 @@ const badgeVariants = cva(
 
         /* ── Status variants — Duas Mãos tones ── */
         success:
-          "bg-olive-soft text-olive-dark border-olive/20",
+          "bg-status-success/15 text-status-success border-transparent",
         warning:
-          "bg-yellow-soft text-yellow-dark border-yellow/20",
+          "bg-status-warning/15 text-status-warning border-transparent",
         danger:
-          "bg-terracotta-soft text-terracotta-dark border-terracotta/20",
+          "bg-status-danger/15 text-status-danger border-transparent",
         info:
-          "bg-deep-blue-soft text-deep-blue border-deep-blue/20",
+          "bg-status-info/15 text-status-info border-transparent",
         pending:
-          "bg-yellow-soft text-yellow-dark border-yellow/20",
+          "bg-status-pending/15 text-status-pending border-transparent",
         draft:
-          "bg-surface-muted text-text-muted border-border",
+          "bg-black/5 dark:bg-white/10 text-text-secondary border-transparent",
 
         /* ── Solid status ── */
         "success-solid":
@@ -57,11 +57,11 @@ const badgeVariants = cva(
 
         /* ── Neutral ── */
         secondary:
-          "bg-surface-muted text-text-primary border-border hover:bg-border",
+          "bg-black/5 dark:bg-white/10 text-text-primary border-transparent hover:bg-black/10 dark:hover:bg-white/20",
         muted:
-          "bg-surface-muted/50 text-text-muted border-border hover:bg-surface-muted",
+          "bg-black/5 dark:bg-white/5 text-text-muted border-transparent hover:bg-black/10",
         outline:
-          "border-border text-text-secondary hover:bg-surface-muted",
+          "border-border text-text-secondary hover:bg-black/5 dark:hover:bg-white/5",
         ghost:
           "text-text-secondary hover:bg-surface-muted",
 
