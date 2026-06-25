@@ -49,12 +49,12 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Productivity Card */}
-      <div className="glass-panel rounded-2xl p-6 shadow-sm">
+      <div className="glass-card-super p-6">
         <div className="flex items-center gap-2 mb-6">
-          <div className="p-2 bg-brand-primary/10 rounded-lg text-brand-primary">
+          <div className="p-2 bg-brand-primary/10 rounded-xl text-brand-primary">
             <BarChart3 size={18} />
           </div>
-          <h3 className="font-bold text-text-primary">Produtividade por Equipe</h3>
+          <h3 className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#8A94A6] dark:text-[#A0AABF]">Produtividade por Equipe</h3>
         </div>
         
         <div className="space-y-4">
@@ -79,17 +79,17 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
       </div>
 
       {/* Operational Health Card */}
-      <div className="glass-panel rounded-2xl p-6 shadow-sm">
+      <div className="glass-card-super p-6">
         <div className="flex items-center gap-2 mb-6">
-          <div className="p-2 bg-olive-soft rounded-lg text-olive-dark">
+          <div className="p-2 bg-olive-soft rounded-xl text-olive-dark">
             <Timer size={18} />
           </div>
-          <h3 className="font-bold text-text-primary">Eficiência Operacional</h3>
+          <h3 className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#8A94A6] dark:text-[#A0AABF]">Eficiência Operacional</h3>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-background border border-border/50">
-            <p className="text-xs text-text-muted font-medium mb-1">Tempo Médio</p>
+          <div className="p-4 glass-pill rounded-[1.25rem]">
+            <p className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#8A94A6] dark:text-[#A0AABF] mb-1">Tempo Médio</p>
             <div className="flex items-baseline gap-1">
               <p className="text-2xl font-black text-text-primary">{avgLeadTime}</p>
               <p className="text-xs text-text-muted">dias</p>
@@ -97,8 +97,8 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
             <p className="text-[10px] text-text-muted mt-2">Do início à conclusão</p>
           </div>
 
-          <div className="p-4 rounded-xl bg-background border border-border/50">
-            <p className="text-xs text-text-muted font-medium mb-1">Taxa de Atraso</p>
+          <div className="p-4 glass-pill rounded-[1.25rem]">
+            <p className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#8A94A6] dark:text-[#A0AABF] mb-1">Taxa de Atraso</p>
             <div className="flex items-baseline gap-1">
               <p className={cn(
                 "text-2xl font-black",
@@ -109,7 +109,7 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
           </div>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-border">
+        <div className="mt-6 pt-6 border-t border-black/[0.04] dark:border-white/[0.08]">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2 text-text-secondary">
               <CheckCircle2 size={16} className="text-olive" />

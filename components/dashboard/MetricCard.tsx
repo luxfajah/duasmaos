@@ -90,24 +90,20 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-3xl p-6',
-        'bg-surface-primary/70 dark:bg-black/40',
-        'border border-black/[0.04] dark:border-white/[0.08]',
-        'shadow-[0_4px_16px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.2)]',
-        'backdrop-blur-3xl saturate-150',
-        'transition-all duration-300 ease-apple hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5',
+        'group relative overflow-hidden p-6',
+        'glass-card-super transition-all duration-300 ease-apple hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1',
         className
       )}
     >
       <div className="relative z-10 flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className={cn(
-            'flex-shrink-0 rounded-2xl p-3 w-12 h-12 flex items-center justify-center',
+            'flex-shrink-0 rounded-[1.25rem] p-3 w-12 h-12 flex items-center justify-center',
             accentMap[accent]
           )}>
             <Icon size={22} strokeWidth={1.5} />
           </div>
-          <p className="text-[11px] font-bold tracking-wider uppercase text-text-muted/70 font-body">
+          <p className="text-[11px] font-bold tracking-[0.06em] uppercase text-[#8A94A6] dark:text-[#A0AABF]">
             {label}
           </p>
         </div>
