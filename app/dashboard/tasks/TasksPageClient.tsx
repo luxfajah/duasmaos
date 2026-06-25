@@ -11,8 +11,6 @@ import { useRouter } from 'next/navigation'
 import { Plus, Search, LayoutGrid, List } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-import { TasksByProjectView } from '@/components/tasks/TasksByProjectView'
-import { TaskCalendar } from '@/components/tasks/TaskCalendar'
 import { MetricCard } from '@/components/dashboard/MetricCard'
 import { Briefcase, CheckCircle, AlertTriangle, ListTodo } from 'lucide-react'
 
@@ -28,8 +26,7 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
   const [editingTask, setEditingTask] = useState<TaskWithRelations | null>(null)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [viewMode, setViewMode] = useState<'general' | 'project'>('general')
-  const [visualization, setVisualization] = useState<'kanban' | 'list' | 'calendar'>('kanban')
+  const [visualization, setVisualization] = useState<'kanban' | 'list'>('kanban')
 
   // Status Filter Options
   const STATUS_FILTER_OPTIONS = [
@@ -156,38 +153,11 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
             })}
           </div>
 
-          {/* Grouping View (Geral / Por Projeto) */}
-          <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
-            <button
-              onClick={() => setViewMode('general')}
-              className={cn(
-                'px-4 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
-                viewMode === 'general'
-                  ? 'bg-white dark:bg-white/10 text-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
-                  : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
-              )}
-            >
-              Visão Geral
-            </button>
-            <button
-              onClick={() => setViewMode('project')}
-              className={cn(
-                'px-4 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
-                viewMode === 'project'
-                  ? 'bg-white dark:bg-white/10 text-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
-                  : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
-              )}
-            >
-              Por Projeto
-            </button>
-          </div>
-
-          {/* Visualization Options (Kanban / Lista / Calendário) */}
+          {/* Visualization Options (Kanban / Lista) */}
           <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center shrink-0">
             {[
               { id: 'kanban', label: 'Kanban' },
               { id: 'list', label: 'Lista' },
-              { id: 'calendar', label: 'Calendário' },
             ].map((opt) => (
               <button
                 key={opt.id}
@@ -208,32 +178,16 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
 
       {/* ── Content View ── */}
       <div className="mt-4">
-        {viewMode === 'general' ? (
-          <>
-            {visualization === 'kanban' && (
-              <TaskKanban tasks={filtered as any} />
-            )}
-            {visualization === 'list' && (
-              <div className="glass-card-super pb-4">
-                <TasksTable
-                  tasks={filtered}
-                  onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}
-                />
-              </div>
-            )}
-            {visualization === 'calendar' && (
-              <TaskCalendar 
-                tasks={filtered} 
-                onTaskClick={(task) => router.push(`/dashboard/tasks/${task.id}`)} 
-              />
-            )}
-          </>
-        ) : (
-          <TasksByProjectView 
-            tasks={filtered} 
-            viewType={visualization} 
-            onEditTask={(task) => router.push(`/dashboard/tasks/${task.id}`)} 
-          />
+        {visualization === 'kanban' && (
+          <TaskKanban tasks={filtered as any} />
+        )}
+        {visualization === 'list' && (
+          <div className="glass-card-super pb-4">
+            <TasksTable
+              tasks={filtered}
+              onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}
+            />
+          </div>
         )}
       </div>
 
