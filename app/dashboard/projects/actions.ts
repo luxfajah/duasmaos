@@ -149,13 +149,29 @@ export async function createProjectV3(data: {
 }) {
   try {
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Usuário não autenticado' }
+
+    // 0. Ensure a workspace exists
+    let { data: defaultWorkspace } = await supabase.from('v2_workspaces').select('id').limit(1).single()
+    if (!defaultWorkspace) {
+      const { data: newWorkspace, error: wsError } = await supabase.from('v2_workspaces').insert({
+        name: 'Meu Workspace',
+        owner_id: user.id
+      }).select().single()
+      
+      if (wsError) return { success: false, error: `Erro ao inicializar workspace: ${wsError.message}` }
+      defaultWorkspace = newWorkspace
+    }
+
+    const workspaceId = defaultWorkspace.id
   
-  // 0. Fetch template details to get type
-  const { data: template } = await supabase
-    .from('product_templates')
-    .select('type')
-    .eq('id', data.template_id)
-    .single()
+    // 1. Fetch template details to get type
+    const { data: template } = await supabase
+      .from('product_templates')
+      .select('type')
+      .eq('id', data.template_id)
+      .single()
 
   // 1. Create Project
   const { data: project, error: pError } = await supabase
@@ -171,7 +187,7 @@ export async function createProjectV3(data: {
       status: 'active',
       owner_id: data.owner_id || null, // Handle empty string as null for UUID
       deadline: data.deadline || null,
-      workspace_id: 'e777e7e7-e7e7-e7e7-e7e7-e7e7e7e7e7e7'
+      workspace_id: workspaceId
     })
     .select()
     .single()
