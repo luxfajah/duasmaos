@@ -24,10 +24,10 @@ const TYPE_CONFIG: Record<TaskTypeV2, { label: string, color: string }> = {
 }
 
 const PRIORITY_BADGE: Record<TaskPriorityV2, string> = {
-  low: "bg-surface-muted text-text-muted border-border",
-  medium: "bg-info/10 text-info border-info/20",
-  high: "bg-warning/10 text-warning border-warning/20",
-  urgent: "bg-danger text-white border-danger"
+  low: "bg-surface text-text-muted border-border",
+  medium: "bg-info/10 text-info border-info/10",
+  high: "bg-warning/10 text-warning border-warning/10",
+  urgent: "bg-danger/10 text-danger border-danger/10 font-bold"
 }
 
 export function TaskGroupGrid({ tasks, onTaskClick }: TaskGroupGridProps) {
@@ -49,26 +49,29 @@ export function TaskGroupGrid({ tasks, onTaskClick }: TaskGroupGridProps) {
   const typesToRender = activeTypes.length > 0 ? activeTypes : (['task'] as const)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="flex gap-6 overflow-x-auto pb-4 pt-2 no-scrollbar snap-x">
       {typesToRender.map((type) => (
-        <div key={type} className="space-y-4">
-          <div className="flex items-center justify-between px-2">
-            <h3 className={cn("text-xs font-bold uppercase tracking-widest", TYPE_CONFIG[type].color)}>
-              {TYPE_CONFIG[type].label}
-            </h3>
-            <span className="text-[10px] font-bold text-text-muted bg-surface-muted rounded-full px-2 py-0.5">
+        <div key={type} className="w-[320px] shrink-0 snap-start space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <div className={cn("w-2 h-2 rounded-full", TYPE_CONFIG[type].color.replace('text', 'bg'))} />
+              <h3 className="text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+                {TYPE_CONFIG[type].label}
+              </h3>
+            </div>
+            <span className="text-[10px] font-bold text-text-muted bg-border/50 rounded-full px-2 py-0.5">
               {groups[type].length}
             </span>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 min-h-[150px]">
             {groups[type].length > 0 ? (
               groups[type].map((task) => (
                 <TaskCard key={task.id} task={task} onClick={() => onTaskClick(task)} />
               ))
             ) : (
-              <div className="h-24 flex items-center justify-center border border-dashed border-border rounded-xl text-[10px] text-text-muted uppercase tracking-widest bg-surface/30">
-                Nenhuma {TYPE_CONFIG[type].label.toLowerCase().slice(0, -1)}
+              <div className="h-20 flex flex-col items-center justify-center rounded-2xl bg-surface/50 text-[11px] font-medium text-text-muted">
+                Sem tarefas
               </div>
             )}
           </div>
@@ -87,79 +90,69 @@ function TaskCard({ task, onClick }: { task: V2Task; onClick: () => void }) {
     <div 
       onClick={onClick}
       className={cn(
-        "task-card group p-4 flex flex-col gap-3",
-        isDone && "opacity-60 grayscale-[0.5]"
+        "group p-4 flex flex-col gap-3 rounded-2xl bg-white dark:bg-surface border border-border shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:-translate-y-0.5 relative overflow-hidden",
+        isDone && "opacity-60 bg-surface/30"
       )}
     >
       {/* Priority & Top Row */}
       <div className="flex items-center justify-between">
-        <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-tight", PRIORITY_BADGE[task.priority])}>
+        <Badge variant="outline" className={cn("text-[9px] font-bold uppercase tracking-wider rounded-full px-2 border-transparent", PRIORITY_BADGE[task.priority])}>
           {task.priority}
         </Badge>
-        <button className="text-text-muted hover:text-text-primary transition-colors opacity-0 group-hover:opacity-100">
+        <button className="text-text-muted hover:text-brand-primary transition-colors opacity-0 group-hover:opacity-100">
           <MoreHorizontal size={14} />
         </button>
       </div>
 
       {/* Title & Description */}
       <div className="space-y-1">
-        <h4 className="text-sm font-bold text-text-primary leading-tight line-clamp-2">
+        <h4 className={cn("text-sm font-semibold text-text-primary leading-tight line-clamp-2", isDone && "line-through text-text-secondary")}>
           {task.title}
         </h4>
         {task.description && (
-          <p className="text-[11px] text-text-secondary leading-normal line-clamp-2">
+          <p className="text-[11px] text-text-secondary leading-normal line-clamp-2 mt-1">
             {task.description}
           </p>
         )}
       </div>
 
       {/* Meta Bar */}
-      <div className="flex items-center justify-between pt-1 mt-auto">
+      <div className="flex items-center justify-between pt-2 mt-auto border-t border-border/50">
         <div className="flex items-center gap-3">
           {task.due_date && (
-            <div className="flex items-center gap-1 text-[10px] font-bold text-text-muted">
-              <Calendar size={12} className="text-brand-primary/60" />
+            <div className="flex items-center gap-1 text-[10px] font-semibold text-text-muted">
+              <Calendar size={12} className={cn("opacity-70", isDone ? "" : "text-brand-primary")} />
               {new Date(task.due_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
             </div>
           )}
           
           {/* Assignees Stack */}
           {assignees.length > 0 && (
-            <div className="avatar-stack">
+            <div className="flex -space-x-1.5 overflow-hidden">
               {assignees.slice(0, 3).map((a: any) => (
-                <Avatar 
-                  key={a.id} 
-                  src={a.profiles?.avatar_url} 
-                  name={a.profiles?.full_name}
-                  size="xs"
-                  className="border-[1.5px] border-surface" 
-                />
-              ))}
-              {assignees.length > 3 && (
-                <div className="w-5 h-5 rounded-full border-[1.5px] border-surface bg-surface-muted flex items-center justify-center text-[7px] font-bold text-text-muted">
-                  +{assignees.length - 3}
+                <div key={a.id} className="inline-block h-5 w-5 rounded-full ring-2 ring-white dark:ring-surface overflow-hidden bg-surface-muted">
+                   {a.profiles?.avatar_url ? (
+                     <img src={a.profiles?.avatar_url} alt={a.profiles?.full_name} className="h-full w-full object-cover" />
+                   ) : (
+                     <span className="flex h-full w-full items-center justify-center text-[7px] font-bold text-text-primary">
+                       {a.profiles?.full_name?.substring(0, 2).toUpperCase() || 'U'}
+                     </span>
+                   )}
                 </div>
-              )}
+              ))}
             </div>
           )}
         </div>
 
         {/* Action Button */}
-        <Button 
-          size="sm" 
-          variant={isDone ? "ghost" : "default"} 
-          className="h-7 w-7 p-0 rounded-lg shadow-sm"
-        >
-          {isDone ? (
-            <CheckCircle2 size={14} className="text-success" />
-          ) : (
-            <Play size={12} className="fill-current" />
-          )}
-        </Button>
+        {isDone ? (
+          <CheckCircle2 size={16} className="text-success" />
+        ) : (
+          <div className="w-6 h-6 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors">
+            <Play size={10} className="fill-current" />
+          </div>
+        )}
       </div>
-
-      {/* Glass Inner Shine Overlay */}
-      <div className="absolute inset-x-0 top-0 h-px bg-white/10" />
     </div>
   )
 }

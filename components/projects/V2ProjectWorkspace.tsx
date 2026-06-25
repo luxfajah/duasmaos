@@ -60,10 +60,12 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-brand-primary/10 text-brand-primary">
-              <Building2 size={18} />
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-surface-muted text-text-muted">
+              <Building2 size={14} />
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-text-muted">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-text-secondary">
               {project.clients?.name}
             </span>
           </div>
@@ -80,14 +82,14 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
                   <span className="flex items-center gap-1.5"><CheckCircle size={10} className="text-success" /> Concluído</span>
                 )}
               </Badge>
-              <div className="flex items-center gap-2">
-                <div className="w-24 h-1.5 bg-surface-muted rounded-full overflow-hidden">
+              <div className="flex items-center gap-3">
+                <div className="w-32 h-2.5 bg-surface-muted rounded-full overflow-hidden shadow-inner">
                   <div 
-                    className="h-full bg-brand-primary transition-all duration-1000 ease-out" 
+                    className="h-full bg-brand-primary transition-all duration-1000 ease-out rounded-full" 
                     style={{ width: `${project.progress}%` }} 
                   />
                 </div>
-                <span className="text-[10px] font-bold text-text-muted">{project.progress}%</span>
+                <span className="text-[11px] font-bold text-text-secondary">{project.progress}%</span>
               </div>
             </div>
           </div>
@@ -95,8 +97,10 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
       </header>
 
       {/* 2. Pipeline (Stage Navigator) */}
-      <section className="space-y-2">
-        <label className="label-eyebrow text-text-muted px-1">Pipeline do Projeto</label>
+      <section className="space-y-3">
+        <label className="text-[11px] font-bold uppercase tracking-widest text-text-muted px-2">
+          Pipeline do Projeto
+        </label>
         <PipelineNavigator 
           stages={project.stages} 
           activeStageId={selectedStageId} 
@@ -124,7 +128,7 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
 
       {/* 5. Task Detail Side Panel */}
       <Sheet open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
-        <SheetContent className="sm:max-w-xl glass glass-reflection border-l border-white/10">
+        <SheetContent className="sm:max-w-xl bg-white/80 dark:bg-black/80 backdrop-blur-xl border-l border-white/20 dark:border-white/10 shadow-2xl">
           {selectedTask && (
             <div className="h-full flex flex-col gap-6 pt-10">
               <SheetHeader className="space-y-4">
@@ -154,16 +158,25 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
 
               <div className="flex-1 overflow-y-auto pr-2 space-y-8 scrollbar-thin">
                 {/* Details Section */}
-                <div className="grid grid-cols-2 gap-px bg-border rounded-xl border border-border overflow-hidden">
-                  <div className="bg-surface/50 p-4 space-y-1">
-                    <p className="text-[10px] uppercase font-bold text-text-muted">Prazo</p>
-                    <p className="text-sm font-medium text-text-primary">
-                      {selectedTask.due_date ? new Date(selectedTask.due_date).toLocaleDateString() : '—'}
-                    </p>
-                  </div>
-                  <div className="bg-surface/50 p-4 space-y-1">
-                    <p className="text-[10px] uppercase font-bold text-text-muted">Prioridade</p>
-                    <p className="text-sm font-medium text-text-primary capitalize">{selectedTask.priority}</p>
+                <div className="flex flex-col gap-3">
+                  <h5 className="text-[11px] font-bold uppercase tracking-widest text-text-muted px-2">Detalhes</h5>
+                  <div className="bg-white dark:bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
+                    <div className="flex items-center justify-between p-4 border-b border-border/50">
+                      <div className="flex items-center gap-2 text-text-secondary">
+                        <Clock size={16} />
+                        <span className="text-sm font-medium">Prazo</span>
+                      </div>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {selectedTask.due_date ? new Date(selectedTask.due_date).toLocaleDateString() : '—'}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between p-4">
+                      <div className="flex items-center gap-2 text-text-secondary">
+                        <AlertCircle size={16} />
+                        <span className="text-sm font-medium">Prioridade</span>
+                      </div>
+                      <p className="text-sm font-semibold text-text-primary capitalize">{selectedTask.priority}</p>
+                    </div>
                   </div>
                 </div>
 
