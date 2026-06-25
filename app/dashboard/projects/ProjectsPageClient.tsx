@@ -126,7 +126,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome ou cliente..."
-            className="pl-10 h-10 w-full rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30"
+            className="pl-10 h-10 w-full rounded-full transition-all duration-200 glass-pill hover:bg-white/40 dark:hover:bg-black/40 focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none"
             id="projects-search"
           />
         </div>
@@ -134,7 +134,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
+            className="h-10 px-4 glass-pill rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
             id="projects-status-filter"
             aria-label="Filtrar por status"
           >
@@ -145,7 +145,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
+            className="h-10 px-4 glass-pill rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
             id="projects-type-filter"
             aria-label="Filtrar por tipo"
           >
@@ -166,7 +166,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
         </p>
       )}
 
-      <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4 mt-5">
+      <div className="glass-card-super pb-4 mt-5">
         <ProjectsTable projects={filtered} clients={clients} team={team} />
       </div>
 

@@ -6,6 +6,18 @@
   .glass-panel {
     @apply bg-surface/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden;
   }
+  
+  .glass-pill {
+    @apply bg-white/30 dark:bg-black/30 backdrop-blur-lg border border-white/40 dark:border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-none;
+  }
+  
+  .glass-pill-active {
+    @apply bg-white/80 dark:bg-white/20 backdrop-blur-xl text-text-primary shadow-sm border border-white/50 dark:border-white/20;
+  }
+  
+  .glass-card-super {
+    @apply rounded-[2rem] bg-white/40 dark:bg-black/40 backdrop-blur-3xl saturate-150 border border-white/60 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] overflow-hidden;
+  }
 }
 
 @layer base {

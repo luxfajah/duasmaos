@@ -188,13 +188,13 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
             <Input 
               placeholder="Buscar produtos ou categorias..." 
-              className="pl-10 h-10 w-full rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30"
+              className="pl-10 h-10 w-full rounded-full transition-all duration-200 glass-pill hover:bg-white/40 dark:hover:bg-black/40 focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select 
-            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
+            className="h-10 px-4 glass-pill rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
@@ -211,7 +211,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             }}
             className={cn(
               "h-10 px-4 rounded-full font-bold transition-all duration-300 ease-apple active:scale-[0.97] border-transparent",
-              showInactive ? "bg-black/10 dark:bg-white/10 text-text-primary shadow-sm" : "bg-black/5 dark:bg-white/5 text-text-muted hover:text-text-primary hover:bg-black/[0.07]"
+              showInactive ? "glass-pill-active" : "glass-pill text-text-muted hover:text-text-primary hover:bg-white/40 dark:hover:bg-black/40"
             )}
           >
             {showInactive ? <RotateCcw size={16} className="mr-2" /> : <Archive size={16} className="mr-2" />}
@@ -219,7 +219,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
           </Button>
         </div>
 
-        <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-full overflow-x-auto no-scrollbar w-full lg:w-auto">
+        <div className="flex items-center p-1 glass-pill rounded-full overflow-x-auto no-scrollbar w-full lg:w-auto">
           {CATEGORIES.map(cat => (
             <button
               key={cat}
@@ -227,8 +227,8 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ease-apple select-none whitespace-nowrap",
                 categoryFilter === cat 
-                  ? "bg-white dark:bg-white/10 text-text-primary shadow-sm" 
-                  : "text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5"
+                  ? "glass-pill-active" 
+                  : "text-text-muted hover:text-text-primary hover:bg-white/20 dark:hover:bg-black/20"
               )}
             >
               {cat}

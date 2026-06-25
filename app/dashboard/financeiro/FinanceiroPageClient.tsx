@@ -190,12 +190,12 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             placeholder="Buscar por cliente ou projeto..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 h-10 rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none text-sm text-text-primary"
+            className="w-full pl-10 h-10 rounded-full transition-all duration-200 glass-pill hover:bg-white/40 dark:hover:bg-black/40 focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none text-sm text-text-primary"
           />
         </div>
 
         {/* Status filters */}
-        <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-full overflow-x-auto no-scrollbar w-full md:w-auto">
+        <div className="flex items-center p-1 glass-pill rounded-full overflow-x-auto no-scrollbar w-full md:w-auto">
           {[
             { id: 'all', label: 'Todos' },
             { id: 'paid', label: 'Pagos' },
@@ -208,8 +208,8 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
               className={cn(
                 "px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ease-apple select-none whitespace-nowrap",
                 filterStatus === btn.id
-                  ? "bg-white dark:bg-white/10 text-text-primary shadow-sm"
-                  : "text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5"
+                  ? "glass-pill-active"
+                  : "text-text-muted hover:text-text-primary hover:bg-white/20 dark:hover:bg-black/20"
               )}
             >
               {btn.label}
@@ -220,7 +220,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
       </div>
 
       {/* 3. Table of Revenues */}
-      <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4">
+      <div className="glass-card-super pb-4">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

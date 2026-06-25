@@ -116,8 +116,8 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
             placeholder="Buscar por nome, empresa, documento..."
             className={cn(
               'pl-9 h-10 w-full rounded-full transition-all duration-200',
-              'bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07]',
-              'focus-visible:ring-2 focus-visible:ring-brand-primary/30 focus-visible:bg-transparent dark:focus-visible:bg-transparent'
+              'glass-pill hover:bg-white/40 dark:hover:bg-black/40',
+              'focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none'
             )}
             id="clients-search"
           />
@@ -125,7 +125,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
 
         {/* Status Segmented Control & Actions */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-full">
+          <div className="flex items-center p-1 glass-pill rounded-full">
             {[
               { id: 'all', label: `Todos (${countAll})` },
               { id: 'active', label: `Ativos (${countActive})` },
@@ -138,8 +138,8 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
                 className={cn(
                   'px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-apple select-none',
                   statusFilter === tab.id
-                    ? 'bg-white dark:bg-white/10 text-text-primary shadow-sm'
-                    : 'text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5'
+                    ? 'glass-pill-active'
+                    : 'text-text-muted hover:text-text-primary hover:bg-white/20 dark:hover:bg-black/20'
                 )}
               >
                 {tab.label}
@@ -157,7 +157,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
       </div>
 
       {/* ── Super Table Container (Pill Glass) ── */}
-      <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4">
+      <div className="glass-card-super pb-4">
         <ClientsTable clients={filtered} />
       </div>
     </div>
