@@ -31,7 +31,7 @@ const cardVariants = cva(
 
         /* Level 1 — Default light surface on white/near-white */
         default:
-          "glass glass-reflection text-text-primary hover:shadow-sm",
+          "glass-panel text-text-primary hover:shadow-sm",
 
         /* Level 2 — Elevated, stronger shadow */
         elevated:
@@ -53,7 +53,7 @@ const cardVariants = cva(
         status:
           "bg-surface border-l-4 border-l-pending text-text-primary shadow-sm",
         client:
-          "bg-surface border border-border shadow-sm text-text-primary",
+          "glass-panel shadow-sm text-text-primary",
         highlight:
           "bg-editorial-highlight text-brand-primary border border-brand-accent/40 shadow-sm", // Keep solid
 

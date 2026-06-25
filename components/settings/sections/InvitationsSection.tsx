@@ -116,7 +116,7 @@ export function InvitationsSection({ clients, invitations }: InvitationsSectionP
               <div className="space-y-3">
                 <label className="text-xs font-bold text-text-muted uppercase">Função</label>
                 <select 
-                  className="w-full h-10 px-3 bg-surface border border-border rounded-md text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+                  className="w-full h-10 px-3 glass-panel rounded-md text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                 >
@@ -130,7 +130,7 @@ export function InvitationsSection({ clients, invitations }: InvitationsSectionP
               <div className="space-y-3">
                 <label className="text-xs font-bold text-text-muted uppercase">Selecionar Cliente</label>
                 <select 
-                  className="w-full h-10 px-3 bg-surface border border-border rounded-md text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+                  className="w-full h-10 px-3 glass-panel rounded-md text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
                   value={selectedClient}
                   onChange={(e) => setSelectedClient(e.target.value)}
                   required
@@ -146,7 +146,7 @@ export function InvitationsSection({ clients, invitations }: InvitationsSectionP
             <div className="space-y-3">
               <label className="text-xs font-bold text-text-muted uppercase">Expiração</label>
               <select 
-                className="w-full h-10 px-3 bg-surface border border-border rounded-md text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+                className="w-full h-10 px-3 glass-panel rounded-md text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
                 value={expiry}
                 onChange={(e) => setExpiry(Number(e.target.value))}
               >

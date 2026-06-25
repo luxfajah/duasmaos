@@ -29,7 +29,7 @@ const buttonVariants = cva(
 
         /* Sand/neutral — secondary, no strong presence */
         secondary:
-          "bg-surface border border-border text-text-primary shadow-xs hover:bg-surface-muted hover:shadow-sm",
+          "glass-panel text-text-primary shadow-xs hover:bg-surface-muted hover:shadow-sm",
 
         /* Deep Blue — immersive, trust */
         "deep-blue":

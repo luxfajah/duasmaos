@@ -133,7 +133,7 @@ export function FileLibraryGrid({ files, projects }: FileLibraryGridProps) {
                 const isDrive = file.file_source === 'drive'
                 const CatIcon = CATEGORIES[file.category ?? 'other']?.icon ?? FolderOpen
                 return (
-                  <div key={file.id} className="group bg-surface border border-border rounded-xl overflow-hidden hover:border-brand-primary/30 hover:shadow-md transition-all duration-200">
+                  <div key={file.id} className="group glass-panel rounded-xl overflow-hidden hover:border-brand-primary/30 hover:shadow-md transition-all duration-200">
                     {/* Preview */}
                     <div className={cn('h-32 flex flex-col items-center justify-center relative', meta.bg, 'bg-opacity-30')}>
                       {isDrive ? (

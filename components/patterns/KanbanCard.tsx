@@ -91,7 +91,7 @@ export function KanbanCard({
       onClick={onClick}
       onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
       className={cn(
-        'group relative flex flex-col gap-3 rounded-lg bg-surface border border-border p-4',
+        'group relative flex flex-col gap-3 rounded-lg glass-panel p-4',
         'border-l-4 transition-all duration-150',
         'hover:border-border-strong hover:shadow-md',
         'cursor-grab active:cursor-grabbing active:shadow-lg active:scale-[1.02]',

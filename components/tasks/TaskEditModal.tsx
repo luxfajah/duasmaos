@@ -369,7 +369,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                         type="date"
                         value={formData.due_date}
                         onChange={e => setFormData(p => ({ ...p, due_date: e.target.value }))}
-                        className="w-full bg-surface border border-border/80 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 ring-brand-primary/20 transition-all outline-none"
+                        className="w-full glass-panel/80 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 ring-brand-primary/20 transition-all outline-none"
                       />
                     </div>
                     <div className="space-y-4">
@@ -380,7 +380,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                       <select 
                         value={formData.priority}
                         onChange={e => setFormData(p => ({ ...p, priority: e.target.value as any }))}
-                        className="w-full bg-surface border border-border/80 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 ring-brand-primary/20 transition-all outline-none appearance-none"
+                        className="w-full glass-panel/80 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 ring-brand-primary/20 transition-all outline-none appearance-none"
                       >
                         {Object.entries(PRIORITY_LABELS).map(([val, label]) => (
                           <option key={val} value={val}>{label}</option>
@@ -395,7 +395,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                       <select 
                         value={formData.status}
                         onChange={e => setFormData(p => ({ ...p, status: e.target.value as any }))}
-                        className="w-full bg-surface border border-border/80 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 ring-brand-primary/20 transition-all outline-none appearance-none"
+                        className="w-full glass-panel/80 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 ring-brand-primary/20 transition-all outline-none appearance-none"
                       >
                         {Object.entries(TASK_STATUS_V2_LABELS).map(([val, label]) => (
                           <option key={val} value={val}>{label}</option>
@@ -510,7 +510,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                             value={postData.art_text}
                             disabled={isLocked}
                             onChange={e => setPostData(p => ({ ...p, art_text: e.target.value }))}
-                            className="w-full bg-surface border border-border/80 rounded-2xl p-5 text-sm font-medium focus:ring-2 ring-brand-primary/10 outline-none transition-all min-h-[100px] resize-none"
+                            className="w-full glass-panel/80 rounded-2xl p-5 text-sm font-medium focus:ring-2 ring-brand-primary/10 outline-none transition-all min-h-[100px] resize-none"
                             placeholder="Escreva aqui o que deve estar escrito na imagem ou nos slides do carrossel..."
                           />
                        </div>
@@ -526,7 +526,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                               value={postData.caption}
                               disabled={isLocked}
                               onChange={e => setPostData(p => ({ ...p, caption: e.target.value }))}
-                              className="w-full bg-surface border border-border/80 rounded-2xl p-5 text-sm font-medium focus:ring-2 ring-brand-primary/10 outline-none transition-all min-h-[180px] leading-relaxed"
+                              className="w-full glass-panel/80 rounded-2xl p-5 text-sm font-medium focus:ring-2 ring-brand-primary/10 outline-none transition-all min-h-[180px] leading-relaxed"
                               placeholder="Escreva a legenda completa aqui..."
                             />
                           </div>
@@ -663,7 +663,7 @@ export function TaskEditModal({ task, open, onClose, projectId, projects }: Task
                   
                   <div className="space-y-6">
                     {versions.map((version, idx) => (
-                      <div key={version.id} className="p-8 rounded-3xl bg-surface border border-border/40 hover:border-brand-primary/30 transition-all group overflow-hidden relative">
+                      <div key={version.id} className="p-8 rounded-3xl glass-panel/40 hover:border-brand-primary/30 transition-all group overflow-hidden relative">
                         <div className="absolute top-0 right-0 p-4">
                            <Badge variant="outline" className="font-black text-[10px] uppercase">v{version.version_number}</Badge>
                         </div>

@@ -57,7 +57,7 @@ export function ApprovalBanner({ stage, canApprove = false }: ApprovalBannerProp
               {isPending ? "Aprovando..." : "Liberar Etapa"}
             </Button>
           ) : (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-border text-xs font-medium text-text-muted">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl glass-panel text-xs font-medium text-text-muted">
               Apenas gestores podem aprovar
             </div>
           )}

@@ -63,7 +63,7 @@ export function ClientCard({
       {...(wrapperProps as any)}
       data-slot="client-card"
       className={cn(
-        'group flex flex-col gap-4 rounded-xl bg-surface border border-border p-5',
+        'group flex flex-col gap-4 rounded-xl glass-panel p-5',
         'transition-all duration-200',
         'hover:border-border-strong hover:shadow-md hover:-translate-y-0.5',
         href && 'cursor-pointer',

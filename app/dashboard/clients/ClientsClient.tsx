@@ -157,7 +157,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
       </div>
 
       {/* ── Table Container (Glass) ── */}
-      <div className="bg-surface-primary/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+      <div className="glass-panel overflow-hidden">
         <ClientsTable clients={filtered} />
       </div>
     </div>

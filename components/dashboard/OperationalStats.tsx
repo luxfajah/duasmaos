@@ -49,7 +49,7 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Productivity Card */}
-      <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-6">
           <div className="p-2 bg-brand-primary/10 rounded-lg text-brand-primary">
             <BarChart3 size={18} />
@@ -79,7 +79,7 @@ export function OperationalStats({ projects, team }: OperationalStatsProps) {
       </div>
 
       {/* Operational Health Card */}
-      <div className="bg-surface border border-border rounded-2xl p-6 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-6">
           <div className="p-2 bg-olive-soft rounded-lg text-olive-dark">
             <Timer size={18} />

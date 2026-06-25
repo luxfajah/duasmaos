@@ -35,7 +35,7 @@ export function GoogleLoginButton() {
       variant="outline" 
       onClick={handleGoogleLogin}
       disabled={loading}
-      className="w-full py-6 flex items-center justify-center gap-3 bg-white border-border text-text-primary hover:bg-surface-muted transition-all font-medium"
+      className="w-full py-6 flex items-center justify-center gap-3 glass-panel text-text-primary hover:bg-surface-muted transition-all font-medium"
     >
       {loading ? (
         <Loader2 className="animate-spin" size={20} />

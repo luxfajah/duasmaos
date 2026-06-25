@@ -94,7 +94,7 @@ export function DashboardWidget({
     <div
       data-slot="dashboard-widget"
       className={cn(
-        'group relative overflow-hidden rounded-xl bg-surface border border-border p-6',
+        'group relative overflow-hidden rounded-xl glass-panel p-6',
         'transition-all duration-200',
         'hover:border-border-strong hover:shadow-md hover:-translate-y-0.5',
         className

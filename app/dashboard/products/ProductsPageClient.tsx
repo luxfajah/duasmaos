@@ -194,7 +194,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
             />
           </div>
           <select 
-            className="h-11 px-4 bg-surface border border-border/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
+            className="h-11 px-4 glass-panel/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
@@ -250,7 +250,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
         {filtered.map(product => (
           <div 
             key={product.id}
-            className="group relative bg-surface border border-border/50 rounded-2xl hover:border-brand-primary/40 hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-300 ease-apple active:scale-[0.97] flex flex-col h-[280px]"
+            className="group relative glass-panel/50 rounded-2xl hover:border-brand-primary/40 hover:shadow-2xl hover:shadow-brand-primary/5 transition-all duration-300 ease-apple active:scale-[0.97] flex flex-col h-[280px]"
           >
             {/* Header / Type Badge */}
             <div className="p-5 flex-1">

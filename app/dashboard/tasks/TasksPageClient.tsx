@@ -91,7 +91,7 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
           <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Lista Completa</h3>
           <span className="text-xs font-medium text-text-muted bg-surface-muted px-2 py-0.5 rounded-full">{filtered.length}</span>
         </div>
-        <div className="bg-surface border border-border rounded-xl overflow-hidden">
+        <div className="glass-panel rounded-xl overflow-hidden">
           <TasksTable
             tasks={filtered}
             onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}

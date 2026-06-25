@@ -189,7 +189,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             placeholder="Buscar por cliente ou projeto..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-surface border border-border/50 rounded-full pl-10 pr-4 py-2 text-sm text-text-primary outline-none focus:border-brand-primary/40 shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-300 ease-apple"
+            className="w-full glass-panel/50 rounded-full pl-10 pr-4 py-2 text-sm text-text-primary outline-none focus:border-brand-primary/40 shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-300 ease-apple"
           />
         </div>
 
@@ -208,7 +208,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 ease-apple active:scale-[0.97] shrink-0 ${
                 filterStatus === btn.id
                   ? 'bg-brand-primary text-white shadow-brand'
-                  : 'bg-surface border border-border text-text-secondary hover:bg-surface-muted'
+                  : 'glass-panel text-text-secondary hover:bg-surface-muted'
               }`}
             >
               {btn.label}

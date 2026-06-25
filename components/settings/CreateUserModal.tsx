@@ -185,7 +185,7 @@ export function CreateUserModal({ isOpen, onClose, onSuccess, clients }: CreateU
                     <label className="text-xs font-bold text-text-muted uppercase">Função na Equipe</label>
                     <select 
                       name="role"
-                      className="w-full h-11 px-4 bg-surface border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all"
+                      className="w-full h-11 px-4 glass-panel rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all"
                       required
                     >
                       <option value="writer">Redator</option>
@@ -199,7 +199,7 @@ export function CreateUserModal({ isOpen, onClose, onSuccess, clients }: CreateU
                     <label className="text-xs font-bold text-text-muted uppercase">Vincular a Cliente</label>
                     <select 
                       name="client_id"
-                      className="w-full h-11 px-4 bg-surface border border-border rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all"
+                      className="w-full h-11 px-4 glass-panel rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all"
                       required
                     >
                       <option value="">Selecione um cliente...</option>

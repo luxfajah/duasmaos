@@ -246,7 +246,7 @@ const StageCard = React.memo(function StageCard({
         </div>
 
         <div className="flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-surface border border-border shadow-inner">
+          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg glass-panel shadow-inner">
             <span className="text-[10px] font-black text-text-muted uppercase">Duração</span>
             <input
               type="number"
@@ -518,7 +518,7 @@ export function ProductTemplateBuilder({ initialData, id }: ProductTemplateBuild
                 <input
                   value={productName}
                   onChange={(e) => setProductName(e.target.value)}
-                  className="w-full bg-surface border border-border/50 rounded-xl px-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-bold"
+                  className="w-full glass-panel/50 rounded-xl px-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-bold"
                   placeholder="Ex: Identidade Visual Express"
                 />
               </div>
@@ -527,7 +527,7 @@ export function ProductTemplateBuilder({ initialData, id }: ProductTemplateBuild
                  <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-surface border border-border/50 rounded-xl px-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-bold appearance-none"
+                    className="w-full glass-panel/50 rounded-xl px-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-bold appearance-none"
                   >
                     {['Design', 'Marketing', 'Estratégia', 'Social Media', 'Web', 'Consultoria'].map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -537,7 +537,7 @@ export function ProductTemplateBuilder({ initialData, id }: ProductTemplateBuild
                  <select
                     value={productType}
                     onChange={(e) => setProductType(e.target.value)}
-                    className="w-full bg-surface border border-border/50 rounded-xl px-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-bold appearance-none"
+                    className="w-full glass-panel/50 rounded-xl px-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-bold appearance-none"
                   >
                     {Object.entries(PRODUCT_TYPE_LABELS).map(([k,v]) => (<option key={k} value={k}>{v}</option>))}
                   </select>
@@ -550,7 +550,7 @@ export function ProductTemplateBuilder({ initialData, id }: ProductTemplateBuild
                     type="number"
                     value={basePrice}
                     onChange={(e) => setBasePrice(e.target.value)}
-                    className="w-full bg-surface border border-border/50 rounded-xl pl-10 pr-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-mono font-bold"
+                    className="w-full glass-panel/50 rounded-xl pl-10 pr-4 py-2.5 text-sm text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all font-mono font-bold"
                     placeholder="0.00"
                   />
                 </div>

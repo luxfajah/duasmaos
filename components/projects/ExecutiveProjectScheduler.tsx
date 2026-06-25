@@ -324,7 +324,7 @@ export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutivePr
             </div>
             <div className="flex flex-wrap gap-2">
               {members.map(member => (
-                <div key={member.id} className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full bg-surface border border-border shadow-sm group">
+                <div key={member.id} className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full glass-panel shadow-sm group">
                   <div className="w-6 h-6 rounded-full bg-brand-primary/10 flex items-center justify-center text-[10px] font-black text-brand-primary">
                     {member.profiles?.full_name[0]}
                   </div>
@@ -370,7 +370,7 @@ export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutivePr
                     
                     <div className="flex flex-wrap items-center gap-4 mt-4">
                       {/* Duration Simulation Input */}
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface border border-border shadow-inner group/input">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass-panel shadow-inner group/input">
                         <Clock size={12} className="text-text-muted group-focus-within/input:text-brand-primary transition-colors" />
                         <input 
                           type="number"
@@ -382,7 +382,7 @@ export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutivePr
                       </div>
 
                       {/* Manual Start Date Input */}
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface border border-border">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass-panel">
                         <Calendar size={12} className="text-text-muted" />
                         <input 
                           type="date"
@@ -401,7 +401,7 @@ export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutivePr
                       </div>
 
                       {/* Mode Toggle */}
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface border border-border">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass-panel">
                         <CompactToggle 
                           checked={stage.start_mode === 'auto'} 
                           onChange={(v) => handleUpdateStage(sIdx, { start_mode: v ? 'auto' : 'manual' })} 
@@ -424,10 +424,10 @@ export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutivePr
                     {stage.tasks.map((task, tIdx) => (
                       <div 
                         key={task.id}
-                        className="group/task relative flex flex-col gap-3 p-3 rounded-2xl bg-surface border border-border/50 hover:border-brand-primary/30 hover:bg-surface-muted/30 transition-all animate-in fade-in slide-in-from-left-2 duration-300"
+                        className="group/task relative flex flex-col gap-3 p-3 rounded-2xl glass-panel/50 hover:border-brand-primary/30 hover:bg-surface-muted/30 transition-all animate-in fade-in slide-in-from-left-2 duration-300"
                       >
                          <div className="flex items-center gap-3">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-surface border border-border text-text-muted group-hover/task:text-brand-primary group-hover/task:border-brand-primary/20 transition-all shrink-0">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg glass-panel text-text-muted group-hover/task:text-brand-primary group-hover/task:border-brand-primary/20 transition-all shrink-0">
                                {React.createElement(TASK_TYPE_ICONS[task.type as TaskTypeV2] || Target, { size: 16 })}
                             </div>
                             <input 
@@ -589,7 +589,7 @@ export function ExecutiveProjectScheduler({ initialData, userRole }: ExecutivePr
               <label className="text-[10px] font-black uppercase tracking-widest text-text-muted">Membros Atuais</label>
               <div className="space-y-2">
                 {members.map(member => (
-                  <div key={member.user_id} className="flex items-center justify-between p-3 rounded-xl bg-surface border border-border">
+                  <div key={member.user_id} className="flex items-center justify-between p-3 rounded-xl glass-panel">
                     <div className="flex items-center gap-3">
                       <Avatar name={member.profiles?.full_name} src={member.profiles?.avatar_url || undefined} size="sm" />
                       <span className="text-sm font-bold text-text-primary">{member.profiles?.full_name}</span>

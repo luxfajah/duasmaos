@@ -166,7 +166,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
               <button 
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 bg-surface border border-border rounded-lg text-sm font-bold hover:border-brand-primary transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 glass-panel rounded-lg text-sm font-bold hover:border-brand-primary transition-all disabled:opacity-50"
               >
                 {isSaving ? <History className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 text-brand-primary" />}
                 Salvar Rascunho
@@ -292,7 +292,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
                          <div className="flex gap-2">
                             <button 
                               onClick={handleAddDriveLink}
-                              className="flex items-center gap-2 px-3 py-1.5 bg-surface border border-border rounded-lg text-xs font-bold hover:bg-slate-50 transition-all"
+                              className="flex items-center gap-2 px-3 py-1.5 glass-panel rounded-lg text-xs font-bold hover:bg-slate-50 transition-all"
                             >
                                <ExternalLink className="w-3.5 h-3.5 text-blue-500" /> Link Drive
                             </button>
@@ -346,7 +346,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
                                 </>
                               ) : (
                                 <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer transition-colors hover:bg-surface-muted/90 group p-4 text-center">
-                                  <div className="w-8 h-8 rounded-full bg-surface border border-border shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                  <div className="w-8 h-8 rounded-full glass-panel shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                                     <Plus className="w-4 h-4 text-brand-primary" />
                                   </div>
                                   <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted group-hover:text-text-primary">
@@ -386,7 +386,7 @@ export function PostEditorPopup({ post, isOpen, onClose, onUpdate }: PostEditorP
                                 "flex items-center justify-between p-4 rounded-xl text-sm font-bold transition-all disabled:opacity-50",
                                 formData.post_type === t 
                                   ? "bg-brand-primary text-white shadow-xl shadow-brand-primary/20 ring-4 ring-brand-primary/10 border-transparent transform scale-[1.02]" 
-                                  : "bg-surface border border-border text-text-muted hover:border-text-secondary hover:bg-surface-muted/30"
+                                  : "glass-panel text-text-muted hover:border-text-secondary hover:bg-surface-muted/30"
                               )}
                             >
                                <span className="capitalize">{t}</span>

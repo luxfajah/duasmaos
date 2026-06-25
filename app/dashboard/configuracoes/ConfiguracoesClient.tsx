@@ -408,7 +408,7 @@ export function ConfiguracoesClient({ users, clients, invitations, portalSetting
                     onChange={(e) => setFormIgBio(e.target.value)}
                     placeholder="| Detalhe 1&#10;| Detalhe 2"
                     rows={3}
-                    className="w-full text-sm bg-surface border border-border rounded-xl px-3 py-2 outline-none focus:border-brand-primary/40 transition-colors"
+                    className="w-full text-sm glass-panel rounded-xl px-3 py-2 outline-none focus:border-brand-primary/40 transition-colors"
                   />
                 </div>
 

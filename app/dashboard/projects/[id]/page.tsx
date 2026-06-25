@@ -176,7 +176,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       {/* Pipeline */}
       {stages.length > 0 && (
-        <section className="bg-surface border border-border rounded-xl p-6">
+        <section className="glass-panel rounded-xl p-6">
           <div className="flex items-center gap-2 mb-5">
             <GitBranch size={15} className="text-text-muted" />
             <h2 className="text-xs font-bold uppercase tracking-widest text-text-muted">

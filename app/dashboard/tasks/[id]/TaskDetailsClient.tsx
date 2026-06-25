@@ -186,7 +186,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
           
           {/* Entrega Module */}
           <div className={cn(
-            "bg-surface border border-border rounded-2xl overflow-hidden flex flex-col max-w-full",
+            "glass-panel rounded-2xl overflow-hidden flex flex-col max-w-full",
             isEditorialGrid ? "shrink-0" : "flex-1 min-h-0"
           )}>
             <div className="px-6 py-4 border-b border-border bg-surface-muted/10 flex items-center justify-between">
@@ -315,7 +315,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
 
                   {sortedPosts.length === 0 && (
                      <div className="col-span-full py-24 flex flex-col items-center justify-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-surface border border-border rounded-3xl flex items-center justify-center shadow-sm">
+                        <div className="w-20 h-20 glass-panel rounded-3xl flex items-center justify-center shadow-sm">
                            <Plus size={32} className="text-text-muted" />
                         </div>
                         <div className="max-w-xs">
@@ -397,7 +397,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                   {(task.html_content || task.description) && (
                     <button 
                       onClick={() => setIsEditingBriefing(true)}
-                      className="absolute -top-11 right-0 opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1 bg-surface border border-border rounded-md text-[10px] font-bold text-text-primary hover:text-brand-primary shadow-sm flex items-center gap-1.5"
+                      className="absolute -top-11 right-0 opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1 glass-panel rounded-md text-[10px] font-bold text-text-primary hover:text-brand-primary shadow-sm flex items-center gap-1.5"
                     >
                       <FileText size={12} /> Editar
                     </button>

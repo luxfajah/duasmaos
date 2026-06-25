@@ -90,7 +90,7 @@ export function TaskKanban({ tasks, onTaskClick }: TaskKanbanProps) {
             key={col.id}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDrop(e, col.id)}
-            className="flex flex-col rounded-xl bg-surface border border-border min-h-[300px]"
+            className="flex flex-col rounded-xl glass-panel min-h-[300px]"
           >
             {/* Column header */}
             <div className={cn('flex items-center gap-2 px-3 py-2.5 border-b border-border rounded-t-xl border-t-2', col.color)}>
