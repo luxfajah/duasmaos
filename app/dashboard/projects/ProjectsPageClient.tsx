@@ -119,22 +119,22 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
 
       <OperationalStats projects={initialProjects} team={team} />
 
-      <div className="flex flex-col lg:flex-row gap-4 mb-8">
+      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between mb-8">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome ou cliente..."
-            className="pl-10 h-11 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)]"
+            className="pl-10 h-10 w-full rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30"
             id="projects-search"
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 px-4 text-sm rounded-xl border border-border/50 bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
+            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
             id="projects-status-filter"
             aria-label="Filtrar por status"
           >
@@ -145,7 +145,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="h-11 px-4 text-sm rounded-xl border border-border/50 bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
+            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
             id="projects-type-filter"
             aria-label="Filtrar por tipo"
           >
@@ -153,7 +153,7 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
             <option value="one_time">Único</option>
             <option value="recurring">Recorrente</option>
           </select>
-          <Button onClick={() => setShowModal(true)} className="h-11 px-6 flex items-center gap-2 rounded-xl shadow-brand/20 hover:shadow-brand/30 active:scale-[0.97] transition-all duration-300 ease-apple">
+          <Button onClick={() => setShowModal(true)} className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 active:scale-[0.97] transition-all duration-300 ease-apple">
             <Plus size={18} />
             Novo Projeto
           </Button>
@@ -166,9 +166,9 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
         </p>
       )}
 
-      <div className="apple-bezel mt-5"><div className="apple-bezel-inner overflow-hidden">
+      <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4 mt-5">
         <ProjectsTable projects={filtered} clients={clients} team={team} />
-      </div></div>
+      </div>
 
       {showModal && (
         <ProjectModal
