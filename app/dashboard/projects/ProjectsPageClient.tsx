@@ -26,7 +26,7 @@ const STATUS_FILTER_OPTIONS: { value: string; label: string }[] = [
   { value: 'active', label: 'Ativos' },
   { value: 'paused', label: 'Pausados' },
   { value: 'completed', label: 'Finalizados' },
-  { value: 'archived', label: 'Arquivados' },
+  { value: 'archived', label: 'Inativos' },
 ]
 
 export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsPageClientProps) {
@@ -86,6 +86,11 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
     return matchesSearch && matchesStatus && matchesType
   })
 
+  const getStatusCount = (status: string) => {
+    if (status === 'all') return initialProjects.length
+    return initialProjects.filter(p => p.status === status).length
+  }
+
   return (
     <>
       <DashboardAlerts projects={initialProjects} />
@@ -131,17 +136,27 @@ export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsP
           />
         </div>
         <div className="flex items-center gap-4">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-10 px-4 glass-pill rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
-            id="projects-status-filter"
-            aria-label="Filtrar por status"
-          >
-            {STATUS_FILTER_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
+          {/* Segmented Control de Status */}
+          <div className="flex p-[3px] bg-black/5 dark:bg-black/40 border border-black/5 dark:border-white/5 rounded-full shadow-inner items-center overflow-x-auto hide-scrollbar">
+            {STATUS_FILTER_OPTIONS.map((opt) => {
+              const count = getStatusCount(opt.value)
+              const isActive = statusFilter === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setStatusFilter(opt.value)}
+                  className={cn(
+                    'flex items-center justify-center px-4 h-8 rounded-full text-[13px] transition-all duration-300 ease-apple whitespace-nowrap',
+                    isActive 
+                      ? 'bg-white dark:bg-white/10 text-text-primary shadow-[0_1px_3px_rgba(0,0,0,0.1)] dark:shadow-none ring-1 ring-black/5 dark:ring-white/10 font-bold'
+                      : 'text-text-secondary hover:text-text-primary font-medium hover:bg-black/5 dark:hover:bg-white/5'
+                  )}
+                >
+                  {opt.label} ({count})
+                </button>
+              )
+            })}
+          </div>
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
