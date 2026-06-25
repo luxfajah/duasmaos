@@ -204,27 +204,7 @@ export function ClientForm({ client }: ClientFormProps) {
       <div className="w-full lg:w-1/3 xl:w-1/4 shrink-0 z-20">
         <div className="glass-card-super p-6 rounded-[2rem] sticky top-24">
           
-          <div className="flex items-center gap-3 mb-8">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              type="button"
-              onClick={() => router.back()}
-              className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors shrink-0"
-            >
-              <ChevronLeft size={20} strokeWidth={2} />
-            </Button>
-            <div>
-              <h1 className="text-[22px] font-bold text-text-primary tracking-tight leading-tight">
-                {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
-              </h1>
-              <p className="text-xs text-text-muted mt-1 font-medium tracking-wide uppercase">
-                {isEdit ? form.name : 'Cadastro Guiado'}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-6 relative">
+          <div className="flex flex-col gap-6 relative mt-12">
             {/* Progress line behind icons */}
             <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-black/[0.04] dark:bg-white/[0.08] -z-10" />
 
@@ -541,41 +521,56 @@ export function ClientForm({ client }: ClientFormProps) {
         </div>
       </div>
 
-      {/* ── Floating Action Bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 z-50 pointer-events-none">
-        <div className="max-w-7xl mx-auto w-full flex justify-end px-2 lg:px-6 pointer-events-auto">
-          {/* We constrain the width to the right column width on large screens */}
-          <div className="w-full lg:w-2/3 xl:w-3/4 flex items-center justify-between glass-card-super p-3 rounded-[2rem] shadow-xl border border-black/[0.04] dark:border-white/[0.08]">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              onClick={prevStep}
-              disabled={isPending}
-              className="rounded-full px-6 h-12 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 font-bold tracking-wide transition-all"
-            >
-              {currentStep === 0 ? 'Cancelar' : 'Voltar'}
-            </Button>
-            
-            <div className="flex gap-2 items-center">
-              {/* Little dots indicator for mobile */}
-              <div className="flex lg:hidden gap-1.5 px-4">
-                {STEPS.map((_, idx) => (
-                  <div key={idx} className={cn("w-2 h-2 rounded-full transition-all", currentStep === idx ? "bg-brand-primary w-4" : "bg-text-muted/30")} />
-                ))}
-              </div>
+      {/* ── Floating Top Header ── */}
+      <div className="fixed top-0 left-0 right-0 p-4 lg:p-6 z-50 pointer-events-none flex justify-center">
+        <div className="pointer-events-auto flex items-center justify-between glass-pill px-4 py-2.5 rounded-full shadow-lg border border-black/[0.04] dark:border-white/[0.08] min-w-[280px]">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => router.back()} 
+            className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary"
+          >
+            <ChevronLeft size={18} />
+          </Button>
+          <h1 className="text-xs font-bold tracking-widest uppercase text-text-primary text-center">
+            {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
+          </h1>
+          <div className="w-8" />
+        </div>
+      </div>
 
-              <Button 
-                type="submit" 
-                disabled={isPending}
-                className="rounded-full px-8 h-12 bg-brand-primary hover:bg-brand-primary/90 text-white shadow-lg shadow-brand-primary/20 active:scale-95 transition-all font-bold tracking-wide"
-              >
-                {isPending ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  currentStep === STEPS.length - 1 ? (isEdit ? 'Salvar Alterações' : 'Finalizar Cadastro') : 'Próximo Passo'
-                )}
-              </Button>
+      {/* ── Floating Action Bar ── */}
+      <div className="fixed bottom-0 left-0 right-0 p-6 z-50 pointer-events-none flex justify-center">
+        <div className="pointer-events-auto w-full max-w-2xl flex items-center justify-between glass-card-super p-3 rounded-[2rem] shadow-2xl border border-black/[0.04] dark:border-white/[0.08]">
+          <Button 
+            type="button" 
+            variant="ghost" 
+            onClick={prevStep}
+            disabled={isPending}
+            className="rounded-full px-6 h-12 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 font-bold tracking-wide transition-all"
+          >
+            {currentStep === 0 ? 'Cancelar' : 'Voltar'}
+          </Button>
+          
+          <div className="flex gap-2 items-center">
+            {/* Little dots indicator for mobile */}
+            <div className="flex lg:hidden gap-1.5 px-4">
+              {STEPS.map((_, idx) => (
+                <div key={idx} className={cn("w-2 h-2 rounded-full transition-all", currentStep === idx ? "bg-brand-primary w-4" : "bg-text-muted/30")} />
+              ))}
             </div>
+
+            <Button 
+              type="submit" 
+              disabled={isPending}
+              className="rounded-full px-8 h-12 bg-brand-primary hover:bg-brand-primary/90 text-white shadow-lg shadow-brand-primary/20 active:scale-95 transition-all font-bold tracking-wide"
+            >
+              {isPending ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                currentStep === STEPS.length - 1 ? (isEdit ? 'Salvar Alterações' : 'Finalizar Cadastro') : 'Próximo Passo'
+              )}
+            </Button>
           </div>
         </div>
       </div>
