@@ -83,34 +83,37 @@ export function Sidebar({ className }: SidebarProps) {
           </Link>
         </div>
 
-        {/* ── Botão Novo Projeto Premium ── */}
-        <div className="px-3 mt-8 mb-6">
-          <Link href="/dashboard/projects?new=true" className="block">
-            <button className={cn(
-              'relative flex items-center overflow-hidden rounded-full',
-              'bg-gradient-to-b from-brand-primary to-[#E6352B] text-white',
-              'shadow-[0_4px_14px_rgba(255,59,48,0.25)] ring-1 ring-brand-primary/50',
-              'w-10 h-10 md:group-hover:w-full md:group-hover:h-11 mx-auto md:group-hover:mx-0 lg:w-full lg:h-11 lg:mx-0',
-              'transition-all duration-300 ease-apple',
-              'hover:shadow-[0_6px_20px_rgba(255,59,48,0.3)] hover:scale-[1.02] active:scale-[0.98]'
-            )}>
-              {/* Inner highlight (Glass) */}
-              <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none mix-blend-overlay" />
-              
-              {/* Ícone */}
-              <span className="flex items-center justify-center w-10 h-10 md:group-hover:h-11 lg:h-11 shrink-0 relative z-10">
-                <Plus size={18} strokeWidth={2} />
-              </span>
-              {/* Texto */}
-              <span className="opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 text-sm font-semibold tracking-wide whitespace-nowrap font-body pr-4 relative z-10">
-                Novo Projeto
-              </span>
-            </button>
-          </Link>
-        </div>
+        {/* ── Centro da Navbar: Botão + Links ── */}
+        <div className="flex-1 flex flex-col justify-center px-3 pb-8">
+          
+          {/* ── Botão Nova Tarefa Premium ── */}
+          <div className="mb-6">
+            <Link href="/dashboard/tasks?new=true" className="block">
+              <button className={cn(
+                'relative flex items-center overflow-hidden rounded-full',
+                'bg-gradient-to-b from-brand-primary to-[#E6352B] text-white',
+                'shadow-[0_4px_14px_rgba(255,59,48,0.25)] ring-1 ring-brand-primary/50',
+                'w-10 h-10 md:group-hover:w-full md:group-hover:h-11 mx-auto md:group-hover:mx-0 lg:w-full lg:h-11 lg:mx-0',
+                'transition-all duration-300 ease-apple',
+                'hover:shadow-[0_6px_20px_rgba(255,59,48,0.3)] hover:scale-[1.02] active:scale-[0.98]'
+              )}>
+                {/* Inner highlight (Glass) */}
+                <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none mix-blend-overlay" />
+                
+                {/* Ícone */}
+                <span className="flex items-center justify-center w-10 h-10 md:group-hover:h-11 lg:h-11 shrink-0 relative z-10">
+                  <Plus size={18} strokeWidth={2} />
+                </span>
+                {/* Texto */}
+                <span className="opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 text-sm font-semibold tracking-wide whitespace-nowrap font-body pr-4 relative z-10">
+                  Nova Tarefa
+                </span>
+              </button>
+            </Link>
+          </div>
 
-        {/* ── Navegação ── */}
-        <nav className="flex-1 flex flex-col justify-end pb-4 space-y-5 px-3">
+          {/* ── Navegação ── */}
+          <nav className="space-y-5">
           {navGroups.map((group) => (
             <div key={group.label}>
               {/* Group label — only visible on hover */}
@@ -151,7 +154,8 @@ export function Sidebar({ className }: SidebarProps) {
               </ul>
             </div>
           ))}
-        </nav>
+          </nav>
+        </div>
 
       </div>
     </aside>
