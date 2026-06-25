@@ -54,8 +54,8 @@ export function Sidebar({ className }: SidebarProps) {
       )}>
 
         {/* ── Logo ── */}
-        <div className="mb-5 px-4 flex items-center justify-start h-8 shrink-0 relative">
-          <Link href="/dashboard" className="flex items-center w-full overflow-hidden whitespace-nowrap">
+        <div className="mb-5 px-4 flex items-center justify-center h-8 shrink-0 relative">
+          <Link href="/dashboard" className="flex items-center justify-center w-full overflow-hidden whitespace-nowrap">
             {/* Símbolo — visível quando fechado */}
             <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-200 md:group-hover:opacity-0 lg:hidden">
               <Image
@@ -67,12 +67,12 @@ export function Sidebar({ className }: SidebarProps) {
               />
             </div>
             {/* Logotipo — visível quando aberto */}
-            <div className="absolute left-4 h-7 w-[160px] opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
+            <div className="absolute inset-0 mx-auto flex justify-center h-7 w-[160px] opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
               <Image
                 src={logoSrc}
                 alt="Duas Mãos"
                 fill
-                className="object-contain object-left"
+                className="object-contain object-center"
                 priority
               />
             </div>
