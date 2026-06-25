@@ -182,19 +182,19 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
     <div className="space-y-6">
       
       {/* ── Filters & Search ── */}
-      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between bg-surface/40 p-4 rounded-2xl border border-border/40 backdrop-blur-sm">
+      <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
         <div className="flex flex-1 w-full gap-4">
           <div className="relative flex-1">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
             <Input 
               placeholder="Buscar produtos ou categorias..." 
-              className="pl-10 h-11 bg-surface border-border/50 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] focus:ring-brand-primary/20"
+              className="pl-10 h-10 w-full rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select 
-            className="h-11 px-4 glass-panel/50 rounded-xl text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-300 ease-apple"
+            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
@@ -210,8 +210,8 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
               router.push(`?${params.toString()}`)
             }}
             className={cn(
-              "h-11 px-4 rounded-xl font-bold transition-all duration-300 ease-apple active:scale-[0.97] border-border/50",
-              showInactive ? "bg-surface-muted text-text-primary" : "text-text-muted hover:text-text-primary"
+              "h-10 px-4 rounded-full font-bold transition-all duration-300 ease-apple active:scale-[0.97] border-transparent",
+              showInactive ? "bg-black/10 dark:bg-white/10 text-text-primary shadow-sm" : "bg-black/5 dark:bg-white/5 text-text-muted hover:text-text-primary hover:bg-black/[0.07]"
             )}
           >
             {showInactive ? <RotateCcw size={16} className="mr-2" /> : <Archive size={16} className="mr-2" />}
@@ -219,16 +219,16 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
           </Button>
         </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 w-full lg:w-auto no-scrollbar">
+        <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-full overflow-x-auto no-scrollbar w-full lg:w-auto">
           {CATEGORIES.map(cat => (
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
               className={cn(
-                "px-4 h-9 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ease-apple active:scale-[0.97] border",
+                "px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ease-apple select-none whitespace-nowrap",
                 categoryFilter === cat 
-                  ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20" 
-                  : "bg-surface border-border/50 text-text-muted hover:text-text-primary hover:border-border-strong"
+                  ? "bg-white dark:bg-white/10 text-text-primary shadow-sm" 
+                  : "text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5"
               )}
             >
               {cat}
@@ -238,7 +238,7 @@ export function ProductsPageClient({ initialProducts }: ProductsPageClientProps)
 
         <Button 
           onClick={() => setShowNewModal(true)}
-          className="h-11 px-6 rounded-xl bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 w-full lg:w-auto active:scale-[0.97] transition-all duration-300 ease-apple"
+          className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 w-full lg:w-auto active:scale-[0.97] transition-all duration-300 ease-apple"
         >
           <Plus size={18} />
           Novo Produto

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { markRevenueAsPaid } from './actions'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { 
   DollarSign, 
@@ -189,13 +190,12 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             placeholder="Buscar por cliente ou projeto..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full glass-panel/50 rounded-full pl-10 pr-4 py-2 text-sm text-text-primary outline-none focus:border-brand-primary/40 shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-300 ease-apple"
+            className="w-full pl-10 h-10 rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30 outline-none text-sm text-text-primary"
           />
         </div>
 
         {/* Status filters */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 w-full md:w-auto">
-          <Filter size={14} className="text-text-muted shrink-0 hidden sm:block" />
+        <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-full overflow-x-auto no-scrollbar w-full md:w-auto">
           {[
             { id: 'all', label: 'Todos' },
             { id: 'paid', label: 'Pagos' },
@@ -205,11 +205,12 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             <button
               key={btn.id}
               onClick={() => setFilterStatus(btn.id)}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 ease-apple active:scale-[0.97] shrink-0 ${
+              className={cn(
+                "px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ease-apple select-none whitespace-nowrap",
                 filterStatus === btn.id
-                  ? 'bg-brand-primary text-white shadow-brand'
-                  : 'glass-panel text-text-secondary hover:bg-surface-muted'
-              }`}
+                  ? "bg-white dark:bg-white/10 text-text-primary shadow-sm"
+                  : "text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5"
+              )}
             >
               {btn.label}
             </button>
@@ -219,17 +220,17 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
       </div>
 
       {/* 3. Table of Revenues */}
-      <div className="apple-bezel"><div className="apple-bezel-inner overflow-hidden">
+      <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-border bg-surface-muted/30 text-xs font-bold text-text-muted uppercase tracking-wider">
-                <th className="px-6 py-4">Projeto / Cliente</th>
-                <th className="px-6 py-4">Tipo</th>
-                <th className="px-6 py-4">Vencimento</th>
-                <th className="px-6 py-4">Valor</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Ação</th>
+              <tr className="border-b border-black/[0.03] dark:border-white/[0.03] text-left align-middle text-[11px] uppercase tracking-[0.06em] text-[#8A94A6] dark:text-[#A0AABF] font-bold">
+                <th className="px-6 py-4 h-12 whitespace-nowrap">Projeto / Cliente</th>
+                <th className="px-6 py-4 h-12 whitespace-nowrap">Tipo</th>
+                <th className="px-6 py-4 h-12 whitespace-nowrap">Vencimento</th>
+                <th className="px-6 py-4 h-12 whitespace-nowrap">Valor</th>
+                <th className="px-6 py-4 h-12 whitespace-nowrap">Status</th>
+                <th className="px-6 py-4 h-12 whitespace-nowrap text-right">Ação</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border text-sm text-text-secondary">
@@ -238,7 +239,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
                 const isOverdue = rev.status === 'overdue' || (rev.status === 'pending' && dueDate < new Date())
                 
                 return (
-                  <tr key={rev.id} className="hover:bg-surface-muted/20 transition-all duration-300 ease-apple">
+                  <tr key={rev.id} className="border-b border-black/[0.03] dark:border-white/[0.03] transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-bold text-text-primary text-sm">{rev.project?.name || 'Projeto Excluído'}</span>
@@ -301,7 +302,7 @@ export function FinanceiroPageClient({ initialSummary, initialRevenues }: Financ
             </tbody>
           </table>
         </div>
-      </div></div>
+      </div>
 
       {/* 4. Confirm Payment Modal */}
       {selectedRevenue && (

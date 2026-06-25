@@ -125,7 +125,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
 
         {/* Status Segmented Control & Actions */}
         <div className="flex items-center gap-4">
-          <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-xl">
+          <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-full">
             {[
               { id: 'all', label: `Todos (${countAll})` },
               { id: 'active', label: `Ativos (${countActive})` },
@@ -136,7 +136,7 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id as StatusFilter)}
                 className={cn(
-                  'px-3 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200 ease-apple select-none',
+                  'px-4 py-1.5 text-xs font-semibold rounded-full transition-all duration-200 ease-apple select-none',
                   statusFilter === tab.id
                     ? 'bg-white dark:bg-white/10 text-text-primary shadow-sm'
                     : 'text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5'
@@ -156,8 +156,8 @@ export function ClientsClient({ initialClients }: ClientsClientProps) {
         </div>
       </div>
 
-      {/* ── Table Container (Glass) ── */}
-      <div className="glass-panel overflow-hidden">
+      {/* ── Super Table Container (Pill Glass) ── */}
+      <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4">
         <ClientsTable clients={filtered} />
       </div>
     </div>

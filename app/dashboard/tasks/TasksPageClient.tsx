@@ -42,22 +42,22 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
   return (
     <>
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por tarefa ou projeto..."
-            className="pl-9"
-            id="tasks-search"
-          />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por tarefa ou projeto..."
+              className="pl-10 h-10 w-full rounded-full transition-all duration-200 bg-black/5 dark:bg-white/5 border-transparent hover:bg-black/[0.07] dark:hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-brand-primary/30"
+              id="tasks-search"
+            />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="glass-input h-10 px-3 text-sm rounded-md focus:outline-none"
-          id="tasks-status-filter"
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-10 px-4 bg-black/5 dark:bg-white/5 border-transparent rounded-full text-sm font-bold text-text-primary outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all duration-300 ease-apple"
+            id="tasks-status-filter"
           aria-label="Filtrar por status"
         >
           <option value="all">Todos os status</option>
@@ -68,7 +68,10 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
           <option value="done">Concluído</option>
           <option value="blocked">Pausado</option>
         </select>
-        <Button onClick={() => setShowModal(true)} className="flex items-center gap-2 flex-shrink-0">
+        <Button 
+          onClick={() => setShowModal(true)} 
+          className="h-10 px-6 rounded-full bg-brand-primary hover:bg-brand-primary/90 text-white font-black shadow-xl shadow-brand-primary/20 flex items-center gap-2 w-full sm:w-auto active:scale-[0.97] transition-all duration-300 ease-apple"
+        >
           <Plus size={16} />
           Nova Tarefa
         </Button>
@@ -91,7 +94,7 @@ export function TasksPageClient({ initialTasks, projects, team }: TasksPageClien
           <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Lista Completa</h3>
           <span className="text-xs font-medium text-text-muted bg-surface-muted px-2 py-0.5 rounded-full">{filtered.length}</span>
         </div>
-        <div className="glass-panel rounded-xl overflow-hidden">
+        <div className="rounded-[2rem] bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-black/[0.04] dark:border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.02)] dark:shadow-none overflow-hidden pb-4">
           <TasksTable
             tasks={filtered}
             onEdit={(task) => router.push(`/dashboard/tasks/${task.id}`)}
