@@ -102,7 +102,7 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* ── Navegação ── */}
-        <nav className="flex-1 space-y-5 px-3">
+        <nav className="flex-1 flex flex-col justify-end pb-4 space-y-5 px-3">
           {navGroups.map((group) => (
             <div key={group.label}>
               {/* Group label — only visible on hover */}
