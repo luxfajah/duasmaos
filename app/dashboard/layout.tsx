@@ -45,13 +45,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div className="flex min-h-screen bg-background font-sans">
         {/* Floating Sidebar */}
         <Sidebar
-          className="hidden lg:block"
+          className="hidden md:block"
           userName={userName}
           userEmail={userEmail}
         />
 
         {/* Main area */}
-        <div className="flex-1 flex flex-col relative w-full min-w-0 lg:pl-16">
+        <div className="flex-1 flex flex-col relative w-full min-w-0 md:pl-16 lg:pl-64 transition-all duration-300 ease-apple">
 
           {/* TopBar with notifications */}
           <TopBar

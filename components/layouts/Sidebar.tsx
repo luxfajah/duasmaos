@@ -44,10 +44,10 @@ export function Sidebar({ className }: SidebarProps) {
   const logoSrc = isDark ? '/brand/logos/logotipo-dark.png' : '/brand/logos/logotipo-light.png'
 
   return (
-    <aside className={cn('fixed inset-y-0 left-0 z-50 hidden lg:block border-r border-border/50', className)}>
+    <aside className={cn('fixed inset-y-0 left-0 z-50 hidden md:block border-r border-border/50', className)}>
       <div className={cn(
         'group relative flex flex-col py-5',
-        'w-16 hover:w-60 h-screen',
+        'md:w-16 md:hover:w-64 lg:w-64 h-screen',
         'transition-all duration-300 ease-apple',
         'sidebar-surface',
         'overflow-hidden'
@@ -57,7 +57,7 @@ export function Sidebar({ className }: SidebarProps) {
         <div className="mb-5 px-4 flex items-center justify-start h-8 shrink-0 relative">
           <Link href="/dashboard" className="flex items-center w-full overflow-hidden whitespace-nowrap">
             {/* Símbolo — visível quando fechado */}
-            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-200 group-hover:opacity-0">
+            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-200 md:group-hover:opacity-0 lg:hidden">
               <Image
                 src={symbolSrc}
                 alt="Duas Mãos símbolo"
@@ -67,7 +67,7 @@ export function Sidebar({ className }: SidebarProps) {
               />
             </div>
             {/* Logotipo — visível quando aberto */}
-            <div className="absolute left-4 h-7 w-[160px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
+            <div className="absolute left-4 h-7 w-[160px] opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
               <Image
                 src={logoSrc}
                 alt="Duas Mãos"
@@ -85,7 +85,7 @@ export function Sidebar({ className }: SidebarProps) {
             <button className={cn(
               'bg-brand-primary text-[hsl(35_35%_95%)] font-semibold font-sans w-full',
               'flex items-center rounded-full',
-              'w-12 h-10 group-hover:w-full group-hover:h-10 mx-auto group-hover:mx-0',
+              'w-12 h-10 md:group-hover:w-full md:group-hover:h-10 mx-auto md:group-hover:mx-0 lg:w-full lg:mx-0',
               'transition-all duration-300 ease-apple',
               'shadow-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] overflow-hidden',
             )}>
@@ -94,7 +94,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <Plus size={18} strokeWidth={1.5} />
               </span>
               {/* Texto — só aparece quando aberto */}
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100 text-sm whitespace-nowrap font-heading pr-4">
+              <span className="opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-100 text-sm whitespace-nowrap font-heading pr-4">
                 Novo Projeto
               </span>
             </button>
@@ -106,7 +106,7 @@ export function Sidebar({ className }: SidebarProps) {
           {navGroups.map((group) => (
             <div key={group.label}>
               {/* Group label — only visible on hover */}
-              <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted/65 mb-2 px-3 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-body">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-text-muted/65 mb-2 px-3 h-4 opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 whitespace-nowrap font-body">
                 {group.label}
               </p>
               <ul className="space-y-0.5">
@@ -125,7 +125,7 @@ export function Sidebar({ className }: SidebarProps) {
                         )}
                       >
                         {/* Icon */}
-                        <div className="flex items-center justify-center w-6 h-6 shrink-0 relative z-10 transition-transform duration-200 group-hover/item:scale-105 mx-auto group-hover:mx-0">
+                        <div className="flex items-center justify-center w-6 h-6 shrink-0 relative z-10 transition-transform duration-200 group-hover/item:scale-105 md:mx-auto md:group-hover:mx-0 lg:mx-0">
                           <item.icon
                             size={18}
                             strokeWidth={1.5}
@@ -133,7 +133,7 @@ export function Sidebar({ className }: SidebarProps) {
                           />
                         </div>
                         {/* Label */}
-                        <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 relative z-10">
+                        <span className="ml-2.5 text-sm font-medium font-body whitespace-nowrap opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 relative z-10">
                           {item.label}
                         </span>
                       </Link>
