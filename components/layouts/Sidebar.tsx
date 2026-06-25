@@ -44,12 +44,12 @@ export function Sidebar({ className }: SidebarProps) {
   const logoSrc = isDark ? '/brand/logos/logotipo-dark.png' : '/brand/logos/logotipo-light.png'
 
   return (
-    <aside className={cn('fixed inset-y-0 left-0 z-50 hidden md:block border-r border-border/50', className)}>
+    <aside className={cn('fixed inset-y-0 left-0 z-50 hidden md:block border-r border-border/40', className)}>
       <div className={cn(
         'group relative flex flex-col py-5',
         'md:w-16 md:hover:w-64 lg:w-64 h-screen',
         'transition-all duration-300 ease-apple',
-        'sidebar-surface',
+        'bg-background/60 backdrop-blur-2xl saturate-[1.5]',
         'overflow-hidden'
       )}>
 
