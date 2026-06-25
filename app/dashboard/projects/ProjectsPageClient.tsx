@@ -31,7 +31,7 @@ const STATUS_FILTER_OPTIONS: { value: string; label: string }[] = [
   { value: 'archived', label: 'Inativos' },
 ]
 
-export function ProjectsPageClient({ initialProjects, clients, team }: ProjectsPageClientProps) {
+export function ProjectsPageClient({ initialProjects, clients, team, currentUserRole }: ProjectsPageClientProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [search, setSearch] = useState('')
