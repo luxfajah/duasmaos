@@ -529,19 +529,10 @@ export function ClientForm({ client }: ClientFormProps) {
 
       {/* ── Dynamic Top Navbar Title ── */}
       {mounted && document.getElementById('top-bar-center') && createPortal(
-        <div className="flex items-center gap-2 lg:gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => router.back()} 
-            className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5"
-          >
-            <ChevronLeft size={18} />
-          </Button>
+        <div className="flex items-center justify-center animate-in fade-in slide-in-from-top-4 duration-300">
           <h1 className="text-[13px] font-bold tracking-widest uppercase text-text-primary text-center">
             {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
           </h1>
-          <div className="w-8" />
         </div>,
         document.getElementById('top-bar-center')!
       )}
