@@ -60,8 +60,6 @@ export function V2ProjectWorkspace({ project, profile }: V2ProjectWorkspaceProps
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-2">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-surface-muted text-text-muted">
               <Building2 size={14} />
             </div>
