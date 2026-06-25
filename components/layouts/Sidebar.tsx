@@ -79,22 +79,26 @@ export function Sidebar({ className }: SidebarProps) {
           </Link>
         </div>
 
-        {/* ── Botão Novo Projeto — Terracotta ── */}
-        <div className="px-2 mb-6">
+        {/* ── Botão Novo Projeto Premium ── */}
+        <div className="px-3 mt-8 mb-6">
           <Link href="/dashboard/projects?new=true" className="block">
             <button className={cn(
-              'bg-brand-primary text-[hsl(35_35%_95%)] font-semibold font-sans w-full',
-              'flex items-center rounded-full',
-              'w-12 h-10 md:group-hover:w-full md:group-hover:h-10 mx-auto md:group-hover:mx-0 lg:w-full lg:mx-0',
+              'relative flex items-center overflow-hidden rounded-full',
+              'bg-gradient-to-b from-brand-primary to-[#E6352B] text-white',
+              'shadow-[0_4px_14px_rgba(255,59,48,0.25)] ring-1 ring-brand-primary/50',
+              'w-10 h-10 md:group-hover:w-full md:group-hover:h-11 mx-auto md:group-hover:mx-0 lg:w-full lg:h-11 lg:mx-0',
               'transition-all duration-300 ease-apple',
-              'shadow-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] overflow-hidden',
+              'hover:shadow-[0_6px_20px_rgba(255,59,48,0.3)] hover:scale-[1.02] active:scale-[0.98]'
             )}>
-              {/* Ícone — fixo, sempre visível */}
-              <span className="flex items-center justify-center w-12 h-10 shrink-0">
-                <Plus size={18} strokeWidth={1.5} />
+              {/* Inner highlight (Glass) */}
+              <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none mix-blend-overlay" />
+              
+              {/* Ícone */}
+              <span className="flex items-center justify-center w-10 h-10 md:group-hover:h-11 lg:h-11 shrink-0 relative z-10">
+                <Plus size={18} strokeWidth={2} />
               </span>
-              {/* Texto — só aparece quando aberto */}
-              <span className="opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-100 text-sm whitespace-nowrap font-heading pr-4">
+              {/* Texto */}
+              <span className="opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 text-sm font-semibold tracking-wide whitespace-nowrap font-body pr-4 relative z-10">
                 Novo Projeto
               </span>
             </button>
