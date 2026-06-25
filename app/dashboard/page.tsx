@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { getV2AllProjects, getV2AllTasks } from './v2/actions'
 import { DashboardClientView } from '@/components/dashboard/DashboardClientView'
+import { EditorialHeader } from '@/components/brand/EditorialHeader'
 
 export default async function DashboardPage() {
   const supabase = createClient()
@@ -25,11 +26,14 @@ export default async function DashboardPage() {
   const displayName = fullName
 
   return (
-    <DashboardClientView 
-      user={{ firstName, displayName, avatarUrl }}
-      team={team}
-      initialProjects={projects}
-      initialTasks={initialTasks}
-    />
+    <>
+      <EditorialHeader title="Dashboard" />
+      <DashboardClientView 
+        user={{ firstName, displayName, avatarUrl }}
+        team={team}
+        initialProjects={projects}
+        initialTasks={initialTasks}
+      />
+    </>
   )
 }
