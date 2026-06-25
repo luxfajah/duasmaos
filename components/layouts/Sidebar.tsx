@@ -54,10 +54,11 @@ export function Sidebar({ className }: SidebarProps) {
       )}>
 
         {/* ── Logo ── */}
-        <div className="mb-5 px-4 flex items-center justify-center h-8 shrink-0 relative">
-          <Link href="/dashboard" className="flex items-center justify-center w-full overflow-hidden whitespace-nowrap">
+        <div className="mb-5 flex items-center h-8 shrink-0 relative w-full">
+          <Link href="/dashboard" className="flex items-center w-full h-full overflow-hidden whitespace-nowrap relative">
+            
             {/* Símbolo — visível quando fechado */}
-            <div className="relative w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-200 md:group-hover:opacity-0 lg:hidden">
+            <div className="absolute left-4 w-8 h-8 shrink-0 flex items-center justify-center transition-opacity duration-200 md:group-hover:opacity-0 lg:hidden">
               <Image
                 src={symbolSrc}
                 alt="Duas Mãos símbolo"
@@ -66,16 +67,19 @@ export function Sidebar({ className }: SidebarProps) {
                 priority
               />
             </div>
+            
             {/* Logotipo — visível quando aberto */}
-            <div className="absolute inset-0 mx-auto flex justify-center h-7 w-[160px] opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
+            {/* Espaçamento da esquerda igual ao espaçamento da direita do Avatar no TopBar */}
+            <div className="absolute left-6 lg:left-8 h-7 w-[160px] opacity-0 md:group-hover:opacity-100 lg:opacity-100 transition-opacity duration-200 delay-75 pointer-events-none">
               <Image
                 src={logoSrc}
                 alt="Duas Mãos"
                 fill
-                className="object-contain object-center"
+                className="object-contain object-left"
                 priority
               />
             </div>
+
           </Link>
         </div>
 
