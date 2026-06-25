@@ -10,7 +10,11 @@ import {
   ChevronLeft,
   User,
   Building2,
-  Search
+  Search,
+  MapPin,
+  Phone,
+  Briefcase,
+  CheckCircle2
 } from 'lucide-react'
 import { createClient as createBrowserClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -20,12 +24,20 @@ interface ClientFormProps {
   client?: Client & { client_addresses?: ClientAddress[] } | null
 }
 
+const STEPS = [
+  { id: 'identificacao', title: 'Identificação', icon: User, desc: 'Dados principais do cliente' },
+  { id: 'localizacao', title: 'Localização', icon: MapPin, desc: 'Endereço e CEP' },
+  { id: 'contatos', title: 'Contatos', icon: Phone, desc: 'Telefones e e-mails' },
+  { id: 'comercial', title: 'Comercial', icon: Briefcase, desc: 'Segmento e origens' }
+]
+
 export function ClientForm({ client }: ClientFormProps) {
   const isEdit = !!client
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [isSearchingCep, setIsSearchingCep] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
   const router = useRouter()
 
   const [form, setForm] = useState({
@@ -126,9 +138,16 @@ export function ClientForm({ client }: ClientFormProps) {
   function handleSubmit(e?: React.FormEvent) {
     if (e) e.preventDefault()
     setError(null)
+    
+    // Validate only on final step submit
+    if (currentStep !== STEPS.length - 1) {
+      nextStep()
+      return
+    }
+
     if (!form.name.trim()) {
       setError('O nome é obrigatório.')
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setCurrentStep(0)
       return
     }
     
@@ -144,337 +163,420 @@ export function ClientForm({ client }: ClientFormProps) {
         router.refresh()
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : 'Erro ao salvar cliente.')
-        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     })
   }
 
-  // Helper component for HIG Form Rows
-  const FormRow = ({ label, children, col = false }: { label: string, children: React.ReactNode, col?: boolean }) => (
-    <div className={cn(
-      "flex py-3 px-4 border-b border-black/[0.04] dark:border-white/[0.04] last:border-0",
-      col ? "flex-col gap-1 sm:gap-2" : "flex-col sm:flex-row sm:items-center gap-1 sm:gap-4"
-    )}>
-      <label className="sm:w-1/3 text-[15px] font-medium text-text-primary shrink-0">
+  function nextStep() {
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(prev => prev + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      router.back()
+    }
+  }
+
+  // Field Wrapper Component
+  const Field = ({ label, children, colSpan = 1 }: { label: string, children: React.ReactNode, colSpan?: number }) => (
+    <div className={cn("flex flex-col gap-2", colSpan === 2 && "md:col-span-2")}>
+      <label className="text-[13px] font-bold tracking-[0.06em] uppercase text-[#8A94A6] dark:text-[#A0AABF]">
         {label}
       </label>
-      <div className="flex-1 w-full relative">
+      <div className="relative">
         {children}
       </div>
     </div>
   )
 
-  const higInputClasses = "border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-auto text-[15px] text-text-secondary placeholder:text-text-muted/60 w-full rounded-none"
+  const higInputClasses = "glass-pill border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 px-4 h-12 text-[15px] text-text-primary placeholder:text-text-muted/60 w-full transition-all duration-300"
 
   return (
-    <form onSubmit={handleSubmit} className="relative pb-24 max-w-3xl mx-auto min-h-[calc(100vh-200px)]">
+    <form onSubmit={handleSubmit} className="relative pb-32 w-full max-w-7xl mx-auto min-h-[calc(100vh-120px)] flex flex-col lg:flex-row gap-8">
       
-      {/* ── Top Bar Navigation ── */}
-      <div className="flex items-center gap-4 mb-8 sticky top-0 z-20 py-4 bg-background/80 backdrop-blur-xl -mx-4 px-4 sm:mx-0 sm:px-0">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          type="button"
-          onClick={() => isEdit && client ? router.push(`/dashboard/clients/${client.id}`) : router.push('/dashboard/clients')}
-          className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          <ChevronLeft size={20} strokeWidth={2} />
-        </Button>
-        <h1 className="text-[22px] font-semibold text-text-primary tracking-tight">
-          {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
-        </h1>
-      </div>
-
-      {error && (
-        <div className="mb-6 p-4 rounded-xl bg-status-danger/10 border border-status-danger/20 text-status-danger text-[14px] font-medium">
-          {error}
-        </div>
-      )}
-
-      <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-        {/* ── Seção: TIPO DE CLIENTE ── */}
-        <section>
-          <div className="flex justify-center mb-4">
-            <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-[14px] w-full max-w-sm relative">
-              <button
-                type="button"
-                onClick={() => handleChange('type', 'pf')}
-                className={cn(
-                  "flex-1 flex justify-center items-center gap-2 py-2 rounded-[10px] text-[14px] font-semibold transition-all select-none relative z-10",
-                  form.type === 'pf' ? 'text-text-primary shadow-sm bg-white dark:bg-white/10' : 'text-text-secondary hover:text-text-primary'
-                )}
-              >
-                <User size={16} /> Individual
-              </button>
-              <button
-                type="button"
-                onClick={() => handleChange('type', 'pj')}
-                className={cn(
-                  "flex-1 flex justify-center items-center gap-2 py-2 rounded-[10px] text-[14px] font-semibold transition-all select-none relative z-10",
-                  form.type === 'pj' ? 'text-text-primary shadow-sm bg-white dark:bg-white/10' : 'text-text-secondary hover:text-text-primary'
-                )}
-              >
-                <Building2 size={16} /> Empresa
-              </button>
+      {/* ── Left Column: Stepper ── */}
+      <div className="w-full lg:w-1/3 xl:w-1/4 shrink-0 z-20">
+        <div className="glass-card-super p-6 rounded-[2rem] sticky top-24">
+          
+          <div className="flex items-center gap-3 mb-8">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              type="button"
+              onClick={() => router.back()}
+              className="h-8 w-8 rounded-full p-0 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors shrink-0"
+            >
+              <ChevronLeft size={20} strokeWidth={2} />
+            </Button>
+            <div>
+              <h1 className="text-[22px] font-bold text-text-primary tracking-tight leading-tight">
+                {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
+              </h1>
+              <p className="text-xs text-text-muted mt-1 font-medium tracking-wide uppercase">
+                {isEdit ? form.name : 'Cadastro Guiado'}
+              </p>
             </div>
           </div>
-        </section>
 
-        {/* ── Seção: IDENTIFICAÇÃO ── */}
-        <section>
-          <h2 className="text-[12px] font-medium text-text-muted uppercase ml-4 mb-2 tracking-wider">Identificação</h2>
-          <div className="bg-surface-primary/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl overflow-hidden shadow-sm">
-            
-            <FormRow label={form.type === 'pf' ? 'Nome Completo' : 'Razão Social'}>
-              <Input
-                value={form.name}
-                onChange={(e) => handleChange('name', e.target.value)}
-                placeholder="Obrigatório"
-                className={higInputClasses}
-                required
-              />
-            </FormRow>
+          <div className="flex flex-col gap-6 relative">
+            {/* Progress line behind icons */}
+            <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-black/[0.04] dark:bg-white/[0.08] -z-10" />
 
-            {form.type === 'pj' && (
-              <FormRow label="Nome Fantasia">
-                <Input
-                  value={form.trade_name}
-                  onChange={(e) => handleChange('trade_name', e.target.value)}
-                  placeholder="Opcional"
-                  className={higInputClasses}
-                />
-              </FormRow>
-            )}
+            {STEPS.map((step, idx) => {
+              const Icon = step.icon
+              const isActive = currentStep === idx
+              const isPast = currentStep > idx
 
-            <FormRow label={form.type === 'pf' ? 'CPF' : 'CNPJ'}>
-              <Input
-                value={form.type === 'pf' ? applyMask(form.cpf, 'cpf') : applyMask(form.cnpj, 'cnpj')}
-                onChange={(e) => handleChange(form.type === 'pf' ? 'cpf' : 'cnpj', e.target.value)}
-                placeholder={form.type === 'pf' ? '000.000.000-00' : '00.000.000/0000-00'}
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label={form.type === 'pf' ? 'Data de Nascimento' : 'Responsável'}>
-              {form.type === 'pf' ? (
-                <Input
-                  type="date"
-                  value={form.birth_date}
-                  onChange={(e) => handleChange('birth_date', e.target.value)}
-                  className={higInputClasses}
-                />
-              ) : (
-                <Input
-                  value={form.responsible_name}
-                  onChange={(e) => handleChange('responsible_name', e.target.value)}
-                  placeholder="Nome do contato principal"
-                  className={higInputClasses}
-                />
-              )}
-            </FormRow>
-
-          </div>
-        </section>
-
-        {/* ── Seção: CONTATOS ── */}
-        <section>
-          <h2 className="text-[12px] font-medium text-text-muted uppercase ml-4 mb-2 tracking-wider">Contatos</h2>
-          <div className="bg-surface-primary/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl overflow-hidden shadow-sm">
-            
-            <FormRow label="E-mail">
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                placeholder="exemplo@empresa.com"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Telefone">
-              <Input
-                value={applyMask(form.phone, 'phone')}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                placeholder="(00) 0000-0000"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="WhatsApp">
-              <Input
-                value={applyMask(form.whatsapp, 'phone')}
-                onChange={(e) => handleChange('whatsapp', e.target.value)}
-                placeholder="(00) 00000-0000"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-          </div>
-        </section>
-
-        {/* ── Seção: ENDEREÇO ── */}
-        <section>
-          <h2 className="text-[12px] font-medium text-text-muted uppercase ml-4 mb-2 tracking-wider">Endereço</h2>
-          <div className="bg-surface-primary/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl overflow-hidden shadow-sm">
-            
-            <FormRow label="CEP">
-              <div className="flex items-center gap-2">
-                <Input
-                  value={applyMask(form.address.zip_code, 'cep')}
-                  onChange={(e) => handleChange('address.zip_code', e.target.value)}
-                  onBlur={handleCepSearch}
-                  placeholder="00000-000"
-                  className={higInputClasses}
-                />
-                {isSearchingCep && <Loader2 size={16} className="animate-spin text-brand-primary" />}
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleCepSearch}
-                  className="h-7 w-7 rounded-full p-0 text-brand-primary hover:bg-brand-primary/10"
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => setCurrentStep(idx)}
+                  className={cn(
+                    "flex items-start gap-4 text-left transition-all duration-300 group",
+                    isActive ? "opacity-100" : "opacity-40 hover:opacity-70"
+                  )}
                 >
-                  <Search size={14} />
-                </Button>
-              </div>
-            </FormRow>
-
-            <FormRow label="Rua / Avenida">
-              <Input
-                value={form.address.street}
-                onChange={(e) => handleChange('address.street', e.target.value)}
-                placeholder="Nome do logradouro"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Número">
-              <Input
-                value={form.address.number}
-                onChange={(e) => handleChange('address.number', e.target.value)}
-                placeholder="S/N"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Complemento">
-              <Input
-                value={form.address.complement}
-                onChange={(e) => handleChange('address.complement', e.target.value)}
-                placeholder="Apto, Sala, etc."
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Cidade">
-              <Input
-                value={form.address.city}
-                onChange={(e) => handleChange('address.city', e.target.value)}
-                placeholder="Cidade"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Estado (UF)">
-              <Input
-                value={form.address.state}
-                onChange={(e) => handleChange('address.state', e.target.value)}
-                placeholder="Ex: SP"
-                maxLength={2}
-                className={cn(higInputClasses, "uppercase")}
-              />
-            </FormRow>
-
+                  <div className={cn(
+                    "w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 shadow-sm",
+                    isActive 
+                      ? "bg-brand-primary text-white scale-110 shadow-brand-primary/20" 
+                      : isPast 
+                        ? "bg-olive text-white" 
+                        : "bg-surface-primary text-text-muted border border-border"
+                  )}>
+                    {isPast ? <CheckCircle2 size={20} /> : <Icon size={20} strokeWidth={isActive ? 2 : 1.5} />}
+                  </div>
+                  <div className="pt-1.5">
+                    <p className={cn(
+                      "text-sm font-bold tracking-wide uppercase",
+                      isActive ? "text-brand-primary" : "text-text-primary"
+                    )}>
+                      {step.title}
+                    </p>
+                    <p className="text-xs text-text-muted mt-1 font-medium">
+                      {step.desc}
+                    </p>
+                  </div>
+                </button>
+              )
+            })}
           </div>
-        </section>
 
-        {/* ── Seção: COMERCIAL E NOTAS ── */}
-        <section>
-          <h2 className="text-[12px] font-medium text-text-muted uppercase ml-4 mb-2 tracking-wider">Comercial & Informações Extras</h2>
-          <div className="bg-surface-primary/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl overflow-hidden shadow-sm">
-            
-            <FormRow label="Segmento">
-              <Input
-                value={form.segment}
-                onChange={(e) => handleChange('segment', e.target.value)}
-                placeholder="Ex: Tecnologia, Varejo"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Website">
-              <Input
-                type="url"
-                value={form.website}
-                onChange={(e) => handleChange('website', e.target.value)}
-                placeholder="https://"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Origem do Lead">
-              <Input
-                value={form.lead_source}
-                onChange={(e) => handleChange('lead_source', e.target.value)}
-                placeholder="Ex: Instagram, Indicação"
-                className={higInputClasses}
-              />
-            </FormRow>
-
-            <FormRow label="Account Manager">
-              <select
-                value={form.account_manager_id}
-                onChange={(e) => handleChange('account_manager_id', e.target.value)}
-                className={cn(higInputClasses, "appearance-none bg-transparent outline-none")}
-              >
-                <option value="">Não atribuído</option>
-                {profiles.map(p => (
-                  <option key={p.id} value={p.id}>{p.full_name}</option>
-                ))}
-              </select>
-            </FormRow>
-
-            <div className="flex flex-col gap-2 py-3 px-4">
-              <label className="text-[15px] font-medium text-text-primary">
-                Anotações Internas
-              </label>
-              <textarea
-                value={form.notes}
-                onChange={(e) => handleChange('notes', e.target.value)}
-                placeholder="Escreva detalhes sobre negociações, etc..."
-                className="w-full bg-transparent border-0 text-[15px] text-text-secondary placeholder:text-text-muted/60 focus:ring-0 resize-y min-h-[80px] outline-none"
-              />
+          {error && (
+            <div className="mt-8 p-4 rounded-xl bg-status-danger/10 border border-status-danger/20 text-status-danger text-[13px] font-semibold flex flex-col gap-1">
+              <span className="uppercase text-[10px] tracking-wider opacity-80">Erro</span>
+              {error}
             </div>
+          )}
 
-          </div>
-        </section>
-
+        </div>
       </div>
 
-      {/* ── Sticky Bottom Action Bar ── */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-xl border-t border-black/5 dark:border-white/5 z-50">
-        <div className="max-w-3xl mx-auto flex items-center justify-between sm:justify-end gap-3">
-          <Button 
-            type="button" 
-            variant="ghost" 
-            onClick={() => router.back()}
-            disabled={isPending}
-            className="rounded-full px-6 text-text-secondary hover:text-text-primary hover:bg-black/5"
-          >
-            Cancelar
-          </Button>
-          <Button 
-            type="submit" 
-            disabled={isPending}
-            className="rounded-full px-8 bg-brand-primary text-white shadow-md active:scale-95 transition-all"
-          >
-            {isPending ? (
-              <Loader2 size={18} className="animate-spin" />
-            ) : (
-              isEdit ? 'Salvar Alterações' : 'Cadastrar Cliente'
-            )}
-          </Button>
+      {/* ── Right Column: Form Carousel ── */}
+      <div className="flex-1 w-full overflow-hidden relative">
+        <div 
+          className="flex transition-transform duration-700 ease-apple h-full"
+          style={{ transform: `translateX(-${currentStep * 100}%)` }}
+        >
+          
+          {/* STEP 0: IDENTIFICAÇÃO */}
+          <div className="w-full shrink-0 px-2 lg:px-6">
+            <div className="glass-card-super p-8 rounded-[2rem] h-full">
+              <div className="mb-8 flex justify-center">
+                <div className="flex items-center p-1 glass-pill rounded-[1.25rem] w-full max-w-sm">
+                  <button
+                    type="button"
+                    onClick={() => handleChange('type', 'pf')}
+                    className={cn(
+                      "flex-1 flex justify-center items-center gap-2 py-2.5 rounded-2xl text-[14px] font-semibold transition-all select-none",
+                      form.type === 'pf' ? 'glass-pill-active shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                    )}
+                  >
+                    <User size={16} /> Individual (PF)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleChange('type', 'pj')}
+                    className={cn(
+                      "flex-1 flex justify-center items-center gap-2 py-2.5 rounded-2xl text-[14px] font-semibold transition-all select-none",
+                      form.type === 'pj' ? 'glass-pill-active shadow-sm' : 'text-text-secondary hover:text-text-primary'
+                    )}
+                  >
+                    <Building2 size={16} /> Empresa (PJ)
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <Field label={form.type === 'pf' ? 'Nome Completo' : 'Razão Social'} colSpan={2}>
+                  <Input
+                    value={form.name}
+                    onChange={(e) => handleChange('name', e.target.value)}
+                    placeholder={form.type === 'pf' ? "Digite o nome completo" : "Razão social oficial"}
+                    className={higInputClasses}
+                    required={currentStep === STEPS.length - 1} // Only enforce on last step to avoid native tooltip interrupting carousel
+                  />
+                </Field>
+
+                {form.type === 'pj' && (
+                  <Field label="Nome Fantasia" colSpan={2}>
+                    <Input
+                      value={form.trade_name}
+                      onChange={(e) => handleChange('trade_name', e.target.value)}
+                      placeholder="Como a empresa é conhecida"
+                      className={higInputClasses}
+                    />
+                  </Field>
+                )}
+
+                <Field label={form.type === 'pf' ? 'CPF' : 'CNPJ'}>
+                  <Input
+                    value={form.type === 'pf' ? applyMask(form.cpf, 'cpf') : applyMask(form.cnpj, 'cnpj')}
+                    onChange={(e) => handleChange(form.type === 'pf' ? 'cpf' : 'cnpj', e.target.value)}
+                    placeholder={form.type === 'pf' ? '000.000.000-00' : '00.000.000/0000-00'}
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label={form.type === 'pf' ? 'Data de Nascimento' : 'Responsável Principal'}>
+                  {form.type === 'pf' ? (
+                    <Input
+                      type="date"
+                      value={form.birth_date}
+                      onChange={(e) => handleChange('birth_date', e.target.value)}
+                      className={higInputClasses}
+                    />
+                  ) : (
+                    <Input
+                      value={form.responsible_name}
+                      onChange={(e) => handleChange('responsible_name', e.target.value)}
+                      placeholder="Nome do contato chave"
+                      className={higInputClasses}
+                    />
+                  )}
+                </Field>
+              </div>
+            </div>
+          </div>
+
+          {/* STEP 1: LOCALIZAÇÃO */}
+          <div className="w-full shrink-0 px-2 lg:px-6">
+            <div className="glass-card-super p-8 rounded-[2rem] h-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <Field label="CEP" colSpan={2}>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      value={applyMask(form.address.zip_code, 'cep')}
+                      onChange={(e) => handleChange('address.zip_code', e.target.value)}
+                      onBlur={handleCepSearch}
+                      placeholder="00000-000"
+                      className={higInputClasses}
+                    />
+                    <Button 
+                      type="button" 
+                      onClick={handleCepSearch}
+                      disabled={isSearchingCep || form.address.zip_code.length < 8}
+                      className="h-12 w-12 rounded-2xl bg-black/5 dark:bg-white/5 text-text-primary hover:bg-black/10 dark:hover:bg-white/10 shrink-0"
+                    >
+                      {isSearchingCep ? <Loader2 size={18} className="animate-spin" /> : <Search size={18} />}
+                    </Button>
+                  </div>
+                </Field>
+
+                <Field label="Rua / Avenida" colSpan={2}>
+                  <Input
+                    value={form.address.street}
+                    onChange={(e) => handleChange('address.street', e.target.value)}
+                    placeholder="Nome do logradouro"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Número">
+                  <Input
+                    value={form.address.number}
+                    onChange={(e) => handleChange('address.number', e.target.value)}
+                    placeholder="Ex: 123, S/N"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Complemento">
+                  <Input
+                    value={form.address.complement}
+                    onChange={(e) => handleChange('address.complement', e.target.value)}
+                    placeholder="Apto, Sala, Bloco"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Cidade">
+                  <Input
+                    value={form.address.city}
+                    onChange={(e) => handleChange('address.city', e.target.value)}
+                    placeholder="Cidade"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Estado (UF)">
+                  <Input
+                    value={form.address.state}
+                    onChange={(e) => handleChange('address.state', e.target.value)}
+                    placeholder="Ex: SP"
+                    maxLength={2}
+                    className={cn(higInputClasses, "uppercase")}
+                  />
+                </Field>
+              </div>
+            </div>
+          </div>
+
+          {/* STEP 2: CONTATOS */}
+          <div className="w-full shrink-0 px-2 lg:px-6">
+            <div className="glass-card-super p-8 rounded-[2rem] h-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <Field label="E-mail Principal" colSpan={2}>
+                  <Input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => handleChange('email', e.target.value)}
+                    placeholder="contato@exemplo.com"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="WhatsApp">
+                  <Input
+                    value={applyMask(form.whatsapp, 'phone')}
+                    onChange={(e) => handleChange('whatsapp', e.target.value)}
+                    placeholder="(00) 00000-0000"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Telefone Fixo / Outro">
+                  <Input
+                    value={applyMask(form.phone, 'phone')}
+                    onChange={(e) => handleChange('phone', e.target.value)}
+                    placeholder="(00) 0000-0000"
+                    className={higInputClasses}
+                  />
+                </Field>
+              </div>
+            </div>
+          </div>
+
+          {/* STEP 3: COMERCIAL */}
+          <div className="w-full shrink-0 px-2 lg:px-6">
+            <div className="glass-card-super p-8 rounded-[2rem] h-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                
+                <Field label="Segmento de Mercado">
+                  <Input
+                    value={form.segment}
+                    onChange={(e) => handleChange('segment', e.target.value)}
+                    placeholder="Ex: Tecnologia, Varejo"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Website">
+                  <Input
+                    type="url"
+                    value={form.website}
+                    onChange={(e) => handleChange('website', e.target.value)}
+                    placeholder="https://"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Origem do Lead">
+                  <Input
+                    value={form.lead_source}
+                    onChange={(e) => handleChange('lead_source', e.target.value)}
+                    placeholder="Ex: Indicação, Instagram"
+                    className={higInputClasses}
+                  />
+                </Field>
+
+                <Field label="Account Manager">
+                  <div className="relative">
+                    <select
+                      value={form.account_manager_id}
+                      onChange={(e) => handleChange('account_manager_id', e.target.value)}
+                      className={cn(higInputClasses, "appearance-none bg-transparent outline-none cursor-pointer")}
+                    >
+                      <option value="">Não atribuído</option>
+                      {profiles.map(p => (
+                        <option key={p.id} value={p.id}>{p.full_name}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                      <ChevronLeft size={16} className="-rotate-90" />
+                    </div>
+                  </div>
+                </Field>
+
+                <Field label="Anotações Internas" colSpan={2}>
+                  <textarea
+                    value={form.notes}
+                    onChange={(e) => handleChange('notes', e.target.value)}
+                    placeholder="Informações importantes, negociações..."
+                    className={cn(higInputClasses, "py-4 min-h-[120px] resize-y rounded-[1.25rem]")}
+                  />
+                </Field>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* ── Floating Action Bar ── */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 z-50 pointer-events-none">
+        <div className="max-w-7xl mx-auto w-full flex justify-end px-2 lg:px-6 pointer-events-auto">
+          {/* We constrain the width to the right column width on large screens */}
+          <div className="w-full lg:w-2/3 xl:w-3/4 flex items-center justify-between glass-card-super p-3 rounded-[2rem] shadow-xl border border-black/[0.04] dark:border-white/[0.08]">
+            <Button 
+              type="button" 
+              variant="ghost" 
+              onClick={prevStep}
+              disabled={isPending}
+              className="rounded-full px-6 h-12 text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 font-bold tracking-wide transition-all"
+            >
+              {currentStep === 0 ? 'Cancelar' : 'Voltar'}
+            </Button>
+            
+            <div className="flex gap-2 items-center">
+              {/* Little dots indicator for mobile */}
+              <div className="flex lg:hidden gap-1.5 px-4">
+                {STEPS.map((_, idx) => (
+                  <div key={idx} className={cn("w-2 h-2 rounded-full transition-all", currentStep === idx ? "bg-brand-primary w-4" : "bg-text-muted/30")} />
+                ))}
+              </div>
+
+              <Button 
+                type="submit" 
+                disabled={isPending}
+                className="rounded-full px-8 h-12 bg-brand-primary hover:bg-brand-primary/90 text-white shadow-lg shadow-brand-primary/20 active:scale-95 transition-all font-bold tracking-wide"
+              >
+                {isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  currentStep === STEPS.length - 1 ? (isEdit ? 'Salvar Alterações' : 'Finalizar Cadastro') : 'Próximo Passo'
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
