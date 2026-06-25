@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
   [
-    "group/badge inline-flex h-6 w-fit shrink-0 items-center justify-center",
-    "gap-1 overflow-hidden rounded-md border border-transparent",
-    "px-2.5 py-0.5 text-[10.5px] font-bold tracking-wider uppercase whitespace-nowrap",
+    "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center",
+    "gap-1 overflow-hidden rounded-full border border-transparent",
+    "px-2.5 py-1 text-[11px] font-bold tracking-wider uppercase whitespace-nowrap",
     "transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-    "[&>svg]:pointer-events-none [&>svg]:size-3.5!",
+    "[&>svg]:pointer-events-none [&>svg]:size-3!",
   ].join(" "),
   {
     variants: {
@@ -27,7 +27,7 @@ const badgeVariants = cva(
         yellow:
           "bg-yellow-soft text-yellow-dark border-yellow/20",
 
-        /* ── Status variants — Duas Mãos tones ── */
+        /* ── Status variants — Apple HIG Translucent ── */
         success:
           "bg-status-success/15 text-status-success border-transparent",
         warning:
@@ -59,9 +59,9 @@ const badgeVariants = cva(
         secondary:
           "bg-black/5 dark:bg-white/10 text-text-primary border-transparent hover:bg-black/10 dark:hover:bg-white/20",
         muted:
-          "bg-black/5 dark:bg-white/5 text-text-muted border-transparent hover:bg-black/10",
+          "bg-surface-muted/50 text-text-muted border-border hover:bg-surface-muted",
         outline:
-          "border-border text-text-secondary hover:bg-black/5 dark:hover:bg-white/5",
+          "border-border text-text-secondary hover:bg-surface-muted",
         ghost:
           "text-text-secondary hover:bg-surface-muted",
 

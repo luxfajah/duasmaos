@@ -49,15 +49,16 @@ const InputField = React.forwardRef<HTMLInputElement, InputFieldProps>(
             }
             className={cn(
               /* base */
-              "h-10 w-full rounded-xl border-transparent bg-black/5 dark:bg-white/10 px-4 py-2.5",
-              "text-[15px] text-text-primary placeholder:text-text-muted font-medium",
+              "h-10 w-full rounded-xl border-transparent bg-black/5 dark:bg-white/5 px-4 py-2.5 hover:bg-black/[0.07] dark:hover:bg-white/[0.07]",
+              "text-[15px] font-medium text-text-primary placeholder:text-text-muted",
+              "shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)]",
               "transition-all duration-300 ease-apple outline-none",
-              /* focus — brand ring */
-              "focus-visible:bg-transparent dark:focus-visible:bg-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30",
+              /* focus — Terracotta ring */
+              "focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20",
               /* disabled */
               "disabled:cursor-not-allowed disabled:opacity-50",
               /* error state */
-              "aria-invalid:ring-2 aria-invalid:ring-status-danger/40 aria-invalid:bg-status-danger/5",
+              "aria-invalid:border-brand-primary aria-invalid:ring-2 aria-invalid:ring-brand-primary/20",
               /* icon offsets */
               leftIcon && "pl-10",
               rightElement && "pr-10",
@@ -107,12 +108,13 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       <input
         ref={ref}
         className={cn(
-          "h-10 w-full rounded-xl border-transparent bg-black/5 dark:bg-white/10 px-4 py-2.5",
-          "text-[15px] text-text-primary placeholder:text-text-muted font-medium",
+          "h-10 w-full rounded-xl border-transparent bg-black/5 dark:bg-white/5 px-4 py-2.5 hover:bg-black/[0.07] dark:hover:bg-white/[0.07]",
+          "text-[15px] font-medium text-text-primary placeholder:text-text-muted",
+          "shadow-[inset_0_1px_3px_rgba(0,0,0,0.04)]",
           "transition-all duration-300 ease-apple outline-none",
-          "focus-visible:bg-transparent dark:focus-visible:bg-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30",
+          "focus-visible:border-brand-primary focus-visible:ring-2 focus-visible:ring-brand-primary/20",
           "disabled:cursor-not-allowed disabled:opacity-50",
-          "aria-invalid:ring-2 aria-invalid:ring-status-danger/40 aria-invalid:bg-status-danger/5",
+          "aria-invalid:border-brand-primary aria-invalid:ring-2 aria-invalid:ring-brand-primary/20",
           className
         )}
         {...props}
@@ -132,10 +134,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"tex
       <textarea
         ref={ref}
         className={cn(
-          "min-h-[100px] w-full rounded-xl border-transparent bg-black/5 dark:bg-white/10 px-4 py-3",
-          "text-[15px] text-text-primary placeholder:text-text-muted font-medium",
+          "min-h-[100px] w-full rounded-xl border-transparent bg-black/5 dark:bg-white/5 px-4 py-3 hover:bg-black/[0.07] dark:hover:bg-white/[0.07]",
+          "text-[15px] font-medium text-text-primary placeholder:text-text-muted",
           "transition-all duration-200 outline-none resize-none",
-          "focus:bg-transparent dark:focus:bg-transparent focus:ring-2 focus:ring-brand-primary/30",
+          "focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}

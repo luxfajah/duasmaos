@@ -42,7 +42,7 @@ function DropdownMenuSubContent({
   return (
     <DropdownMenuPrimitive.SubContent
       className={cn(
-        "z-50 min-w-[10rem] overflow-hidden rounded-xl border border-border/50 glass depth-modal p-1.5",
+        "z-50 min-w-[10rem] overflow-hidden glass-panel p-1.5",
         "shadow-xl data-[state=open]:animate-scale-in data-[state=closed]:animate-fade-in",
         className
       )}
@@ -61,7 +61,7 @@ function DropdownMenuContent({
       <DropdownMenuPrimitive.Content
         sideOffset={sideOffset}
         className={cn(
-          "z-50 min-w-[12rem] overflow-hidden rounded-xl border border-border/50 glass depth-modal p-1.5",
+          "z-50 min-w-[12rem] overflow-hidden glass-panel p-1.5",
           "shadow-xl [&_svg]:stroke-[1.5]",
           "data-[state=open]:animate-scale-in data-[state=closed]:animate-fade-in",
           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
