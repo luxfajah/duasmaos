@@ -174,30 +174,24 @@ export function ClientForm({ client }: ClientFormProps) {
       {/* Top Bar Navigation */}
       <div className="flex items-center gap-4">
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="sm" 
           type="button"
           onClick={() => isEdit && client ? router.push(`/dashboard/clients/${client.id}`) : router.push('/dashboard/clients')}
-          className="h-9 px-3 border-border hover:bg-surface-muted"
+          className="h-8 px-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
         >
-          <ArrowLeft size={16} className="mr-2" /> Voltar
+          <ArrowLeft size={16} strokeWidth={2} />
         </Button>
-        <div>
-          <Badge variant="outline" className="bg-brand-primary/5 text-brand-primary border-brand-primary/20 mb-1">
-            CRM Pipeline
-          </Badge>
-          <h1 className="text-2xl font-serif font-bold text-text-primary tracking-tight">
-            {isEdit ? 'Editar Cadastro de Cliente' : 'Cadastrar Novo Cliente'}
-          </h1>
-        </div>
+        <h1 className="text-[22px] font-semibold text-text-primary tracking-tight">
+          {isEdit ? 'Editar Cliente' : 'Novo Cliente'}
+        </h1>
       </div>
 
-      {/* Main Grid: Wizard */}
-      <div className="bg-surface border border-border rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[500px]">
+      {/* Main Grid: Wizard (HIG Container) */}
+      <div className="bg-surface-primary/70 dark:bg-black/40 border border-black/[0.04] dark:border-white/[0.08] backdrop-blur-3xl saturate-150 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col md:flex-row min-h-[500px]">
         
-        {/* Left: Stepper Sidebar */}
-        <div className="w-full md:w-64 bg-surface-muted/10 border-b md:border-b-0 md:border-r border-border p-6 flex flex-col gap-1 shrink-0">
-          <p className="text-[10px] font-black tracking-widest text-text-muted uppercase mb-4 px-2">Passos do Cadastro</p>
+        {/* Left: Stepper Sidebar (macOS Settings style) */}
+        <div className="w-full md:w-64 bg-black/[0.02] dark:bg-white/[0.02] border-b md:border-b-0 md:border-r border-black/[0.04] dark:border-white/[0.04] p-4 flex flex-col gap-1 shrink-0">
           {steps.map((s, i) => {
             const stepNum = i + 1
             const isActive = step === stepNum
@@ -208,17 +202,17 @@ export function ClientForm({ client }: ClientFormProps) {
                 type="button"
                 onClick={() => setStep(stepNum as Step)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all uppercase tracking-wider text-left w-full",
-                  isActive ? "bg-brand-primary/10 text-brand-primary font-black" : 
-                  isCompleted ? "text-olive font-bold hover:bg-surface-muted/40" : "text-text-muted hover:text-text-primary hover:bg-surface-muted/30"
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all text-left w-full",
+                  isActive ? "bg-brand-primary text-white shadow-sm" : 
+                  "text-text-secondary hover:bg-black/5 dark:hover:bg-white/5"
                 )}
               >
                 <div className={cn(
-                  "w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black border transition-colors shrink-0",
-                  isActive ? "bg-brand-primary border-brand-primary text-white shadow-md shadow-brand-primary/10" : 
-                  isCompleted ? "bg-olive-soft border-olive-soft text-olive-dark" : "border-border bg-surface"
+                  "flex items-center justify-center shrink-0",
+                  isActive ? "text-white" : 
+                  isCompleted ? "text-[#34c759]" : "text-text-muted"
                 )}>
-                  {isCompleted ? "✓" : stepNum}
+                  {isCompleted ? <Check size={16} strokeWidth={2.5} /> : <div className="w-4 h-4 flex items-center justify-center">{s.icon}</div>}
                 </div>
                 <span className="truncate">{s.title}</span>
               </button>
@@ -229,20 +223,22 @@ export function ClientForm({ client }: ClientFormProps) {
         {/* Right: Form Content Area */}
         <div className="flex-1 flex flex-col p-6 md:p-8">
           <div className="flex-1">
-            <h2 className="text-sm font-black uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2">
-              {steps[step - 1].icon} {steps[step - 1].title}
+            <h2 className="text-[17px] font-semibold text-text-primary mb-6 flex items-center gap-2">
+              {steps[step - 1].title}
             </h2>
 
             <form className="space-y-6">
               {step === 1 && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                  <div className="grid grid-cols-2 gap-2 p-1 bg-surface-muted/50 border border-border rounded-xl max-w-md">
+                  
+                  {/* PF / PJ Segmented Control */}
+                  <div className="flex items-center p-1 bg-black/5 dark:bg-white/5 rounded-xl w-fit">
                     <button
                       type="button"
                       onClick={() => handleChange('type', 'pf')}
                       className={cn(
-                        "flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all",
-                        form.type === 'pf' ? 'bg-surface shadow-sm text-brand-primary' : 'text-text-muted hover:text-text-primary'
+                        "flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-all select-none",
+                        form.type === 'pf' ? 'bg-white dark:bg-white/10 text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5'
                       )}
                     >
                       <User size={14} /> Individual (PF)
@@ -251,8 +247,8 @@ export function ClientForm({ client }: ClientFormProps) {
                       type="button"
                       onClick={() => handleChange('type', 'pj')}
                       className={cn(
-                        "flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all",
-                        form.type === 'pj' ? 'bg-surface shadow-sm text-brand-primary' : 'text-text-muted hover:text-text-primary'
+                        "flex items-center gap-2 px-4 py-1.5 rounded-lg text-[13px] font-semibold transition-all select-none",
+                        form.type === 'pj' ? 'bg-white dark:bg-white/10 text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5'
                       )}
                     >
                       <Building2 size={14} /> Empresa (PJ)
@@ -261,43 +257,43 @@ export function ClientForm({ client }: ClientFormProps) {
 
                   <div className="space-y-4 max-w-xl">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">
+                      <label className="text-[13px] font-medium text-text-primary">
                         {form.type === 'pf' ? 'Nome Completo *' : 'Razão Social *'}
                       </label>
                       <Input
                         value={form.name}
                         onChange={(e) => handleChange('name', e.target.value)}
                         placeholder={form.type === 'pf' ? 'Ex: João da Silva' : 'Ex: Tecnologia LTDA'}
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
 
                     {form.type === 'pj' && (
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Nome Fantasia</label>
+                        <label className="text-[13px] font-medium text-text-primary">Nome Fantasia</label>
                         <Input
                           value={form.trade_name}
                           onChange={(e) => handleChange('trade_name', e.target.value)}
                           placeholder="Ex: Tech Solutions"
-                          className="h-11"
+                          className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                         />
                       </div>
                     )}
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-text-primary">
+                        <label className="text-[13px] font-medium text-text-primary">
                           {form.type === 'pf' ? 'CPF' : 'CNPJ'}
                         </label>
                         <Input
                           value={form.type === 'pf' ? applyMask(form.cpf, 'cpf') : applyMask(form.cnpj, 'cnpj')}
                           onChange={(e) => handleChange(form.type === 'pf' ? 'cpf' : 'cnpj', e.target.value)}
                           placeholder={form.type === 'pf' ? '000.000.000-00' : '00.000.000/0000-00'}
-                          className="h-11"
+                          className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-text-primary">
+                        <label className="text-[13px] font-medium text-text-primary">
                           {form.type === 'pf' ? 'Data de Nascimento' : 'Nome do Responsável'}
                         </label>
                         {form.type === 'pf' ? (
@@ -305,14 +301,14 @@ export function ClientForm({ client }: ClientFormProps) {
                             type="date"
                             value={form.birth_date}
                             onChange={(e) => handleChange('birth_date', e.target.value)}
-                            className="h-11 text-text-primary bg-surface"
+                            className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all text-text-primary bg-surface"
                           />
                         ) : (
                           <Input
                             value={form.responsible_name}
                             onChange={(e) => handleChange('responsible_name', e.target.value)}
                             placeholder="Nome do contato principal"
-                            className="h-11"
+                            className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                           />
                         )}
                       </div>
@@ -324,7 +320,7 @@ export function ClientForm({ client }: ClientFormProps) {
               {step === 2 && (
                 <div className="space-y-4 max-w-xl animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
+                    <label className="text-[13px] font-medium text-text-primary flex items-center gap-2">
                       <Mail size={14} /> E-mail de Contato
                     </label>
                     <Input
@@ -332,42 +328,42 @@ export function ClientForm({ client }: ClientFormProps) {
                       value={form.email}
                       onChange={(e) => handleChange('email', e.target.value)}
                       placeholder="exemplo@empresa.com"
-                      className="h-11"
+                      className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
+                      <label className="text-[13px] font-medium text-text-primary flex items-center gap-2">
                         <Phone size={14} /> Telefone
                       </label>
                       <Input
                         value={applyMask(form.phone, 'phone')}
                         onChange={(e) => handleChange('phone', e.target.value)}
                         placeholder="(00) 0000-0000"
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
+                      <label className="text-[13px] font-medium text-text-primary flex items-center gap-2">
                         <Phone size={14} className="text-status-success" /> WhatsApp
                       </label>
                       <Input
                         value={applyMask(form.whatsapp, 'phone')}
                         onChange={(e) => handleChange('whatsapp', e.target.value)}
                         placeholder="(00) 90000-0000"
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
+                    <label className="text-[13px] font-medium text-text-primary flex items-center gap-2">
                       <Globe size={14} /> Site Corporativo ou LinkedIn
                     </label>
                     <Input
                       value={form.website}
                       onChange={(e) => handleChange('website', e.target.value)}
                       placeholder="https://"
-                      className="h-11"
+                      className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                     />
                   </div>
                 </div>
@@ -377,14 +373,14 @@ export function ClientForm({ client }: ClientFormProps) {
                 <div className="space-y-4 max-w-xl animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">CEP</label>
+                      <label className="text-[13px] font-medium text-text-primary">CEP</label>
                       <div className="relative">
                         <Input
                           value={applyMask(form.address.zip_code, 'cep')}
                           onChange={(e) => handleChange('address.zip_code', e.target.value)}
                           onBlur={handleCepSearch}
                           placeholder="00000-000"
-                          className="h-11"
+                          className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                         />
                         {isSearchingCep && (
                           <Loader2 size={14} className="absolute right-3 top-3.5 animate-spin text-brand-primary" />
@@ -392,51 +388,51 @@ export function ClientForm({ client }: ClientFormProps) {
                       </div>
                     </div>
                     <div className="col-span-2 space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Endereço / Logradouro</label>
+                      <label className="text-[13px] font-medium text-text-primary">Endereço / Logradouro</label>
                       <Input
                         value={form.address.street}
                         onChange={(e) => handleChange('address.street', e.target.value)}
                         placeholder="Nome da rua/avenida"
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Número</label>
+                      <label className="text-[13px] font-medium text-text-primary">Número</label>
                       <Input
                         value={form.address.number}
                         onChange={(e) => handleChange('address.number', e.target.value)}
                         placeholder="Ex: 123"
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Complemento</label>
+                      <label className="text-[13px] font-medium text-text-primary">Complemento</label>
                       <Input
                         value={form.address.complement}
                         onChange={(e) => handleChange('address.complement', e.target.value)}
                         placeholder="Bloco A, Sala 10"
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Cidade</label>
+                      <label className="text-[13px] font-medium text-text-primary">Cidade</label>
                       <Input
                         value={form.address.city}
                         onChange={(e) => handleChange('address.city', e.target.value)}
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Estado / UF</label>
+                      <label className="text-[13px] font-medium text-text-primary">Estado / UF</label>
                       <Input
                         value={form.address.state}
                         onChange={(e) => handleChange('address.state', e.target.value)}
                         placeholder="Ex: SP"
-                        className="h-11"
+                        className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                       />
                     </div>
                   </div>
@@ -446,16 +442,16 @@ export function ClientForm({ client }: ClientFormProps) {
               {step === 4 && (
                 <div className="space-y-4 max-w-xl animate-in fade-in slide-in-from-right-4 duration-300">
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Segmento de Mercado</label>
+                    <label className="text-[13px] font-medium text-text-primary">Segmento de Mercado</label>
                     <Input
                       value={form.segment}
                       onChange={(e) => handleChange('segment', e.target.value)}
                       placeholder="Ex: Varejo, Tecnologia, Saúde"
-                      className="h-11"
+                      className="h-10 rounded-lg bg-black/5 dark:bg-white/5 border-transparent focus-visible:ring-2 focus-visible:ring-brand-primary/30 transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Origem do Lead</label>
+                    <label className="text-[13px] font-medium text-text-primary">Origem do Lead</label>
                     <select
                       value={form.lead_source}
                       onChange={(e) => handleChange('lead_source', e.target.value)}
@@ -469,7 +465,7 @@ export function ClientForm({ client }: ClientFormProps) {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-primary">Gestor da Conta (Responsável Interno)</label>
+                    <label className="text-[13px] font-medium text-text-primary">Gestor da Conta (Responsável Interno)</label>
                     <select
                       value={form.account_manager_id}
                       onChange={(e) => handleChange('account_manager_id', e.target.value)}
@@ -482,7 +478,7 @@ export function ClientForm({ client }: ClientFormProps) {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-primary text-status-success">Status no CRM</label>
+                    <label className="text-[13px] font-medium text-text-primary text-status-success">Status no CRM</label>
                     <select
                       value={form.status}
                       onChange={(e) => handleChange('status', e.target.value)}
