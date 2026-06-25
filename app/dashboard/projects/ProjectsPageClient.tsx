@@ -8,6 +8,7 @@ import { ProjectModal } from '@/components/projects/ProjectModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 import { ProjectDTO } from './actions'
 import { DollarSign, Briefcase, CheckCircle, AlertTriangle, TrendingUp, Timer } from 'lucide-react'
