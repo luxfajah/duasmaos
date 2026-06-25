@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { ProjectForm } from '@/components/projects/ProjectForm'
 import { getClients } from '@/app/dashboard/clients/actions'
 import { getProjectById } from '@/app/dashboard/projects/actions'
+import { EditorialHeader } from '@/components/brand/EditorialHeader'
 
 export default async function EditProjectPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -26,6 +27,10 @@ export default async function EditProjectPage({ params }: { params: { id: string
 
   return (
     <div className="space-y-8 animate-in fade-in-50 duration-500">
+      <EditorialHeader
+        title="Editar Projeto"
+        subtitle="Atualize as informações principais do seu projeto"
+      />
       <ProjectForm 
         project={project as any}
         clients={clients.map((c) => ({ id: c.id, name: c.name }))} 

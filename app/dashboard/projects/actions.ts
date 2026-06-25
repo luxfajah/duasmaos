@@ -116,10 +116,12 @@ export async function updateProject(
 ) {
   const supabase = createClient()
   const { error } = await supabase.from('v2_projects').update(formData).eq('id', id)
-  if (error) throw error
+  if (error) return { success: false, error: error.message }
+  
   revalidatePath('/dashboard/projects')
   revalidatePath(`/dashboard/projects/${id}`)
   revalidatePath('/dashboard/kanban')
+  return { success: true }
 }
 
 function slugify(text: string) {
@@ -145,7 +147,8 @@ export async function createProjectV3(data: {
   deadline?: string
   owner_id?: string
 }) {
-  const supabase = createClient()
+  try {
+    const supabase = createClient()
   
   // 0. Fetch template details to get type
   const { data: template } = await supabase
@@ -173,7 +176,7 @@ export async function createProjectV3(data: {
     .select()
     .single()
 
-  if (pError) throw pError
+  if (pError) return { success: false, error: `Erro ao criar projeto: ${pError.message}` }
 
   // 2. Clone Template Stages & Tasks
   const { data: stages } = await supabase
@@ -199,7 +202,7 @@ export async function createProjectV3(data: {
         .select()
         .single()
 
-      if (psError) throw psError
+      if (psError) return { success: false, error: `Erro ao criar etapa: ${psError.message}` }
       stageIdMap.set(stage.id, projectStage.id)
     }
 
@@ -249,7 +252,7 @@ export async function createProjectV3(data: {
 
     if (tasksToInsert.length > 0) {
       const { error: tasksInsertError } = await supabase.from('v2_tasks').insert(tasksToInsert)
-      if (tasksInsertError) throw tasksInsertError
+      if (tasksInsertError) return { success: false, error: `Erro ao inserir tarefas: ${tasksInsertError.message}` }
 
       // Run blockers evaluation
       const { evaluateProjectBlockers } = await import('@/app/dashboard/v2/actions')
@@ -282,5 +285,8 @@ export async function createProjectV3(data: {
   }
 
   revalidatePath('/dashboard/projects')
-  return project
+  return { success: true, project }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Erro inesperado ao criar projeto.' }
+  }
 }

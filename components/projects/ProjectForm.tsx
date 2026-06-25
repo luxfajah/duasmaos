@@ -134,8 +134,9 @@ export function ProjectForm({ project, clients, team, initialTemplateId }: Proje
 
     startTransition(async () => {
       try {
+        let result: any;
         if (isEdit && project) {
-          await updateProject(project.id, {
+          result = await updateProject(project.id, {
             name: form.name,
             status: form.status,
             deadline: form.deadline || null,
@@ -146,7 +147,7 @@ export function ProjectForm({ project, clients, team, initialTemplateId }: Proje
             return
           }
 
-          await createProjectV3({
+          result = await createProjectV3({
             name: form.name,
             client_id: form.client_id,
             template_id: form.template_id,
@@ -160,6 +161,12 @@ export function ProjectForm({ project, clients, team, initialTemplateId }: Proje
             owner_id: form.owner_id || undefined,
           })
         }
+
+        if (result && !result.success) {
+          setError(result.error)
+          return
+        }
+
         router.push('/dashboard/projects')
         router.refresh()
       } catch (err: any) {
@@ -183,34 +190,12 @@ export function ProjectForm({ project, clients, team, initialTemplateId }: Proje
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card p-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="h-10 w-10 p-0 rounded-full bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 transition-colors"
-          >
-            <ChevronLeft size={20} className="text-text-primary" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-black text-text-primary flex items-center gap-2">
-              <Briefcase className="text-brand-primary" size={24} />
-              {isEdit ? 'Editar Projeto' : 'Novo Projeto'}
-            </h1>
-            <p className="text-sm text-text-secondary mt-1">
-              {isEdit ? 'Atualize as informações principais do seu projeto' : 'Siga os passos para criar um novo projeto no seu portfólio'}
-            </p>
-          </div>
+      {error && (
+        <div className="flex items-center gap-2 text-status-danger bg-status-danger/10 px-4 py-3 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-2">
+          <AlertCircle size={18} />
+          {error}
         </div>
-
-        {error && (
-          <div className="flex items-center gap-2 text-status-danger bg-status-danger/10 px-4 py-2 rounded-xl text-sm font-medium">
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
-      </div>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Stepper Sidebar */}
