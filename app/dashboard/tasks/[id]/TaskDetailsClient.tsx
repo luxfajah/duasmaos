@@ -35,7 +35,7 @@ interface TaskDetailsClientProps {
 }
 
 export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = true, isClient = false }: TaskDetailsClientProps) {
-  const isEditorialGrid = task.project?.workflow_type !== 'social_media'
+  const isEditorialGrid = task.project?.workflow_type !== 'social_media' || task.task_type?.toLowerCase().includes('copy');
   const [selectedPost, setSelectedPost] = useState<V2SocialPost | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [isEditingBriefing, setIsEditingBriefing] = useState(false)
