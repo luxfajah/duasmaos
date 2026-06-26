@@ -72,9 +72,13 @@ export function TaskDeliveryFileUploader({ taskId, projectId, clientId, currentU
       onDragOver={handleDragOver}
       onDragLeave={() => setDragActive(false)}
       onDrop={handleDrop}
-      className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center transition-colors cursor-pointer w-full max-w-[300px] bg-surface-muted/10 shrink-0 ${dragActive ? 'border-brand-primary bg-brand-primary/5' : 'border-border hover:border-text-muted hover:bg-surface-muted/30'}`}
+      className={`relative rounded-[20px] p-6 flex flex-col items-center justify-center transition-all duration-300 cursor-pointer w-full max-w-[350px] shrink-0 overflow-hidden group 
+        ${dragActive ? 'bg-brand-primary/10 border-brand-primary/30' : 'bg-surface-muted/30 hover:bg-surface-muted/50 border-white/50 dark:border-white/5'} 
+        border shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]`}
     >
-      <label className="cursor-pointer flex flex-col items-center w-full h-full space-y-2">
+      <div className={`absolute inset-0 bg-gradient-to-b from-white/40 to-transparent dark:from-white/5 pointer-events-none transition-opacity ${dragActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
+      
+      <label className="cursor-pointer flex flex-col items-center w-full h-full space-y-3 relative z-10">
         <input 
           type="file" 
           className="hidden" 
@@ -85,17 +89,25 @@ export function TaskDeliveryFileUploader({ taskId, projectId, clientId, currentU
           }}
           disabled={isUploading}
         />
-        {isUploading ? (
-           <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
-        ) : (
-           <UploadCloud className="w-6 h-6 text-text-muted transition-colors" />
-        )}
-        <span className="text-[10px] font-bold uppercase tracking-widest text-text-primary text-center">
-          {isUploading ? 'Enviando...' : 'Arraste ou Clique'}
-        </span>
-        <span className="text-[10px] text-text-muted text-center max-w-[200px]">
-          Upload rápido de pacote final ou arquivo fonte
-        </span>
+        
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm
+          ${dragActive || isUploading ? 'bg-brand-primary text-white scale-110' : 'bg-white dark:bg-black/20 text-text-muted group-hover:text-brand-primary group-hover:scale-105'}`}
+        >
+          {isUploading ? (
+             <Loader2 className="w-6 h-6 animate-spin" />
+          ) : (
+             <UploadCloud className="w-6 h-6" />
+          )}
+        </div>
+        
+        <div className="text-center mt-2">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-text-primary mb-1">
+            {isUploading ? 'Enviando Arquivo...' : 'Anexar Arquivo'}
+          </h4>
+          <p className="text-[11px] text-text-muted leading-relaxed max-w-[200px]">
+            Arraste pacotes finais, fontes ou referências para cá.
+          </p>
+        </div>
       </label>
     </div>
   )
