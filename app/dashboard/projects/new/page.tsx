@@ -4,7 +4,7 @@ import { ProjectForm } from '@/components/projects/ProjectForm'
 import { getClients } from '@/app/dashboard/clients/actions'
 import { EditorialHeader } from '@/components/brand/EditorialHeader'
 
-export default async function NewProjectPage({ searchParams }: { searchParams?: { templateId?: string } }) {
+export default async function NewProjectPage({ searchParams }: { searchParams?: { templateId?: string; clientId?: string } }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -35,6 +35,7 @@ export default async function NewProjectPage({ searchParams }: { searchParams?: 
         clients={clients.map((c) => ({ id: c.id, name: c.name }))} 
         team={team} 
         initialTemplateId={searchParams?.templateId}
+        initialClientId={searchParams?.clientId}
       />
     </div>
   )

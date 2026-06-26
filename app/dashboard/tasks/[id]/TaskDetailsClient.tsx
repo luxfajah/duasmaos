@@ -24,6 +24,7 @@ import { PostEditorPopup } from '@/components/tasks/PostEditorPopup'
 import { TaskDeliveryFileUploader } from '@/components/tasks/TaskDeliveryFileUploader'
 import { syncSocialPosts, updateV2Task, getTaskFiles } from '@/app/dashboard/v2/task-actions'
 import { updateTaskStatus } from '@/app/dashboard/tasks/actions'
+import { updateProjectBriefing } from '@/app/dashboard/projects/actions'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
@@ -39,7 +40,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
   const [selectedPost, setSelectedPost] = useState<V2SocialPost | null>(null)
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [isEditingBriefing, setIsEditingBriefing] = useState(false)
-  const [briefingContent, setBriefingContent] = useState(task.html_content || '')
+  const [briefingContent, setBriefingContent] = useState(task.project?.briefing_content || task.html_content || '')
   const [isSavingBriefing, setIsSavingBriefing] = useState(false)
 
   // Delivery State
@@ -69,7 +70,12 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
   const handleSaveBriefing = async () => {
     setIsSavingBriefing(true)
     try {
-      await updateV2Task(task.id, task.project_id, { html_content: briefingContent })
+      if (task.project?.id) {
+        await updateProjectBriefing(task.project.id, briefingContent)
+        task.project.briefing_content = briefingContent
+      } else {
+        await updateV2Task(task.id, task.project_id, { html_content: briefingContent })
+      }
       setIsEditingBriefing(false)
       router.refresh()
     } catch (err: any) {
@@ -366,7 +372,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                   <div className="flex gap-2 justify-end mt-2">
                     <button 
                       onClick={() => {
-                        setBriefingContent(task.html_content || '')
+                        setBriefingContent(task.project?.briefing_content || task.html_content || '')
                         setIsEditingBriefing(false)
                       }}
                       className="px-4 py-2 bg-transparent text-text-secondary text-xs font-bold rounded-xl hover:bg-surface-muted transition-colors"
@@ -384,11 +390,13 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                 </div>
               ) : (
                 <div className="group relative z-10 flex-1">
-                  {(task.html_content || task.description) ? (
+                  {(task.project?.briefing_content || task.html_content || task.description) ? (
                     <div 
                       className="text-sm text-text-secondary leading-relaxed custom-scrollbar prose prose-sm dark:prose-invert max-w-none p-4 rounded-2xl transition-colors bg-white/60 dark:bg-black/10 border border-white/50 dark:border-white/5 shadow-sm"
                     >
-                      {task.html_content ? (
+                      {task.project?.briefing_content ? (
+                        <div dangerouslySetInnerHTML={{ __html: task.project.briefing_content }} />
+                      ) : task.html_content ? (
                         <div dangerouslySetInnerHTML={{ __html: task.html_content }} />
                       ) : (
                         <p className="whitespace-pre-wrap">{task.description}</p>
@@ -396,20 +404,24 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                     </div>
                   ) : (
                     <div 
-                      onClick={() => setIsEditingBriefing(true)}
-                      className="w-full flex-col cursor-pointer bg-white/40 dark:bg-black/10 hover:bg-white/80 dark:hover:bg-black/30 border border-white/60 dark:border-white/5 shadow-sm rounded-3xl p-8 flex items-center justify-center text-center transition-all group"
+                      onClick={() => { if (!isClient) setIsEditingBriefing(true) }}
+                      className={`w-full flex-col border border-white/60 dark:border-white/5 shadow-sm rounded-3xl p-8 flex items-center justify-center text-center transition-all group ${isClient ? '' : 'cursor-pointer bg-white/40 dark:bg-black/10 hover:bg-white/80 dark:hover:bg-black/30'}`}
                     >
                       <div className="w-12 h-12 rounded-full bg-brand-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-brand-primary/20 transition-all duration-300">
                         <FileText size={18} className="text-brand-primary" />
                       </div>
-                      <p className="text-[13px] font-bold text-text-primary">Definir o Briefing</p>
-                      <p className="text-[11px] text-text-muted mt-2 leading-relaxed px-2">
-                        Clique para documentar os detalhes, links e guias da tarefa.
+                      <p className="text-[13px] font-bold text-text-primary">
+                        {isClient ? 'Nenhum Briefing Definido' : 'Definir o Briefing'}
                       </p>
+                      {!isClient && (
+                        <p className="text-[11px] text-text-muted mt-2 leading-relaxed px-2">
+                          Clique para documentar os detalhes, links e guias da tarefa.
+                        </p>
+                      )}
                     </div>
                   )}
 
-                  {(task.html_content || task.description) && (
+                  {!isClient && (task.project?.briefing_content || task.html_content || task.description) && (
                     <button 
                       onClick={() => setIsEditingBriefing(true)}
                       className="absolute -top-10 right-0 opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-surface rounded-lg text-[10px] font-bold text-text-primary hover:text-brand-primary border border-border/50 shadow-sm flex items-center gap-1.5"

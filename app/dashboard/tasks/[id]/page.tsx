@@ -13,8 +13,10 @@ export default async function TaskDetailsPage({ params }: { params: { id: string
     .select(`
       *,
       project:v2_projects(
+        id,
         name, 
         workflow_type,
+        briefing_content,
         client:clients(name)
       ),
       stage:v2_project_stages(name),

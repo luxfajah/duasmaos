@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import { Client, PipelineStage } from '@/types/database'
 import { PipelineCard } from './PipelineCard'
@@ -21,6 +22,7 @@ interface PipelineBoardProps {
 
 export function PipelineBoard({ initialClients }: PipelineBoardProps) {
   const [clients, setClients] = useState<Client[]>(initialClients)
+  const router = useRouter()
 
   function getColumnClients(stage: PipelineStage) {
     return clients.filter((c) => c.pipeline_stage === stage)
@@ -46,6 +48,9 @@ export function PipelineBoard({ initialClients }: PipelineBoardProps) {
 
     try {
       await updateClientPipelineStage(draggableId, newStage)
+      if (newStage === 'Fechado' || newStage === 'Onboarding') {
+        router.push(`/dashboard/projects/new?clientId=${draggableId}`)
+      }
     } catch {
       // Revert on error
       setClients(initialClients)

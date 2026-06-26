@@ -282,6 +282,7 @@ export interface V2Project {
   start_date: string | null;
   deadline: string | null;
   completed_at: string | null;
+  briefing_content: string | null;
   created_at: string;
   updated_at: string;
 }

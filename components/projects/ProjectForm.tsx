@@ -26,6 +26,7 @@ interface ProjectFormProps {
   clients: { id: string; name: string }[]
   team: { id: string; full_name: string }[]
   initialTemplateId?: string
+  initialClientId?: string
 }
 
 const STEPS = [
@@ -34,7 +35,7 @@ const STEPS = [
   { id: 'finance', title: 'Financeiro', icon: DollarSign, desc: 'Cobrança e Valores' }
 ]
 
-export function ProjectForm({ project, clients, team, initialTemplateId }: ProjectFormProps) {
+export function ProjectForm({ project, clients, team, initialTemplateId, initialClientId }: ProjectFormProps) {
   const isEdit = !!project
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -50,7 +51,7 @@ export function ProjectForm({ project, clients, team, initialTemplateId }: Proje
 
   const [form, setForm] = useState({
     name: project?.name ?? '',
-    client_id: project?.client_id ?? '',
+    client_id: project?.client_id ?? initialClientId ?? '',
     template_id: initialTemplateId ?? '',
     project_type: 'one_time' as 'one_time' | 'recurring',
     amount: 0,
@@ -63,6 +64,23 @@ export function ProjectForm({ project, clients, team, initialTemplateId }: Proje
     priority: 'medium' as Priority,
     deadline: project?.deadline ? new Date(project.deadline).toISOString().split('T')[0] : '',
   })
+
+  // Auto-fill project name when templates are loaded and client/template are preselected
+  useEffect(() => {
+    if (templates.length > 0) {
+      const templateIdVal = form.template_id || initialTemplateId
+      const clientIdVal = form.client_id || initialClientId
+      const selectedTemplate = templates.find(t => t.id === templateIdVal)
+      const selectedClient = clients.find(c => c.id === clientIdVal)
+
+      if (selectedTemplate && selectedClient && !form.name) {
+        setForm(prev => ({
+          ...prev,
+          name: `${selectedTemplate.name} - ${selectedClient.name}`
+        }))
+      }
+    }
+  }, [templates, initialTemplateId, initialClientId, clients])
 
   function handleChange(field: keyof typeof form, value: any) {
     setForm((prev) => {

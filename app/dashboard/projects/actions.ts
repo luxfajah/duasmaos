@@ -313,3 +313,16 @@ export async function createProjectV3(data: {
     return { success: false, error: err.message || 'Erro inesperado ao criar projeto.' }
   }
 }
+
+export async function updateProjectBriefing(projectId: string, briefing_content: string) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('v2_projects')
+    .update({ briefing_content })
+    .eq('id', projectId)
+  if (error) throw error
+  revalidatePath(`/dashboard/projects/${projectId}`)
+  revalidatePath('/dashboard/tasks')
+  return { success: true }
+}
+
