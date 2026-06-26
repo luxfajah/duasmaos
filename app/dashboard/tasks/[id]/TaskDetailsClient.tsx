@@ -353,40 +353,40 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
               </h4>
               
               {isEditingBriefing ? (
-                <div className="flex flex-col gap-3 relative z-10">
-                  <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-border/50 focus-within:ring-2 focus-within:ring-brand-primary/20 transition-shadow">
+                <div className="flex flex-col gap-3 relative z-10 w-full h-full flex-1">
+                  <div className="bg-white/50 dark:bg-black/20 rounded-2xl overflow-hidden border border-border/30 focus-within:ring-2 focus-within:ring-brand-primary/20 transition-shadow flex-1 flex flex-col">
                      <ReactQuill 
                        theme="snow" 
                        value={briefingContent} 
                        onChange={setBriefingContent}
                        placeholder="Escreva livremente aqui..."
-                       className="min-h-[150px] custom-quill-editor"
+                       className="custom-quill-editor-seamless flex-1 flex flex-col min-h-[200px]"
                      />
                   </div>
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={handleSaveBriefing}
-                      disabled={isSavingBriefing}
-                      className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:bg-brand-secondary transition-colors"
-                    >
-                      {isSavingBriefing ? 'Salvando...' : 'Salvar'}
-                    </button>
+                  <div className="flex gap-2 justify-end mt-2">
                     <button 
                       onClick={() => {
                         setBriefingContent(task.html_content || '')
                         setIsEditingBriefing(false)
                       }}
-                      className="px-4 py-2 bg-surface text-text-primary text-xs font-bold rounded-lg border border-border hover:bg-surface-muted transition-colors"
+                      className="px-4 py-2 bg-transparent text-text-secondary text-xs font-bold rounded-xl hover:bg-surface-muted transition-colors"
                     >
                       Cancelar
+                    </button>
+                    <button 
+                      onClick={handleSaveBriefing}
+                      disabled={isSavingBriefing}
+                      className="px-5 py-2 bg-brand-primary text-white text-xs font-bold rounded-xl hover:bg-brand-secondary transition-colors shadow-sm active:scale-95"
+                    >
+                      {isSavingBriefing ? 'Salvando...' : 'Salvar'}
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="group relative z-10">
+                <div className="group relative z-10 flex-1">
                   {(task.html_content || task.description) ? (
                     <div 
-                      className="text-sm text-text-secondary leading-relaxed custom-scrollbar prose prose-sm dark:prose-invert max-w-none p-2 rounded-xl transition-colors bg-white/50 dark:bg-black/10"
+                      className="text-sm text-text-secondary leading-relaxed custom-scrollbar prose prose-sm dark:prose-invert max-w-none p-4 rounded-2xl transition-colors bg-white/60 dark:bg-black/10 border border-white/50 dark:border-white/5 shadow-sm"
                     >
                       {task.html_content ? (
                         <div dangerouslySetInnerHTML={{ __html: task.html_content }} />
@@ -397,14 +397,14 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                   ) : (
                     <div 
                       onClick={() => setIsEditingBriefing(true)}
-                      className="w-full flex-col cursor-pointer border-2 border-dashed border-border/40 hover:border-brand-primary/40 hover:bg-brand-primary/5 rounded-2xl p-8 flex items-center justify-center text-center transition-all group"
+                      className="w-full flex-col cursor-pointer bg-white/40 dark:bg-black/10 hover:bg-white/80 dark:hover:bg-black/30 border border-white/60 dark:border-white/5 shadow-sm rounded-3xl p-8 flex items-center justify-center text-center transition-all group"
                     >
-                      <div className="w-12 h-12 rounded-full bg-surface-elevated shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <FileText size={18} className="text-text-muted group-hover:text-brand-primary" />
+                      <div className="w-12 h-12 rounded-full bg-brand-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-brand-primary/20 transition-all duration-300">
+                        <FileText size={18} className="text-brand-primary" />
                       </div>
-                      <p className="text-xs font-bold text-text-primary">Adicionar Descrição</p>
-                      <p className="text-[10px] text-text-muted mt-1.5 max-w-[200px] leading-relaxed">
-                        Tap to add rich text formatting to describe this task.
+                      <p className="text-[13px] font-bold text-text-primary">Definir o Briefing</p>
+                      <p className="text-[11px] text-text-muted mt-2 leading-relaxed px-2">
+                        Clique para documentar os detalhes, links e guias da tarefa.
                       </p>
                     </div>
                   )}
