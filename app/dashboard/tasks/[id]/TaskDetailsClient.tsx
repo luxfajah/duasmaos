@@ -121,56 +121,61 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
     <div className="flex flex-col h-[calc(100vh-140px)] w-full">
       
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-6 px-4 shrink-0">
-        <div>
-          <div className="flex gap-2 items-center mb-2">
-            <Badge variant="muted" className="text-[10px] font-black tracking-widest uppercase">
+      <div className="flex justify-between items-start mb-6 px-4 shrink-0 mt-2">
+        <div className="space-y-3">
+          <div className="flex gap-2 items-center">
+            <Badge variant="outline" className="text-[10px] font-bold tracking-widest uppercase bg-surface border-border text-text-secondary">
               {task.task_type || 'CRM'} STUDIO
             </Badge>
             <Badge 
+              variant="outline"
               className={cn(
-                "px-2 py-0.5 text-[10px] uppercase font-black tracking-widest border",
-                task.status === 'done' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                task.status === 'in_progress' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : 
-                'bg-slate-500/10 text-slate-500 border-slate-500/20'
+                "px-2 py-0.5 text-[9px] uppercase font-bold tracking-widest border-transparent",
+                task.status === 'done' ? 'bg-success/10 text-success' : 
+                task.status === 'in_progress' ? 'bg-brand-primary/10 text-brand-primary' : 
+                'bg-surface-muted text-text-muted'
               )}
             >
-              {task.status.replace('_', ' ').toUpperCase()}
+              {task.status.replace('_', ' ')}
             </Badge>
           </div>
-          <h1 className="text-4xl font-serif font-bold text-text-primary tracking-tight">
+          <h1 className="text-4xl font-extrabold tracking-tighter text-text-primary heading-editorial">
             {task.title}
           </h1>
-          <div className="flex gap-4 mt-2 text-xs text-text-muted font-medium items-center">
-            <span className="flex items-center gap-1.5 border-r border-border pr-4">
-              <History className="w-3.5 h-3.5" /> Prazo: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'Sem prazo'}
-            </span>
-            <span className="flex items-center gap-1.5 border-r border-border pr-4">
-               <span className="font-bold text-text-primary">{task.project?.name}</span>
-            </span>
-            <span className="flex items-center gap-1.5 capitalize border-r border-border pr-4">
-              <FileText className="w-3.5 h-3.5" /> {task.stage?.name || 'Sem Etapa'}
-            </span>
-            <span className="flex items-center gap-1.5">
-               <Users className="w-3.5 h-3.5" /> {task.project?.client?.name}
-            </span>
+          <div className="flex flex-wrap gap-4 text-[11px] font-medium text-text-secondary items-center pt-1">
+            <div className="flex items-center gap-1.5 bg-surface-muted/50 px-2 py-1 rounded-md">
+              <History className="w-3.5 h-3.5 opacity-70" /> 
+              <span>{task.due_date ? new Date(task.due_date).toLocaleDateString() : 'Sem prazo'}</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-brand-primary/5 px-2 py-1 rounded-md text-brand-primary">
+               <LayoutGrid className="w-3.5 h-3.5 opacity-70" />
+               <span className="font-bold">{task.project?.name}</span>
+            </div>
+            <div className="flex items-center gap-1.5 capitalize text-text-muted">
+              <FileText className="w-3.5 h-3.5 opacity-70" /> 
+              <span>{task.stage?.name || 'Sem Etapa'}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-text-muted">
+               <Users className="w-3.5 h-3.5 opacity-70" /> 
+               <span>{task.project?.client?.name}</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 pt-2">
           {isEditorialGrid && (
             <button 
               onClick={handleAddPost}
-              className="flex items-center gap-2 px-4 py-2 bg-surface text-text-primary border border-border rounded-lg font-bold text-sm hover:border-text-muted transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-surface text-brand-primary border border-border rounded-xl font-bold text-xs hover:bg-brand-primary/5 hover:border-brand-primary/30 transition-all shadow-sm h-9"
             >
-              <Plus className="w-4 h-4 text-brand-primary" /> Adicionar Posts
+              <Plus className="w-4 h-4" /> Adicionar Posts
             </button>
           )}
           {task.status !== 'done' && (
             <button 
               onClick={handleFinalizeTask}
               disabled={isFinalizing}
-              className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-bold text-sm hover:bg-brand-secondary transition-all shadow-brand disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-xl font-bold text-xs hover:bg-brand-primary/90 transition-all shadow-brand disabled:opacity-50 disabled:cursor-not-allowed h-9"
             >
               <CheckCircle className="w-4 h-4" /> {isFinalizing ? 'Finalizando...' : 'Finalizar Task'}
             </button>
@@ -186,11 +191,11 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
           
           {/* Entrega Module */}
           <div className={cn(
-            "glass-panel rounded-2xl overflow-hidden flex flex-col max-w-full",
+            "glass-panel rounded-3xl overflow-hidden flex flex-col max-w-full border border-border shadow-sm bg-white dark:bg-surface/50 backdrop-blur-xl",
             isEditorialGrid ? "shrink-0" : "flex-1 min-h-0"
           )}>
-            <div className="px-6 py-4 border-b border-border bg-surface-muted/10 flex items-center justify-between">
-              <h2 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
+            <div className="px-6 py-4 border-b border-border/50 bg-surface-muted/30 flex items-center justify-between">
+              <h2 className="text-[11px] font-bold uppercase tracking-widest text-text-primary flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-500" /> Entrega da Tarefa
               </h2>
               <button 
@@ -204,31 +209,34 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
             
             <div className="p-6 flex flex-col xl:flex-row gap-6">
               <div className="flex-1 flex flex-col gap-4">
-                <div className="bg-white dark:bg-slate-900 border border-border/80 rounded-xl overflow-hidden w-full max-w-full shrink">
+                <div className="bg-white dark:bg-slate-900 border border-border/50 rounded-xl overflow-hidden w-full max-w-full shrink focus-within:ring-2 focus-within:ring-brand-primary/20 transition-shadow">
                   <ReactQuill 
                     theme="snow" 
                     value={deliveryContent} 
                     onChange={setDeliveryContent}
                     placeholder="Escreva os detalhes, direcionamentos e considerações finais da entrega..."
-                    className="min-h-[120px]"
+                    className="min-h-[120px] custom-quill-editor"
                   />
                 </div>
-                <div>
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1 block">Link Externo (Drive, Figma, Trello, etc)</label>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-1 block">Link Externo (Drive, Figma, Trello)</label>
                   {isClient && !finalPaymentConfirmed && deliveryLink ? (
-                    <div className="w-full bg-red-500/5 border border-red-500/20 text-red-500 rounded-lg px-4 py-2 text-sm flex items-center justify-between cursor-not-allowed">
-                      <span>••••••••••••••••••••••••••••</span>
-                      <span className="text-[9px] bg-red-500/10 px-1.5 py-0.5 rounded font-black uppercase tracking-wider">Aguardando Pagamento Final</span>
+                    <div className="w-full bg-red-500/5 border border-red-500/20 text-red-500 rounded-xl px-4 py-3 text-sm flex items-center justify-between cursor-not-allowed">
+                      <span className="opacity-50">••••••••••••••••••••••••••••</span>
+                      <span className="text-[9px] bg-red-500/10 px-2 py-1 rounded-md font-bold uppercase tracking-wider">Aguardando Pagamento</span>
                     </div>
                   ) : (
-                    <input 
-                      type="url"
-                      value={deliveryLink}
-                      onChange={(e) => setDeliveryLink(e.target.value)}
-                      placeholder="https://..."
-                      disabled={isClient}
-                      className="w-full bg-surface-muted/10 border border-border rounded-lg px-4 py-2 text-sm text-text-primary focus:border-brand-primary/40 outline-none transition-colors disabled:opacity-75 disabled:cursor-not-allowed"
-                    />
+                    <div className="relative flex items-center">
+                      <ExternalLink className="absolute left-3 w-4 h-4 text-text-muted" />
+                      <input 
+                        type="url"
+                        value={deliveryLink}
+                        onChange={(e) => setDeliveryLink(e.target.value)}
+                        placeholder="https://..."
+                        disabled={isClient}
+                        className="w-full bg-surface-muted/30 border border-border rounded-xl pl-10 pr-4 py-2.5 text-sm text-text-primary focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all disabled:opacity-75 disabled:cursor-not-allowed"
+                      />
+                    </div>
                   )}
                 </div>
               </div>
@@ -285,10 +293,10 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
           </div>
 
           {isEditorialGrid && (
-            <div className="flex flex-col bg-surface-muted/10 border border-border rounded-2xl overflow-hidden relative shrink-0">
-              <div className="h-14 py-3 shrink-0 border-b border-border bg-surface flex items-center px-6 justify-between">
+            <div className="flex flex-col bg-white dark:bg-surface/30 border border-border/50 rounded-3xl overflow-hidden relative shrink-0 shadow-sm">
+              <div className="h-14 py-3 shrink-0 border-b border-border/50 bg-surface-muted/30 flex items-center px-6 justify-between">
                 <div className="flex items-center gap-3">
-                   <h2 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
+                   <h2 className="text-[11px] font-bold uppercase tracking-widest text-text-primary flex items-center gap-2">
                      <LayoutGrid className="w-4 h-4 text-brand-primary" /> Grade Editorial
                    </h2>
                    <div className="w-px h-4 bg-border mx-1" />
@@ -297,13 +305,13 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                    </span>
                 </div>
                 
-                <div className="flex gap-1.5 bg-surface-muted/50 p-1 rounded-lg border border-border/50">
-                   <button className="p-1.5 bg-surface rounded-md shadow-sm text-brand-primary"><LayoutGrid size={14}/></button>
-                   <button className="p-1.5 text-text-muted hover:text-text-primary"><List size={14}/></button>
+                <div className="flex gap-1 bg-surface-muted/50 p-1 rounded-xl border border-border/50">
+                   <button className="p-1.5 bg-white dark:bg-surface rounded-lg shadow-sm text-brand-primary transition-all"><LayoutGrid size={14}/></button>
+                   <button className="p-1.5 text-text-muted hover:text-text-primary transition-colors"><List size={14}/></button>
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {sortedPosts.map(post => (
                      <PostCard 
@@ -314,13 +322,13 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                   ))}
 
                   {sortedPosts.length === 0 && (
-                     <div className="col-span-full py-24 flex flex-col items-center justify-center text-center space-y-4">
-                        <div className="w-20 h-20 glass-panel rounded-3xl flex items-center justify-center shadow-sm">
-                           <Plus size={32} className="text-text-muted" />
+                     <div className="col-span-full py-20 flex flex-col items-center justify-center text-center space-y-4">
+                        <div className="w-20 h-20 bg-surface-muted rounded-full flex items-center justify-center mb-2">
+                           <LayoutGrid size={32} className="text-text-muted/50" />
                         </div>
                         <div className="max-w-xs">
-                           <h3 className="text-lg font-serif font-bold text-text-primary">Container Editorial Vazio</h3>
-                           <p className="text-sm text-text-muted mt-1 leading-relaxed">
+                           <h3 className="text-sm font-bold text-text-primary">Container Editorial Vazio</h3>
+                           <p className="text-[11px] text-text-muted mt-2 leading-relaxed">
                              Esta tarefa ainda não possui posts. Use o botão <b>Adicionar Posts</b> para gerar a grade base.
                            </p>
                         </div>
@@ -333,28 +341,28 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
         </div>
 
         {/* Sidebar: Briefing & Revisions */}
-        <div className="w-[340px] shrink-0 space-y-6 flex flex-col min-h-0 h-full overflow-y-auto custom-scrollbar pb-6 pr-2">
-           <Card className="p-6 bg-surface-muted/20 border-border flex flex-col shrink-0">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-text-muted mb-4 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-brand-primary" /> Briefing da Task
+        <div className="w-[340px] shrink-0 flex flex-col gap-6 min-h-0 h-full overflow-y-auto custom-scrollbar pb-6 pr-2">
+           <div className="p-5 bg-surface-muted/10 border border-border rounded-3xl flex flex-col shrink-0 relative overflow-hidden">
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-text-secondary mb-4 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-brand-primary" /> Briefing
               </h4>
               
               {isEditingBriefing ? (
-                <div className="flex flex-col gap-3">
-                  <div className="bg-white dark:bg-slate-900 rounded-md overflow-hidden border border-border/80">
+                <div className="flex flex-col gap-3 relative z-10">
+                  <div className="bg-white dark:bg-slate-900 rounded-xl overflow-hidden border border-border/50 focus-within:ring-2 focus-within:ring-brand-primary/20 transition-shadow">
                      <ReactQuill 
                        theme="snow" 
                        value={briefingContent} 
                        onChange={setBriefingContent}
                        placeholder="Escreva livremente aqui..."
-                       className="min-h-[150px]"
+                       className="min-h-[150px] custom-quill-editor"
                      />
                   </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={handleSaveBriefing}
                       disabled={isSavingBriefing}
-                      className="px-3 py-1.5 bg-brand-primary text-white text-xs font-bold rounded-md hover:bg-brand-secondary transition-colors"
+                      className="px-4 py-2 bg-brand-primary text-white text-xs font-bold rounded-lg hover:bg-brand-secondary transition-colors"
                     >
                       {isSavingBriefing ? 'Salvando...' : 'Salvar'}
                     </button>
@@ -363,17 +371,17 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                         setBriefingContent(task.html_content || '')
                         setIsEditingBriefing(false)
                       }}
-                      className="px-3 py-1.5 bg-surface text-text-primary text-xs font-bold rounded-md border border-border hover:bg-surface-muted transition-colors"
+                      className="px-4 py-2 bg-surface text-text-primary text-xs font-bold rounded-lg border border-border hover:bg-surface-muted transition-colors"
                     >
                       Cancelar
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="group relative">
+                <div className="group relative z-10">
                   {(task.html_content || task.description) ? (
                     <div 
-                      className="text-sm text-text-secondary leading-relaxed custom-scrollbar prose prose-sm dark:prose-invert max-w-none p-1 rounded-lg transition-colors"
+                      className="text-sm text-text-secondary leading-relaxed custom-scrollbar prose prose-sm dark:prose-invert max-w-none p-2 rounded-xl transition-colors bg-white/50 dark:bg-black/10"
                     >
                       {task.html_content ? (
                         <div dangerouslySetInnerHTML={{ __html: task.html_content }} />
@@ -384,40 +392,44 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                   ) : (
                     <div 
                       onClick={() => setIsEditingBriefing(true)}
-                      className="w-full flex-col cursor-pointer border-2 border-dashed border-border/60 hover:border-brand-primary/40 hover:bg-brand-primary/5 rounded-xl p-6 flex items-center justify-center text-center transition-all group"
+                      className="w-full flex-col cursor-pointer border-2 border-dashed border-border/40 hover:border-brand-primary/40 hover:bg-brand-primary/5 rounded-2xl p-8 flex items-center justify-center text-center transition-all group"
                     >
-                      <div className="w-10 h-10 rounded-full bg-surface-muted flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <FileText size={16} className="text-text-muted group-hover:text-brand-primary" />
+                      <div className="w-12 h-12 rounded-full bg-surface-elevated shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <FileText size={18} className="text-text-muted group-hover:text-brand-primary" />
                       </div>
                       <p className="text-xs font-bold text-text-primary">Adicionar Descrição</p>
-                      <p className="text-[10px] text-text-muted mt-1 max-w-[200px]">Use o editor de texto rico para detalhar a tarefa.</p>
+                      <p className="text-[10px] text-text-muted mt-1.5 max-w-[200px] leading-relaxed">
+                        Tap to add rich text formatting to describe this task.
+                      </p>
                     </div>
                   )}
 
                   {(task.html_content || task.description) && (
                     <button 
                       onClick={() => setIsEditingBriefing(true)}
-                      className="absolute -top-11 right-0 opacity-0 group-hover:opacity-100 transition-opacity px-2.5 py-1 glass-panel rounded-md text-[10px] font-bold text-text-primary hover:text-brand-primary shadow-sm flex items-center gap-1.5"
+                      className="absolute -top-10 right-0 opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 bg-surface rounded-lg text-[10px] font-bold text-text-primary hover:text-brand-primary border border-border/50 shadow-sm flex items-center gap-1.5"
                     >
                       <FileText size={12} /> Editar
                     </button>
                   )}
                 </div>
               )}
-            </Card>
+           </div>
 
-           <Card className="flex-1 p-0 bg-surface border-border overflow-hidden flex flex-col">
-              <div className="p-5 border-b border-border flex justify-between items-center bg-surface-muted/10 shrink-0">
-                 <h4 className="text-[10px] font-black uppercase tracking-widest text-text-primary">Log de Atividade</h4>
-                 <Badge variant="muted" className="text-[10px]">Recent</Badge>
+           <div className="flex-1 bg-surface-elevated/50 border border-border rounded-3xl overflow-hidden flex flex-col relative shadow-inner">
+              <div className="p-5 flex justify-between items-center shrink-0 relative z-10">
+                 <h4 className="text-[11px] font-bold uppercase tracking-widest text-text-secondary">Histórico</h4>
               </div>
-              <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar text-xs">
-                 <div className="space-y-4 opacity-50 italic text-text-muted">
-                    <p>O fluxo de aprovação é individual por post.</p>
-                    <p>Ao aprovar todos os posts, a tarefa será marcada automaticamente como concluída.</p>
+              <div className="flex-1 overflow-y-auto p-5 custom-scrollbar text-xs relative z-10 flex flex-col items-center justify-center text-center">
+                 <div className="w-12 h-12 rounded-full bg-surface-muted flex items-center justify-center mb-3">
+                    <History size={16} className="text-text-muted opacity-50" />
                  </div>
+                 <h5 className="font-semibold text-text-primary mb-1">Sem Histórico</h5>
+                 <p className="text-text-muted leading-relaxed max-w-[200px]">
+                    Nenhuma atividade foi registrada nesta tarefa ainda. (O fluxo de aprovação é por post).
+                 </p>
               </div>
-           </Card>
+           </div>
         </div>
       </div>
 

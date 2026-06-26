@@ -18,6 +18,23 @@
   .glass-card-super {
     @apply rounded-[2rem] bg-white/40 dark:bg-black/40 backdrop-blur-3xl saturate-150 border border-white/60 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] overflow-hidden;
   }
+
+  /* Custom Quill Editor Styles for Apple HIG */
+  .custom-quill-editor .ql-toolbar {
+    @apply border-none bg-surface-muted/30 border-b border-border/50 rounded-t-xl px-4 py-2 transition-colors;
+  }
+  .custom-quill-editor .ql-container {
+    @apply border-none text-text-primary text-sm font-medium leading-relaxed font-sans;
+  }
+  .custom-quill-editor .ql-editor {
+    @apply min-h-[120px] px-6 py-4;
+  }
+  .custom-quill-editor .ql-editor.ql-blank::before {
+    @apply text-text-muted opacity-60 font-medium font-sans italic not-italic;
+  }
+  .custom-quill-editor:focus-within .ql-toolbar {
+    @apply bg-surface-muted/60;
+  }
 }
 
 @layer base {
