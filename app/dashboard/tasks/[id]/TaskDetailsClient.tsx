@@ -191,23 +191,28 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
           
           {/* Entrega Module */}
           <div className={cn(
-            "glass-panel rounded-3xl overflow-hidden flex flex-col max-w-full border border-border shadow-sm bg-white dark:bg-surface/50 backdrop-blur-xl",
+            "glass-panel rounded-3xl overflow-hidden flex flex-col max-w-full border border-border shadow-sm bg-white dark:bg-surface/30 backdrop-blur-xl relative",
             isEditorialGrid ? "shrink-0" : "flex-1 min-h-0"
           )}>
-            <div className="px-6 py-4 border-b border-border/50 bg-surface-muted/30 flex items-center justify-between">
-              <h2 className="text-[11px] font-bold uppercase tracking-widest text-text-primary flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500" /> Entrega da Tarefa
-              </h2>
+            <div className="px-6 py-5 border-b border-border/30 bg-surface-muted/10 flex items-center justify-between relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                </div>
+                <h2 className="text-[11px] font-bold uppercase tracking-widest text-text-primary">
+                  Módulo de Entrega
+                </h2>
+              </div>
               <button 
                 onClick={handleSaveDelivery}
                 disabled={isSavingDelivery}
-                className="px-4 py-1.5 bg-emerald-500 text-white text-xs font-bold rounded-md hover:bg-emerald-600 transition-colors shadow-sm"
+                className="px-5 py-2 bg-emerald-500 text-white text-xs font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-2"
               >
-                {isSavingDelivery ? 'Salvando...' : 'Salvar Entrega'}
+                {isSavingDelivery ? 'Salvando...' : 'Salvar Arquivos e Link'}
               </button>
             </div>
             
-            <div className="p-6 flex flex-col xl:flex-row gap-6">
+            <div className="p-6 md:p-8 flex flex-col xl:flex-row gap-8 relative z-10">
               <div className="flex-1 flex flex-col gap-4">
                 <div className="bg-white dark:bg-slate-900 border border-border/50 rounded-xl overflow-hidden w-full max-w-full shrink focus-within:ring-2 focus-within:ring-brand-primary/20 transition-shadow">
                   <ReactQuill 
@@ -241,7 +246,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                 </div>
               </div>
               
-              <div className="w-full xl:w-[350px] shrink-0 flex flex-col gap-4 border-t xl:border-t-0 xl:border-l border-border pt-4 xl:pt-0 xl:pl-6">
+              <div className="w-full xl:w-[380px] shrink-0 flex flex-col gap-5 border-t xl:border-t-0 xl:border-l border-border/50 pt-6 xl:pt-0 xl:pl-8">
                 <TaskDeliveryFileUploader 
                   taskId={task.id}
                   projectId={task.project_id}
