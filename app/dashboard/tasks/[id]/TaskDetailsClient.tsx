@@ -212,19 +212,19 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
               </button>
             </div>
             
-            <div className="p-6 md:p-8 flex flex-col xl:flex-row gap-8 relative z-10">
-              <div className="flex-1 flex flex-col gap-4">
-                <div className="bg-white dark:bg-slate-900 border border-border/50 rounded-xl overflow-hidden w-full max-w-full shrink focus-within:ring-2 focus-within:ring-brand-primary/20 transition-shadow">
+            <div className="flex flex-col xl:flex-row relative z-10">
+              <div className="flex-1 flex flex-col">
+                <div className="w-full flex-1 flex flex-col focus-within:bg-surface-muted/5 transition-colors">
                   <ReactQuill 
                     theme="snow" 
                     value={deliveryContent} 
                     onChange={setDeliveryContent}
                     placeholder="Escreva os detalhes, direcionamentos e considerações finais da entrega..."
-                    className="min-h-[120px] custom-quill-editor"
+                    className="custom-quill-editor-seamless flex-1 flex flex-col min-h-[250px]"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-1 block">Link Externo (Drive, Figma, Trello)</label>
+                <div className="p-6 md:p-8 pt-4 border-t border-border/30 bg-surface-muted/5">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-text-muted px-1 block mb-2">Link Externo (Drive, Figma, Trello)</label>
                   {isClient && !finalPaymentConfirmed && deliveryLink ? (
                     <div className="w-full bg-red-500/5 border border-red-500/20 text-red-500 rounded-xl px-4 py-3 text-sm flex items-center justify-between cursor-not-allowed">
                       <span className="opacity-50">••••••••••••••••••••••••••••</span>
@@ -246,7 +246,7 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                 </div>
               </div>
               
-              <div className="w-full xl:w-[380px] shrink-0 flex flex-col gap-5 border-t xl:border-t-0 xl:border-l border-border/50 pt-6 xl:pt-0 xl:pl-8">
+              <div className="w-full xl:w-[380px] shrink-0 flex flex-col gap-5 border-t xl:border-t-0 xl:border-l border-border/50 bg-white/40 dark:bg-black/20 p-6 md:p-8">
                 <TaskDeliveryFileUploader 
                   taskId={task.id}
                   projectId={task.project_id}
