@@ -345,10 +345,10 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
           )}
         </div>
 
-        {/* Sidebar: Briefing & Revisions */}
-        <div className="w-[340px] shrink-0 flex flex-col gap-6 min-h-0 h-full overflow-y-auto custom-scrollbar pb-6 pr-2">
-           <div className="p-5 bg-surface-muted/10 border border-border rounded-3xl flex flex-col shrink-0 relative overflow-hidden">
-              <h4 className="text-[11px] font-bold uppercase tracking-widest text-text-secondary mb-4 flex items-center gap-2">
+        {/* Sidebar: Briefing */}
+        <div className="w-[340px] shrink-0 flex flex-col min-h-0 h-full overflow-y-auto custom-scrollbar pb-6 pr-2">
+           <div className="p-5 bg-surface-muted/10 border border-border rounded-3xl flex flex-col h-full relative overflow-hidden">
+              <h4 className="text-[11px] font-bold uppercase tracking-widest text-text-secondary mb-4 flex items-center gap-2 shrink-0">
                 <FileText className="w-4 h-4 text-brand-primary" /> Briefing
               </h4>
               
@@ -419,21 +419,6 @@ export function TaskDetailsClient({ task, currentUser, finalPaymentConfirmed = t
                   )}
                 </div>
               )}
-           </div>
-
-           <div className="flex-1 bg-surface-elevated/50 border border-border rounded-3xl overflow-hidden flex flex-col relative shadow-inner">
-              <div className="p-5 flex justify-between items-center shrink-0 relative z-10">
-                 <h4 className="text-[11px] font-bold uppercase tracking-widest text-text-secondary">Histórico</h4>
-              </div>
-              <div className="flex-1 overflow-y-auto p-5 custom-scrollbar text-xs relative z-10 flex flex-col items-center justify-center text-center">
-                 <div className="w-12 h-12 rounded-full bg-surface-muted flex items-center justify-center mb-3">
-                    <History size={16} className="text-text-muted opacity-50" />
-                 </div>
-                 <h5 className="font-semibold text-text-primary mb-1">Sem Histórico</h5>
-                 <p className="text-text-muted leading-relaxed max-w-[200px]">
-                    Nenhuma atividade foi registrada nesta tarefa ainda. (O fluxo de aprovação é por post).
-                 </p>
-              </div>
            </div>
         </div>
       </div>
